@@ -194,7 +194,7 @@ printf("222222\r\n");
 	FlashID = SPI_FLASH_ReadID();
 
 	printf("device_id is %x\r\n", device_id);
-	printf("FlashID %x\r\n", FlashID);
+	//printf("FlashID %x\r\n", FlashID);
 	//printf("FlashID %d\r\n", FlashID);
 	
 

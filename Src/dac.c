@@ -55,10 +55,4 @@ void dac_set_voltage(uint8_t outx, uint16_t vol)
         HAL_DAC_SetValue(&g_dac1_handle, DAC_CHANNEL_2, DAC_ALIGN_12B_R, temp);
     }
 }
-444444
-555555
-666666
-11111111
-22222222
-33333333
 

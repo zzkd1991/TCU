@@ -21,6 +21,3 @@ void ADC_Smooth(void)
 		REAL_BUF[i + 9] = (uint16_t)(3.3f * (_ADC_AVG[i] / 4096.0f) * 1.51f * 1000);
 	}
 }
-
-
-fdsdfsd

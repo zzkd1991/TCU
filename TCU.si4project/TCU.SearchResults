@@ -1,6 +1,0 @@
----- CAN_Tx_Mailboxes Matches (5 in 2 files) ----
-stm32f4xx_hal_can.c (Drivers\STM32F4xx_HAL_Driver\Src) line 1247 :   *         This parameter can be a value of @arg CAN_Tx_Mailboxes.
-stm32f4xx_hal_can.c (Drivers\STM32F4xx_HAL_Driver\Src) line 1355 :   *         This parameter can be any combination of @arg CAN_Tx_Mailboxes.
-stm32f4xx_hal_can.c (Drivers\STM32F4xx_HAL_Driver\Src) line 1444 :   *         This parameter can be any combination of @arg CAN_Tx_Mailboxes.
-stm32f4xx_hal_can.c (Drivers\STM32F4xx_HAL_Driver\Src) line 1479 :   *         This parameter can be one value of @arg CAN_Tx_Mailboxes.
-stm32f4xx_hal_can.h (Drivers\STM32F4xx_HAL_Driver\Inc) line 451 : /** @defgroup CAN_Tx_Mailboxes CAN Tx Mailboxes

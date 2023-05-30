@@ -58,3 +58,7 @@ void dac_set_voltage(uint8_t outx, uint16_t vol)
 444444
 555555
 666666
+11111111
+22222222
+33333333
+

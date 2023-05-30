@@ -13,7 +13,7 @@ void ADC_Smooth(void)
 	
 	for(i = 0; i < 9; i++)
 	{
-		REAL_BUF[i] = (uint16_t)(3.3f * (ADC_AVG[i] / 4096.0f) * 1.51f * 1000);
+		REAL_BUF[i] = (uint16_t)(3.3f * (ADC_AVG[i] / 4096.0f) * 1.51f * 1000);//添加注释
 	}
 
 	for(i = 0; i < 10; i++)

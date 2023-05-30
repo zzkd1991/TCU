@@ -43,12 +43,14 @@ void LED_GPIO_Config(void)
 
 void led1_show_yellow(void)
 {
+	LED1(OFF);
 	LED2(ON);
 	LED3(ON);
 }
 
 void led2_show_yellow(void)
 {
+	LED4(OFF);
 	LED5(ON);
 	LED6(ON);
 }
@@ -57,12 +59,14 @@ void led2_show_yellow(void)
 void led1_show_purple(void)
 {
 	LED1(ON);
+	LED2(OFF);
 	LED3(ON);
 }
 
 void led2_show_purple(void)
 {
 	LED4(ON);
+	LED5(OFF);
 	LED6(ON);
 }
 
@@ -70,12 +74,14 @@ void led1_show_cyan(void)//青色
 {
 	LED1(ON);
 	LED2(ON);
+	LED3(OFF);
 }
 
 void led2_show_cyan(void)
 {
 	LED4(ON);
 	LED5(ON);
+	LED6(OFF);
 }
 
 void led1_show_white(void)

@@ -195,7 +195,7 @@ printf("222222\r\n");
 
 	printf("device_id is %x\r\n", device_id);
 	//printf("FlashID %x\r\n", FlashID);
-	//printf("FlashID %d\r\n", FlashID);
+	printf("FlashID %d\r\n", FlashID);
 	
 
   while (1)

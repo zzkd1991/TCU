@@ -112,8 +112,8 @@
 #define DI21_GPIO_CLK_ENABLE()		__GPIOD_CLK_ENABLE()
 
 
-uint8_t IMCA2163_ID[21] = {0};
-uint8_t IMCA2163_Flag[21] = {0};
+uint8_t IMCA2136_DI[21] = {0};
+uint8_t IMCA2136_Flag[21] = {0};
 
 
 uint8_t API_DI_Cfg(uint8_t channel_u8, uint8_t signaleType_u8)
@@ -123,7 +123,7 @@ uint8_t API_DI_Cfg(uint8_t channel_u8, uint8_t signaleType_u8)
 	if(signaleType_u8 != 0 || signaleType_u8 != 1)
 		return 2;
 
-	IMCA2163_Flag[channel_u8] = signaleType_u8;
+	IMCA2136_Flag[channel_u8] = signaleType_u8;
 	
 	return 0;
 }
@@ -499,24 +499,24 @@ uint32_t DI_Screen(void)
 	{
 		if(Api_Di_Get(channel) == 1)
 		{
-			if(IMCA2163_Flag[channel] == 0)
+			if(IMCA2136_Flag[channel] == 0)
 			{
-				IMCA2163_ID[channel] = 1;
+				IMCA2136_DI[channel] = 1;
 			}
-			else if(IMCA2163_Flag[channel] == 1)
+			else if(IMCA2136_Flag[channel] == 1)
 			{
-				IMCA2163_ID[channel] = 0;
+				IMCA2136_DI[channel] = 0;
 			}
 		}
 		else
 		{
-			if(IMCA2163_Flag[channel] == 0)
+			if(IMCA2136_Flag[channel] == 0)
 			{
-				IMCA2163_ID[channel] = 0;
+				IMCA2136_DI[channel] = 0;
 			}
-			else if(IMCA2163_Flag[channel] == 1)
+			else if(IMCA2136_Flag[channel] == 1)
 			{
-				IMCA2163_ID[channel] = 1;
+				IMCA2136_DI[channel] = 1;
 			}
 		}
 	}

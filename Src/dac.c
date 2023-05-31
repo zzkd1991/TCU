@@ -56,5 +56,3 @@ void dac_set_voltage(uint8_t outx, uint16_t vol)
     }
 }
 
-
-

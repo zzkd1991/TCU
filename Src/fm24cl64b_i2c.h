@@ -65,7 +65,7 @@
 
 void I2C_Fram_Init(void);
 										  
-void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite);
+uint32_t I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite);
 uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr);
 uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByteToWrite);
 uint32_t I2C_Fram_BufferRead(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t NumByteToRead);

@@ -1,6 +1,8 @@
 #ifndef BSP_PAR_H
 #define BSP_PAR_H
 
+#include "main.h"
+
 /*
 共8192（0x2000）个字节,8*8192=64KB
 BYTES:512*1 
@@ -21,8 +23,8 @@ Sum = 3584*2 = 7168
 #define Max_WORD_NUM           512
 #define Max_REAL_NUM           512
 
-#define ParMainCheckCode_Base	0x1C00      //主存储区校验起始地址2*3
-#define ParBackCheckCode_Base	0x1C06      //备份区校验起始地址2*3
+#define ParMainCheckCode_Base	0x1C00      //主存储区校验起始地址4*3
+#define ParBackCheckCode_Base	0x1C0C      //备份区校验起始地址4*3
 
 #define SYS_PRODUCT_BASE            0x1E00      //系统/产品信息存储地址    
 #define SYS_PRODUCT_BACKUP          0x1F00      //系统/产品信息存储地址
@@ -36,16 +38,16 @@ float PAR_REALS[Max_REAL_NUM];
 
 void bsp_PAR_Init(void);
 uint16_t API_PAR_Init(void);
-uint8_t API_PAR_Data_Init(uint8_t Par_type, const uint8_t buffer,  uint16_t len);
+uint8_t API_PAR_Data_Init(uint8_t Par_type, uint8_t *buffer,  uint16_t len);
 
-uint16_t API_PAR_SaveBytes(uint16_t Address, const uint8_t buffer, uint16_t len);
-uint16_t API_PAR_SaveWords(uint16_t Address, const uint16_t buffer, uint16_t len);
-uint16_t API_PAR_SaveDwords(uint16_t Address, const uint32_t buffer, uint16_t len);
+uint16_t API_PAR_SaveBytes(uint16_t Address, uint8_t *buffer, uint16_t len);
+uint16_t API_PAR_SaveWords(uint16_t Address, uint16_t *buffer, uint16_t len);
+uint16_t API_PAR_SaveReals(uint16_t Address, float *buffer, uint16_t len);
+
 
 uint16_t API_PAR_GetBytes(uint16_t Address, uint8_t *buffer, uint16_t len);
 uint16_t API_PAR_GetWords(uint16_t Address, uint16_t *buffer, uint16_t len);
-uint16_t API_PAR_GetDwords(uint16_t Address, uint32_t *buffer, uint16_t len);
-//uint16_t API_PAR_GetReals(uint16_t Address, real *buffer, uint16_t len);
+uint16_t API_PAR_GetReals(uint16_t Address, float *buffer, uint16_t len);
 
 
 #endif

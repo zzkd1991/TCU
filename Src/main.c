@@ -124,10 +124,8 @@ int main(void)
 	API_OUT_Do_Set(DOUT1, 1);
 	//Pi_Drv_Init();
 	//mcp2515_hw_init();
-	dac_init(1);
-	//printf("Init.....OK!!!\r\n");
 
-	dac_set_voltage(1, 3000);
+	//printf("Init.....OK!!!\r\n");
 
 	I2C_Fram_Init();
 

@@ -134,7 +134,7 @@ void ccpBootInit (int cro_id, int dto_id)
   msCAN12.CTCR  &= 0x00;       // and disable appropriate TX-interrupt
   msCAN12.CMCR0 &= 0xFE;       // quit soft reset mode, clear bit 0
 	#endif
-	Can_Config();
+	CAN_Hardware_Config();
 // -----------------------------------------------------------------------------
 } /* ccpBootInit */
 
@@ -186,6 +186,7 @@ void ccpBootTransmitCrm (unsigned char *msg)
 	
 	m.cob_id = g_ccp_dto_id << 5;
 	m.rtr = 0;
+	m.ide = 0;
 	m.len = 8;
 	m.data[0] = *msg++;
 	m.data[1] = *msg++;

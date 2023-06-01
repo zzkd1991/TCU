@@ -146,6 +146,7 @@ printf("222222\r\n");
   
   m.cob_id = 0x0a;
   m.rtr = 0;
+	m.ide = 0;
 	uint8_t value = 0x33;
   //memcpy(m.data, &value, 1);
   int i = 0;

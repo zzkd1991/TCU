@@ -519,6 +519,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\bsp_output_docc.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_output_ao.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\bsp_output_ao.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_par.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\bsp_par.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

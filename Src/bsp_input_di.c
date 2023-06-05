@@ -7,7 +7,7 @@
  DI2------->PF12
  DI3------->PF13
  DI4------->PF14
- DI5------->PF15
+ DI5------->PG2
  DI6------->PG0
  DI7------->PG1
  DI8------->PE7
@@ -43,9 +43,9 @@
 #define DI4_GPIO_PORT				GPIOF
 #define DI4_GPIO_CLK_ENABLE()		__GPIOF_CLK_ENABLE()
 
-#define DI5_PIN						GPIO_PIN_15
-#define DI5_GPIO_PORT				GPIOF
-#define DI5_GPIO_CLK_ENABLE()		__GPIOF_CLK_ENABLE()
+#define DI5_PIN						GPIO_PIN_2
+#define DI5_GPIO_PORT				GPIOG
+#define DI5_GPIO_CLK_ENABLE()		__GPIOG_CLK_ENABLE()
 
 #define DI6_PIN						GPIO_PIN_0
 #define DI6_GPIO_PORT				GPIOG
@@ -159,8 +159,8 @@ void Bsp_Di_Init(void)
 
 	//DI1
 	GPIO_InitStructure.Pin =  DI1_PIN;
-	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚悬空输出0
+	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI1_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI2

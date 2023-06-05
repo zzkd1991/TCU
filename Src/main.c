@@ -27,6 +27,7 @@
 #include "tim.h"
 #include "bsp_can.h"
 #include "temp_pres_drv.h"
+#include "bsp_input_ai.h"
 #include "spi_flash.h"
 #include "ccp.h"
 #include "tle7242.h"
@@ -90,12 +91,13 @@ Time_2000ms_Flag;
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc3;
 
-uint16_t ADC_ConvertedValue[9];
+uint16_t ADC_ConvertedValue[6];
 uint16_t _ADC_ConvertedValue[10];
-uint32_t ACT_ADC_ConvertedValue[9];
+uint32_t ACT_ADC_ConvertedValue[6];
 uint32_t _ACT_ADC_ConvertedValue[10];
-uint16_t ADC_AVG[9];
-uint16_t _ADC_AVG[10];
+uint16_t ADC_AVG[6];//adc1
+uint16_t _ADC_AVG[10];//adc3 
+uint16_t ADC_FINAL[20];
 
 
 int main(void)
@@ -135,7 +137,7 @@ int main(void)
 	//init_timer_0(10);
 	//ccpBootInit(CCP_CRO_ID, CCP_DTO_ID);
 printf("11111\r\n");
-	HAL_ADC_Start_DMA(&hadc1,(uint32_t *)ADC_ConvertedValue, 9);
+	HAL_ADC_Start_DMA(&hadc1,(uint32_t *)ADC_ConvertedValue, 6);
 	HAL_ADC_Start_DMA(&hadc3,(uint32_t *)_ADC_ConvertedValue, 10);  
 
 printf("222222\r\n");
@@ -205,7 +207,7 @@ printf("222222\r\n");
 	//mdelay(1000);
 	//uwTick = 0;
 	bsp_application_task_loop();
-		
+	ADC_Smooth();
 	//printf("message_read %s\n", message_read);
 	//printf("hello world\r\n");
  #if 0	
@@ -232,7 +234,7 @@ printf("222222\r\n");
 		_timer_0();
 		flag = 0;
 	}
-
+ 
 	MCP2515_CanGet_SendQueue();
 
 	LED1_OFF;

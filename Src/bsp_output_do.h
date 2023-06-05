@@ -19,6 +19,8 @@ uint8_t API_OUT_Do_Cfg(uint8_t channel_u8, uint8_t OutMode_u8);
 
 uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value);
 
+uint8_t API_OUT_Do_Get_State(uint8_t channel_u8);
+
 #endif
 
 

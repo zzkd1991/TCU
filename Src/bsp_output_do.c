@@ -31,6 +31,109 @@
 #define DO6_GPIO_PORT				GPIOG
 #define DO6_GPIO_CLK_ENABLE()		__GPIOG_CLK_ENABLE()
 
+#define DO_IN1_Pin 					GPIO_PIN_0
+#define DO_IN1_GPIO_Port 			GPIOE
+#define DO_IN2_Pin 					GPIO_PIN_1
+#define DO_IN2_GPIO_Port 			GPIOE
+#define DO_IN3_Pin 					GPIO_PIN_2
+#define DO_IN3_GPIO_Port 			GPIOE
+#define DO_IN4_Pin 					GPIO_PIN_3
+#define DO_IN4_GPIO_Port 			GPIOE
+#define DO_IN5_Pin 					GPIO_PIN_4
+#define DO_IN5_GPIO_Port 			GPIOE
+#define DO_IN6_Pin 					GPIO_PIN_6
+#define DO_IN6_GPIO_Port 			GPIOE
+
+void API_OUT_DO_IN_Cfg(void)
+{
+  	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	/* USER CODE BEGIN MX_GPIO_Init_1 */
+	/* USER CODE END MX_GPIO_Init_1 */
+
+  	/* GPIO Ports Clock Enable */
+  	__HAL_RCC_GPIOE_CLK_ENABLE();	
+	/*Configure GPIO pins : DO_IN3_Pin DO_IN4_Pin DO_IN5_Pin DO_IN6_Pin
+							 DI8_Pin DI9_Pin DI10_Pin DI11_Pin
+							 DI12_Pin DI13_Pin DI14_Pin DO_IN1_Pin
+							 DO_IN2_Pin */
+	GPIO_InitStruct.Pin = DO_IN3_Pin|DO_IN4_Pin|DO_IN5_Pin|DO_IN6_Pin|DO_IN1_Pin|DO_IN2_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+}
+
+uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
+{
+	if(channel_u8 == DOUT1)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN1_GPIO_Port, DO_IN1_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else if(channel_u8 == DOUT2)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN2_GPIO_Port, DO_IN2_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else if(channel_u8 == DOUT3)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN3_GPIO_Port, DO_IN3_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}	
+	else if(channel_u8 == DOUT4)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN4_GPIO_Port, DO_IN4_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else if(channel_u8 == DOUT5)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN5_GPIO_Port, DO_IN5_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else if(channel_u8 == DOUT6)
+	{
+		if(HAL_GPIO_ReadPin(DO_IN6_GPIO_Port, DO_IN6_Pin) == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}	
+	
+	return 0xff;
+}
+
 
 uint8_t API_OUT_Do_Cfg(uint8_t channel_u8, uint8_t OutMode_u8)
 {
@@ -126,7 +229,6 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 
 	return 0;
-
 }
 
 

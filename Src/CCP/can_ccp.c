@@ -89,6 +89,7 @@ int CanTransmit_0(CCP_TX_HANDLE_STR ccp_tx_handle)
 	m.cob_id = g_ccp_dto_id;
 	m.rtr = 0;
 	m.len = 8;
+	m.ide = 0;
 
 	for(i = 0; i < 8; i++)
 	{

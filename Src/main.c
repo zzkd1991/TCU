@@ -126,10 +126,8 @@ int main(void)
 	API_OUT_Do_Set(DOUT1, 1);
 	//Pi_Drv_Init();
 	//mcp2515_hw_init();
-	dac_init(1);
-	//printf("Init.....OK!!!\r\n");
 
-	dac_set_voltage(1, 3000);
+	//printf("Init.....OK!!!\r\n");
 
 	I2C_Fram_Init();
 
@@ -150,6 +148,7 @@ printf("222222\r\n");
   
   m.cob_id = 0x0a;
   m.rtr = 0;
+	m.ide = 0;
 	uint8_t value = 0x33;
   //memcpy(m.data, &value, 1);
   int i = 0;

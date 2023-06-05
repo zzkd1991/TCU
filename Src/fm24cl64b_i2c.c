@@ -72,7 +72,7 @@ void I2C_Fram_Init(void)
 }
 
 
-void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite)
+uint32_t I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite)
 {
   uint8_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0;
 
@@ -80,6 +80,7 @@ void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByte
   count = FRAM_PAGESIZE - Addr;
   NumOfPage =  NumByteToWrite / FRAM_PAGESIZE;
   NumOfSingle = NumByteToWrite % FRAM_PAGESIZE;
+  uint32_t status = HAL_OK;
  
   /* If WriteAddr is I2C_PageSize aligned  */
   if(Addr == 0) 
@@ -87,21 +88,27 @@ void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByte
     /* If NumByteToWrite < I2C_PageSize */
     if(NumOfPage == 0) 
     {
-      I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+      status = I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+	  if(status != HAL_OK)
+	  	return status;
     }
     /* If NumByteToWrite > I2C_PageSize */
     else  
     {
       while(NumOfPage--)
       {
-        I2C_Fram_PageWrite(pBuffer, WriteAddr, FRAM_PAGESIZE); 
+        status = I2C_Fram_PageWrite(pBuffer, WriteAddr, FRAM_PAGESIZE);
+		if(status != HAL_OK)
+			return status;
         WriteAddr +=  FRAM_PAGESIZE;
         pBuffer += FRAM_PAGESIZE;
       }
 
       if(NumOfSingle!=0)
       {
-        I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+        status = I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+		if(status != HAL_OK)
+			return status;
       }
     }
   }
@@ -111,7 +118,9 @@ void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByte
     /* If NumByteToWrite < I2C_PageSize */
     if(NumOfPage== 0) 
     {
-      I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+      status = I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+	  if(status != HAL_OK)
+	  	return status;
     }
     /* If NumByteToWrite > I2C_PageSize */
     else
@@ -122,23 +131,31 @@ void I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByte
       
       if(count != 0)
       {  
-        I2C_Fram_PageWrite(pBuffer, WriteAddr, count);
+        status = I2C_Fram_PageWrite(pBuffer, WriteAddr, count);
+		if(status != HAL_OK)
+			return status;
         WriteAddr += count;
         pBuffer += count;
       } 
       
       while(NumOfPage--)
       {
-        I2C_Fram_PageWrite(pBuffer, WriteAddr, FRAM_PAGESIZE);
-        WriteAddr +=  FRAM_PAGESIZE;
+        status = I2C_Fram_PageWrite(pBuffer, WriteAddr, FRAM_PAGESIZE);
+		if(status != HAL_OK)
+			return status;
+		WriteAddr +=  FRAM_PAGESIZE;
         pBuffer += FRAM_PAGESIZE;  
       }
       if(NumOfSingle != 0)
       {
-        I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle); 
+        status = I2C_Fram_PageWrite(pBuffer, WriteAddr, NumOfSingle);
+		if(status != HAL_OK)
+			return status;
       }
     }
   }  
+
+  return status;
 }
 
 

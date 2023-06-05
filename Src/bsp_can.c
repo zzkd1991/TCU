@@ -138,16 +138,36 @@ int dev_txempty(CAN_HandleTypeDef *hcan)
 	return (freetxnum == 0) ? 0 : 1;
 }
 
-uint8_t CANx_SendNormalData(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData, uint16_t Len)
+uint8_t CANx_SendNormalData(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData, uint8_t ide, uint8_t rtr, uint16_t Len, uint32_t *mailbox_num)
 {
 	HAL_StatusTypeDef HAL_RetVal;
 	CAN_TxHeaderTypeDef TxMeg = {0};
 	uint16_t SendTimes, SendCNT = 0;
 	uint8_t FreeTxNum = 0;
 	uint32_t tx_mailbox;
-	TxMeg.StdId = ID;
-	TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
-	TxMeg.RTR = CAN_RTR_DATA;
+	//TxMeg.StdId = ID;
+	//TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
+	//TxMeg.RTR = CAN_RTR_DATA;
+	if(rtr == 0)//数据帧
+	{
+		TxMeg.RTR = CAN_RTR_DATA;
+	}
+	else if(rtr == 1)
+	{
+		TxMeg.RTR = CAN_RTR_REMOTE;
+	}
+
+	if(ide == 0)//标准帧
+	{
+		TxMeg.StdId = ID;
+		TxMeg.IDE = CAN_ID_STD;
+	}
+	else if(ide == 1)
+	{
+		TxMeg.ExtId = ID;
+		TxMeg.IDE = CAN_ID_EXT;
+	}
+	
 	if(!hcan || ! pData || !Len) return 1;
 	SendTimes = Len / 8 + ( Len % 8 ? 1 : 0);
 	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
@@ -175,15 +195,75 @@ uint8_t CANx_SendNormalData(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData
 	
 }
 
+uint8_t CANx_SendNormalData_No_Wait(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData, uint8_t ide, uint8_t rtr, uint16_t Len, uint32_t *mailbox_num)
+{
+	HAL_StatusTypeDef HAL_RetVal;
+	CAN_TxHeaderTypeDef TxMeg = {0};
+	uint16_t SendTimes, SendCNT = 0;
+	uint8_t FreeTxNum = 0;
+	uint32_t tx_mailbox;
+	//TxMeg.StdId = ID;
+	//TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
+	//TxMeg.RTR = CAN_RTR_DATA;
+	if(rtr == 0)//数据帧
+	{
+		TxMeg.RTR = CAN_RTR_DATA;
+	}
+	else if(rtr == 1)
+	{
+		TxMeg.RTR = CAN_RTR_REMOTE;
+	}
+
+	if(ide == 0)//标准帧
+	{
+		TxMeg.StdId = ID;
+		TxMeg.IDE = CAN_ID_STD;
+	}
+	else if(ide == 1)
+	{
+		TxMeg.ExtId = ID;
+		TxMeg.IDE = CAN_ID_EXT;
+	}
+	
+	if(!hcan || ! pData || !Len) return 1;
+	SendTimes = Len / 8 + ( Len % 8 ? 1 : 0);
+	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
+	TxMeg.DLC = 8;
+	while(SendTimes--){
+		if(0 == SendTimes){
+			if(Len % 8)
+				TxMeg.DLC = Len % 8;
+		}
+#if 0	
+		while(0 == FreeTxNum){
+			FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
+		}
+#else
+		if(FreeTxNum == 0)
+		{
+			return 3;
+		}
+#endif
+		HAL_RetVal = HAL_CAN_AddTxMessage(hcan, &TxMeg, pData + SendCNT, (uint32_t*)&tx_mailbox);
+		if(HAL_RetVal != HAL_OK)
+		{
+			return 2;
+		}
+		SendCNT += 8;
+	
+	}
+	return 0;
+}
 
 uint8_t Can_Send(CAN_PORT notused, Message *m, CAN_HandleTypeDef *hcan)
 {
 	uint16_t messageid;
 	uint8_t result;
+	uint32_t tx_mailbox;
 #if 1
 	messageid = m->cob_id;
 
-	result = CANx_SendNormalData(hcan, messageid, m->data, m->len);
+	result = CANx_SendNormalData(hcan, messageid, m->data, m->ide, m->rtr, m->len, &tx_mailbox);
 
 	return result;
 #else
@@ -217,6 +297,7 @@ uint8_t ST_CanGet_SendQueue(void)
 	extern struct _CANQueue CANQueueTx;
 	uint16_t head;
 	uint8_t result;
+	uint32_t tx_mailbox;
 	Message TxMessage = {0};
 	head = CANQueueTx.front;
 
@@ -224,8 +305,8 @@ uint8_t ST_CanGet_SendQueue(void)
 	{
 		head = (head + 1) % MAX_CAN_SIZE;
 		SetHeadCanQueueTx(head);
-
-		result = CANx_SendNormalData(&hcan1, TxMessage.cob_id, TxMessage.data, TxMessage.len);
+		
+		result = CANx_SendNormalData(&hcan1, TxMessage.cob_id, TxMessage.data, TxMessage.ide, TxMessage.rtr, TxMessage.len, &tx_mailbox);
 
 		if(result != 0)
 		{
@@ -627,7 +708,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *hcan)
 
 }
 
-void Can_Config(void)
+void CAN_Hardware_Config(void)
 {
 	MX_CAN1_Init();
 
@@ -638,7 +719,106 @@ void Can_Config(void)
 	CAN_User_Init(&hcan2);
 }
 
+void CAN_Config(uint16_t can1_baud, uint16_t can2_baud)
+{
+	Set_Can_Baud_Rate(can1_baud, &hcan1);
+
+	Set_Can_Baud_Rate(can2_baud, &hcan2);
+}
+
+
+signed short CAN1_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data)
+{
+	extern struct _CANQueue CANQueueRx;
+	uint16_t head;
+	Message RxMessage;
+	
+	head = CANQueueRx.front;
+
+
+	if(1 == GetCanQueueRx(head, &RxMessage))
+	{
+		head = (head + 1) % MAX_CAN_SIZE;
+		SetHeadCanQueueRx(head);
+
+		if(RxMessage.cob_id == ID)
+		{
+			*Len = RxMessage.len;
+			memcpy(Data, RxMessage.data, RxMessage.len);
+		}
+		return 0;
+	}
+	else
+	{
+		return -1;
+		//printf("CAN queue is empty\r\n");
+	}	
+}
+
+
+uint8_t Can1_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *dat)
+{
+	uint8_t result = 0;
+	uint32_t tx_mailbox;
+	
+	result = CANx_SendNormalData_No_Wait(&hcan1, id, dat, ide, rtr, len, &tx_mailbox);
+
+	if(result == 0)
+	{
+		return tx_mailbox;
+	}
+
+	else if(result == 3)
+	{
+		return 255;
+	}
+
+	else
+	{
+		Error_Handler();
+		return 3;
+	}
+	
+}
+
+
+void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms)
+{
+	extern __IO uint32_t uwTick;
+	Message m = {0};
+	int i = 0;
+	//uint8_t result;
+
+	m.cob_id = msgID;
+	m.ide = ext;
+	m.rtr = 0;
+	m.len = iNoBytes;
+	for(i = 0; i < iNoBytes; i++)
+	{
+		m.data[i] = bBytes[i];
+	}
+
+	if(mode == 0)
+	{
+		return;
+	}
+	else if(mode == 1)//周期发送
+	{
+		if(uwTick % cycle_ms == 0)
+		{
+			Can_Send((CAN_PORT)NULL, &m, &hcan1);	
+		}
+	}
+	else if(mode == 2)//数据变化发送
+	{
+
+		
+	}
+}
+
+
 #endif
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

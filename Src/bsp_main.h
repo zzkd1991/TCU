@@ -24,6 +24,7 @@
 #include "bsp_input_di.h"
 #include "bsp_input_ai.h"
 #include "bsp_output_ao.h"
+#include "usart_queue.h"
 
 void Driver_Init(void);
 

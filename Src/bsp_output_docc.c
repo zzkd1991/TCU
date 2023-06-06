@@ -247,8 +247,42 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	}
 
 	
-	return Diagnostic_info;
+	if(Diagnostic_info & (1 << 5) || Diagnostic_info & (1 << 11) || Diagnostic_info & (1 << 17) || Diagnostic_info & (1 << 23))//Short to Battery Fault
+	{
+		return 1;
+	}
+
+	if(Diagnostic_info & (1 << 7) || Diagnostic_info & (1 << 13) || Diagnostic_info & (1 << 19) || Diagnostic_info & (1 << 25))//short to ground
+	{
+		return 2;
+	}
+
+	if(Diagnostic_info & (1 << 2) || Diagnostic_info & (1 << 8) || Diagnostic_info & (1 << 14) || Diagnostic_info & (1 << 20)
+		|| Diagnostic_info & (1 << 3) || Diagnostic_info & (1 << 9) || Diagnostic_info & (1 << 15) || Diagnostic_info & (1 << 21))
+	{
+		return 3;
+	}
+
+	return 0;
 }
 
+void bsp_Diag_PO_Detect_Protect(void)
+{
+	uint32_t result = 0;
+	
+	result = bsp_Diag_Reset_Fault_PO(PO1);
+	if(result == 0)
+	{
+		return;
+	}
+	else if(result == 1)
+	{
+		
+	}
+	else if(result == 2)
+	{
+		
+	}
+}
 
 

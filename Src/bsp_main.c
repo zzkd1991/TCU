@@ -31,7 +31,8 @@ void Driver_Init(void)
 	HAL_ADC_Start_DMA(&hadc1,(uint32_t *)ADC_ConvertedValue, 6);
 	HAL_ADC_Start_DMA(&hadc3,(uint32_t *)_ADC_ConvertedValue, 10);	
 	//TIM1_Mode_Config(10000);
-	DEBUG_UART_Config();	
+	DEBUG_UART_Config();
+	ClearUsartQueue();
 	MX_SPI2_Init();
 	MX_SPI3_Init();
 	

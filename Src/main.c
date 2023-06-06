@@ -19,27 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-//#include "adc.h"
-//#include "dma.h"
-#include "usart.h"
-#include "gpio.h"
-#include "tim.h"
-#include "bsp_can.h"
-#include "temp_pres_drv.h"
-#include "bsp_input_ai.h"
-#include "spi_flash.h"
-#include "ccp.h"
-#include "tle7242.h"
-#include "fm25cl64b.h"
-#include "pi.h"
-#include "led.h"
-#include "mcp2515.h"
-#include "can_queue.h"
-#include "dac.h"
-#include "bsp_user.h"
-#include "fm24cl64b_i2c.h"
-#include "bsp_output_do.h"
+#include "bsp_main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -79,26 +59,10 @@ unsigned char receive_buffer[8];	//receive buffer
   * @retval int
   */
 extern int ccpBootReceiveCro (unsigned char *msg);
-extern void ccpBootInit (int cro_id, int dto_id);
 extern int ccpBootTransmitCrmPossible( void );
 extern void _timer_0(void);
 extern int flag;
 extern void init_timer_0 (unsigned long millisec);
-
-uint8_t Time_1ms_Flag, Time_5ms_Flag, Time_10ms_Flag, Time_20ms_Flag, Time_50ms_Flag, Time_100ms_Flag, Time_500ms_Flag, Time_1000ms_Flag,
-Time_2000ms_Flag;
-
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc3;
-
-uint16_t ADC_ConvertedValue[6];
-uint16_t _ADC_ConvertedValue[10];
-uint32_t ACT_ADC_ConvertedValue[6];
-uint32_t _ACT_ADC_ConvertedValue[10];
-uint16_t ADC_AVG[6];//adc1
-uint16_t _ADC_AVG[10];//adc3 
-uint16_t ADC_FINAL[20];
-
 
 int main(void)
 {
@@ -108,107 +72,20 @@ int main(void)
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
-	SystemClock_Config();
-	LED_GPIO_Config();
-	//TLE7242_GPIO_Init();
-	//FM25CL_GPIO_Init();
-	MX_DMA_Init();
-	MX_ADC1_Init();
-	MX_ADC3_Init();
-	//TIM1_Mode_Config(10000);
-	DEBUG_UART_Config();	
-	MX_SPI2_Init();
-	MX_SPI3_Init();
-	
-	API_OUT_Do_Cfg(0, 0);
+	SystemClock_Config(); 
+
+   	Driver_Init();
 
 	
-	API_OUT_Do_Set(DOUT1, 1);
-	//Pi_Drv_Init();
-	//mcp2515_hw_init();
+   //ccpInit();
 
-	//printf("Init.....OK!!!\r\n");
-
-	I2C_Fram_Init();
-
-	//ClearCanQueue();
-	//init_timer_0(10);
-	//ccpBootInit(CCP_CRO_ID, CCP_DTO_ID);
-printf("11111\r\n");
-	HAL_ADC_Start_DMA(&hadc1,(uint32_t *)ADC_ConvertedValue, 6);
-	HAL_ADC_Start_DMA(&hadc3,(uint32_t *)_ADC_ConvertedValue, 10);  
-
-printf("222222\r\n");
-	//ccpInit();
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  extern uint8_t Can_Send(CAN_PORT notused, Message *m, CAN_HandleTypeDef *hcan);
-  Message m = {0};
-  
-  m.cob_id = 0x0a;
-  m.rtr = 0;
-	m.ide = 0;
-	uint8_t value = 0x33;
-  //memcpy(m.data, &value, 1);
-  int i = 0;
-	for(i = 0; i < 8; i++)
-		m.data[i] = 0x33;
-  m.len = 8;
-
-	printf("hello world\r\n");
+   /* Infinite loop */
+   /* USER CODE BEGIN WHILE */
 	
-	uint8_t message_write[8]= "hello\r\n";
-	
-	uint8_t message_read[8] = {0};
-	
-	if(HAL_OK != I2C_Fram_PageWrite(message_write, 0, 8))
-	{
-		printf("write error\r\n");
-	}
-	else
-	{
-		printf("write ok\r\n");
-	}
-	
-	if(HAL_OK != I2C_Fram_BufferRead(message_read, 0, 8))
-	{
-		printf("read error\r\n");
-	}
-	else
-	{
-		printf("read ok\r\n");
-	}
-
-  	printf("message_read %s\n", message_read);
-	
-	//printf("message_write %s\n", message_write);
-	extern uint32_t SPI_FLASH_ReadDeviceID(void);
-	extern uint32_t SPI_FLASH_ReadID(void);
-	
-	uint16_t device_id = 0;
-	
-	device_id = SPI_FLASH_ReadDeviceID();
-
-	uint32_t FlashID = 0;
-
-	FlashID = SPI_FLASH_ReadID();
-
-	printf("device_id is %x\r\n", device_id);
-	//printf("FlashID %x\r\n", FlashID);
-	printf("FlashID %d\r\n", FlashID);
-	
-
   while (1)
   {
-	extern __IO uint32_t uwTick;
-	//Can_Send(NULL, &m, &hcan1);
-	//mdelay(1000);
-	//uwTick = 0;
 	bsp_application_task_loop();
 	ADC_Smooth();
-	//printf("message_read %s\n", message_read);
-	//printf("hello world\r\n");
  #if 0	
 	if(ccpBootReceiveCro(receive_buffer))
 	{   // if new CRO message received,

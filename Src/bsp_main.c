@@ -4,6 +4,7 @@ uint8_t Time_1ms_Flag, Time_5ms_Flag, Time_10ms_Flag, Time_20ms_Flag,
 Time_50ms_Flag, Time_100ms_Flag, Time_500ms_Flag, Time_1000ms_Flag,
 Time_2000ms_Flag;
 
+uint8_t Time_Bsp_1ms_Flag, Time_Bsp_5ms_Flag, Time_Bsp_10ms_Flag, Time_Bsp_100ms_Flag;
 
 extern void ccpBootInit (int cro_id, int dto_id);
 extern ADC_HandleTypeDef hadc1;
@@ -61,6 +62,56 @@ void Driver_Init(void)
 	//printf("Init.....OK!!!\r\n");
 }
 
+void bsp_driver_task_loop(void)
+{
+	if(Time_Bsp_1ms_Flag)
+	{
+		bsp_driver_task_1ms();
+		Time_Bsp_1ms_Flag = 0;
+	}
 
+	if(Time_Bsp_5ms_Flag)
+	{
+		bsp_driver_task_5ms();
+		Time_Bsp_5ms_Flag = 0;
+	}
+	
+	if(Time_10ms_Flag)
+	{
+		bsp_driver_task_10ms();
+		Time_Bsp_10ms_Flag = 0;	
+	}
+
+	if(Time_100ms_Flag)
+	{
+		bsp_driver_task_100ms();
+		Time_Bsp_100ms_Flag = 0;	
+	}	
+}
+
+void bsp_driver_task_1ms(void)
+{
+
+}
+
+
+void bsp_driver_task_5ms(void)
+{
+
+	
+}
+
+void bsp_driver_task_10ms(void)
+{
+
+
+}
+
+
+void bsp_driver_task_100ms(void)
+{
+
+
+}
 
 

@@ -190,20 +190,24 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
   extern uint8_t Time_1ms_Flag, Time_5ms_Flag, Time_10ms_Flag, Time_20ms_Flag, Time_50ms_Flag, Time_100ms_Flag, Time_500ms_Flag, Time_1000ms_Flag,
   Time_2000ms_Flag;
+  extern uint8_t Time_Bsp_1ms_Flag, Time_Bsp_5ms_Flag, Time_Bsp_10ms_Flag, Time_Bsp_100ms_Flag;
   extern __IO uint32_t uwTick;
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
 
   Time_1ms_Flag = 1;
+  Time_Bsp_1ms_Flag = 1;
 
   if(uwTick % 5 == 0)
   {
 	Time_5ms_Flag = 1;
+	Time_Bsp_5ms_Flag = 1;
   }
 
   if(uwTick % 10 == 0)
   {
 	Time_10ms_Flag = 1;
+    Time_Bsp_10ms_Flag = 1;	
   }
 
   if(uwTick % 20 == 0)
@@ -219,6 +223,7 @@ void SysTick_Handler(void)
   if(uwTick % 100 == 0)
   {
 	Time_100ms_Flag = 1;
+    Time_Bsp_100ms_Flag = 1;
   }
 
   if(uwTick % 500 == 0)

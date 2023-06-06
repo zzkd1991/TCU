@@ -76,8 +76,6 @@ void API_PO_Mode_Config(uint8_t chan_u8, uint16_t mode_u8)
 
 }
 
-
-
 void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dither_freq, uint8_t dither_amp)
 {
 	uint16_t conved_dither_amp;
@@ -219,16 +217,23 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	
 }
 
+uint32_t flag_5ms_passed = 0;
+
+
 uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 {
 	uint32_t Diagnostic_info = 0;
 	uint8_t conved_chan;
+	uint16_t current_value = 0;
+	uint32_t autozero_read = 0;
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
 		TLE7242_CS1_LOW();
 		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
@@ -236,6 +241,8 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 		conved_chan = chan_u8 - 5;
 		TLE7242_CS2_LOW();
 		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);		
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
@@ -243,6 +250,8 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 		conved_chan = chan_u8 - 9;
 		TLE7242_CS3_LOW();
 		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS3_HIGH();
 	}
 
@@ -263,10 +272,29 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 		return 3;
 	}
 
+	if(current_value >= 3000)
+	{
+		flag_5ms_passed++;
+		if(flag_5ms_passed >= 6)
+		{
+			flag_5ms_passed = 0;
+			return 4;
+		}
+	}
+	else
+	{
+		flag_5ms_passed = 0;
+	}
+
+	if(autozero_read & (1 << 15))//Over Voltage
+	{
+		return 5;
+	}
+
 	return 0;
 }
 
-void bsp_Diag_PO_Detect_Protect(void)
+void bsp_Diag_PO_Detect_Protect(void)//每5ms周期调用用于保护端口
 {
 	uint32_t result = 0;
 	
@@ -277,11 +305,24 @@ void bsp_Diag_PO_Detect_Protect(void)
 	}
 	else if(result == 1)
 	{
-		
+		printf("Short to Battery Fault\r\n");
 	}
-	else if(result == 2)
+	else if(result == 2)//Short to Ground Fault
 	{
-		
+		printf("Short to Ground Fault\r\n");
+		//BATP_EN引脚拉低
+	}
+	else if(result == 3)
+	{
+		printf("Open Load fault\r\n");
+	}
+	else if(result == 4)
+	{
+		printf("Over Current fault\r\n");
+	}
+	else if(result == 5)
+	{
+		printf("Over Voltage\r\n");
 	}
 }
 

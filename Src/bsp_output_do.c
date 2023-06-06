@@ -68,7 +68,7 @@
 /* do_side = 1------high side
    do_side = 0------low side
 */
-uint8_t do_side = 1;
+uint8_t do_side[4] = {1, 1, 1, 1};
 
 void API_DO_FY_Cfg(void)
 {
@@ -119,7 +119,7 @@ uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
 {
 	if(channel_u8 == DOUT1)
 	{
-		if(do_side == 1)
+		if(do_side[0] == 1)
 		{
 			if(HAL_GPIO_ReadPin(DO_IN1_GPIO_Port, DO_IN1_Pin) == 1)
 			{
@@ -145,7 +145,7 @@ uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
 	}
 	else if(channel_u8 == DOUT2)
 	{
-		if(do_side == 1)
+		if(do_side[1] == 1)
 		{
 			if(HAL_GPIO_ReadPin(DO_IN2_GPIO_Port, DO_IN2_Pin) == 1)
 			{
@@ -171,7 +171,7 @@ uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
 	}
 	else if(channel_u8 == DOUT3)
 	{
-		if(do_side == 1)
+		if(do_side[2] == 1)
 		{
 			if(HAL_GPIO_ReadPin(DO_IN3_GPIO_Port, DO_IN3_Pin) == 1)
 			{
@@ -219,7 +219,7 @@ uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
 	}
 	else if(channel_u8 == DOUT6)
 	{
-		if(do_side == 1)
+		if(do_side[3] == 1)
 		{
 			if(HAL_GPIO_ReadPin(DO_IN6_GPIO_Port, DO_IN6_Pin) == 1)
 			{
@@ -299,7 +299,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 
 	if(channel_u8 == DOUT1)
 	{
-		if(do_side == 1)
+		if(do_side[0] == 1)
 		{
 			HAL_GPIO_WritePin(DO1_FY_GPIO_PORT, DO1_FY_PIN, GPIO_PIN_SET);
 		
@@ -321,7 +321,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 	else if(channel_u8 == DOUT2)
 	{
-		if(do_side == 1)
+		if(do_side[1] == 1)
 		{
 			HAL_GPIO_WritePin(DO2_FY_GPIO_PORT, DO2_FY_PIN, GPIO_PIN_SET);
 		
@@ -343,7 +343,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 	else if(channel_u8 == DOUT3)
 	{
-		if(do_side == 1)
+		if(do_side[2] == 1)
 		{
 			HAL_GPIO_WritePin(DO3_FY_GPIO_PORT, DO3_FY_PIN, GPIO_PIN_SET);
 		
@@ -365,7 +365,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 	else if(channel_u8 == DOUT4)
 	{
-		if(do_side == 1)
+		if(do_side[3] == 1)
 		{		
 			if(value == 1)		
 				HAL_GPIO_WritePin(DO4_GPIO_PORT, DO4_PIN, GPIO_PIN_SET);
@@ -383,7 +383,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 	else if(channel_u8 == DOUT5)
 	{
-		if(do_side == 1)
+		if(do_side[3] == 1)
 		{
 			if(value == 1)		
 				HAL_GPIO_WritePin(DO5_GPIO_PORT, DO5_PIN, GPIO_PIN_SET);
@@ -401,7 +401,7 @@ uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 	}
 	else if(channel_u8 == DOUT6)
 	{
-		if(do_side == 1)
+		if(do_side[3] == 1)
 		{
 			HAL_GPIO_WritePin(DO6_FY_GPIO_PORT, DO6_FY_PIN, GPIO_PIN_SET);
 		

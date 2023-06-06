@@ -433,7 +433,7 @@ void stm32can_rxinterrupt(CAN_HandleTypeDef *hcan, int Fifo_Num)
 
 			m.len = len;
 
-			if(0 == InsertCanQueueRx(m))
+			if(0 == InsertCan1QueueRx(m))
 			{
 				Error_Handler();
 			}
@@ -487,7 +487,7 @@ void stm32can_rxinterrupt(CAN_HandleTypeDef *hcan, int Fifo_Num)
 
 			m.len = len;
 
-			if(0 == InsertCanQueueRx(m))
+			if(0 == InsertCan2QueueRx(m))
 			{
 				Error_Handler();
 			}
@@ -729,17 +729,17 @@ void CAN_Config(uint16_t can1_baud, uint16_t can2_baud)
 
 signed short CAN1_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data)
 {
-	extern struct _CANQueue CANQueueRx;
+	extern struct _CANQueue CAN1QueueRx;
 	uint16_t head;
 	Message RxMessage;
 	
-	head = CANQueueRx.front;
+	head = CAN1QueueRx.front;
 
 
-	if(1 == GetCanQueueRx(head, &RxMessage))
+	if(1 == GetCan1QueueRx(head, &RxMessage))
 	{
 		head = (head + 1) % MAX_CAN_SIZE;
-		SetHeadCanQueueRx(head);
+		SetHeadCan1QueueRx(head);
 
 		if(RxMessage.cob_id == ID)
 		{
@@ -753,6 +753,35 @@ signed short CAN1_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data)
 		return -1;
 		//printf("CAN queue is empty\r\n");
 	}	
+}
+
+signed short CAN2_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data)
+{
+	extern struct _CANQueue CAN2QueueRx;
+	uint16_t head;
+	Message RxMessage;
+	
+	head = CAN2QueueRx.front;
+
+
+	if(1 == GetCan2QueueRx(head, &RxMessage))
+	{
+		head = (head + 1) % MAX_CAN_SIZE;
+		SetHeadCan1QueueRx(head);
+
+		if(RxMessage.cob_id == ID)
+		{
+			*Len = RxMessage.len;
+			memcpy(Data, RxMessage.data, RxMessage.len);
+		}
+		return 0;
+	}
+	else
+	{
+		return -1;
+		//printf("CAN queue is empty\r\n");
+	}	
+
 }
 
 
@@ -778,7 +807,6 @@ uint8_t Can1_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t 
 		Error_Handler();
 		return 3;
 	}
-	
 }
 
 
@@ -814,6 +842,42 @@ void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t e
 
 		
 	}
+}
+
+void CAN2_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms)
+{
+	extern __IO uint32_t uwTick;
+	Message m = {0};
+	int i = 0;
+	//uint8_t result;
+
+	m.cob_id = msgID;
+	m.ide = ext;
+	m.rtr = 0;
+	m.len = iNoBytes;
+	for(i = 0; i < iNoBytes; i++)
+	{
+		m.data[i] = bBytes[i];
+	}
+
+	if(mode == 0)
+	{
+		return;
+	}
+	else if(mode == 1)//周期发送
+	{
+		if(uwTick % cycle_ms == 0)
+		{
+			Can_Send((CAN_PORT)NULL, &m, &hcan2);	
+		}
+	}
+	else if(mode == 2)//数据变化发送
+	{
+
+		
+	}
+
+
 }
 
 

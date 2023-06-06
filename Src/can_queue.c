@@ -1,21 +1,36 @@
 #include "can_queue.h"
 #include <string.h>
 
-struct _CANQueue CANQueueRx;
+struct _CANQueue CAN1QueueRx;
+
+struct _CANQueue CAN2QueueRx;
 
 struct _CANQueue CANQueueTx;
 
-void ClearCanRxQueue(void)
+void ClearCan1RxQueue(void)
 {
 	int i;
 	for(i = 0; i < MAX_CAN_SIZE; i++)
 	{
-		memset(&CANQueueRx.Elem[i], 0, sizeof(Message));
+		memset(&CAN1QueueRx.Elem[i], 0, sizeof(Message));
 	}
 
-	CANQueueRx.front = 0;
-	CANQueueRx.rear = 0;
+	CAN1QueueRx.front = 0;
+	CAN1QueueRx.rear = 0;
 }
+
+void ClearCan2RxQueue(void)
+{
+	int i;
+	for(i = 0; i < MAX_CAN_SIZE; i++)
+	{
+		memset(&CAN2QueueRx.Elem[i], 0, sizeof(Message));
+	}
+
+	CAN2QueueRx.front = 0;
+	CAN2QueueRx.rear = 0;
+}
+
 
 void ClearCanTxQueue(void)
 {
@@ -31,7 +46,8 @@ void ClearCanTxQueue(void)
 
 void ClearCanQueue(void)
 {
-	ClearCanRxQueue();
+	ClearCan1RxQueue();
+	ClearCan2RxQueue();
 	ClearCanTxQueue();
 }
 
@@ -47,9 +63,9 @@ uint8_t IsEmptyCanQueueTx(void)
 	}
 }
 
-uint8_t IsEmptyCanQueueRx(void)
+uint8_t IsEmptyCan1QueueRx(void)
 {
-	if(CANQueueRx.front == CANQueueRx.rear)
+	if(CAN1QueueRx.front == CAN1QueueRx.rear)
 	{
 		return 1;
 	}
@@ -58,6 +74,19 @@ uint8_t IsEmptyCanQueueRx(void)
 		return 0;
 	}
 }
+
+uint8_t IsEmptyCan2QueueRx(void)
+{
+	if(CAN2QueueRx.front == CAN2QueueRx.rear)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 
 uint8_t IsFullCanQueueTx(void)
 {
@@ -71,9 +100,9 @@ uint8_t IsFullCanQueueTx(void)
 	}
 }
 
-uint8_t IsFullCanQueueRx(void)
+uint8_t IsFullCan1QueueRx(void)
 {
-	if(CANQueueRx.front == (CANQueueRx.rear + 1) % MAX_CAN_SIZE)
+	if(CAN1QueueRx.front == (CAN1QueueRx.rear + 1) % MAX_CAN_SIZE)
 	{
 		return 1;
 	}
@@ -83,12 +112,25 @@ uint8_t IsFullCanQueueRx(void)
 	}
 }
 
-uint8_t InsertCanQueueRx(Message element)
+uint8_t IsFullCan2QueueRx(void)
 {
-	if(!IsFullCanQueueRx())
+	if(CAN2QueueRx.front == (CAN2QueueRx.rear + 1) % MAX_CAN_SIZE)
 	{
-		memcpy(&CANQueueRx.Elem[CANQueueRx.rear], &element, sizeof(Message));
-		CANQueueRx.rear = (CANQueueRx.rear + 1) % MAX_CAN_SIZE;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+uint8_t InsertCan1QueueRx(Message element)
+{
+	if(!IsFullCan1QueueRx())
+	{
+		memcpy(&CAN1QueueRx.Elem[CAN1QueueRx.rear], &element, sizeof(Message));
+		CAN1QueueRx.rear = (CAN1QueueRx.rear + 1) % MAX_CAN_SIZE;
 		return 1;
 	}
 	else	//队列满
@@ -96,6 +138,21 @@ uint8_t InsertCanQueueRx(Message element)
 		return 0;
 	}
 }
+
+uint8_t InsertCan2QueueRx(Message element)
+{
+	if(!IsFullCan2QueueRx())
+	{
+		memcpy(&CAN2QueueRx.Elem[CAN2QueueRx.rear], &element, sizeof(Message));
+		CAN2QueueRx.rear = (CAN2QueueRx.rear + 1) % MAX_CAN_SIZE;
+		return 1;
+	}
+	else	//队列满
+	{
+		return 0;
+	}
+}
+
 
 uint8_t InsertCanQueueTx(Message element)
 {
@@ -111,13 +168,22 @@ uint8_t InsertCanQueueTx(Message element)
 	}
 }
 
-void SetHeadCanQueueRx(uint16_t head)
+void SetHeadCan1QueueRx(uint16_t head)
 {
-	if(CANQueueRx.front != CANQueueRx.rear)
+	if(CAN1QueueRx.front != CAN1QueueRx.rear)
 	{
-		CANQueueRx.front = head;
+		CAN1QueueRx.front = head;
 	}
 }
+
+void SetHeadCan2QueueRx(uint16_t head)
+{
+	if(CAN2QueueRx.front != CAN2QueueRx.rear)
+	{
+		CAN2QueueRx.front = head;
+	}
+}
+
 
 void SetHeadCanQueueTx(uint16_t head)
 {
@@ -127,11 +193,11 @@ void SetHeadCanQueueTx(uint16_t head)
 	}
 }
 
-uint8_t GetCanQueueRx(uint16_t head, Message *element)
+uint8_t GetCan1QueueRx(uint16_t head, Message *element)
 {
-	if(head != CANQueueRx.rear)		//到队列尾
+	if(head != CAN1QueueRx.rear)		//到队列尾
 	{
-		memcpy(element, &CANQueueRx.Elem[head], sizeof(Message));//得到数据
+		memcpy(element, &CAN1QueueRx.Elem[head], sizeof(Message));//得到数据
 		return 1;
 	}
 	else
@@ -139,6 +205,20 @@ uint8_t GetCanQueueRx(uint16_t head, Message *element)
 		return 0;
 	}
 }
+
+uint8_t GetCan2QueueRx(uint16_t head, Message *element)
+{
+	if(head != CAN2QueueRx.rear)		//到队列尾
+	{
+		memcpy(element, &CAN2QueueRx.Elem[head], sizeof(Message));//得到数据
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 
 uint8_t GetCanQueueTx(uint16_t head, Message *element)
 {
@@ -155,16 +235,18 @@ uint8_t GetCanQueueTx(uint16_t head, Message *element)
 
 void Can_data_Process(void)
 {
-	uint16_t head;
+	uint16_t head1;
+	uint16_t head2;
 	Message RxMessage;
 	extern int NEW_Can_Message_Dispatch(Message *m);
 	
-	head = CANQueueRx.front;
+	head1 = CAN1QueueRx.front;
+	head2 = CAN2QueueRx.front;
 	
-	if(1 == GetCanQueueRx(head, &RxMessage))
+	if(1 == GetCan1QueueRx(head1, &RxMessage))
 	{
-		head = (head + 1) % MAX_CAN_SIZE;
-		SetHeadCanQueueRx(head);
+		head1 = (head1 + 1) % MAX_CAN_SIZE;
+		SetHeadCan1QueueRx(head1);
 
 		//消息处理
 		//printf("%s, %d\n", __func__, __LINE__);
@@ -174,6 +256,20 @@ void Can_data_Process(void)
 	{
 		//printf("CAN queue is empty\r\n");
 	}
+
+	if(1 == GetCan2QueueRx(head2, &RxMessage))
+	{
+		head2 = (head2 + 1) % MAX_CAN_SIZE;
+		SetHeadCan2QueueRx(head1);
+
+		//消息处理
+		//printf("%s, %d\n", __func__, __LINE__);
+		//NEW_Can_Message_Dispatch(&RxMessage);
+	}
+	else
+	{
+		//printf("CAN queue is empty\r\n");
+	}	
 }
 
 

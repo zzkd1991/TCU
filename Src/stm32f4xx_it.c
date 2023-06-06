@@ -22,6 +22,8 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "mcp2515.h"
+#include "usart_queue.h"
+#include "usart.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -367,6 +369,18 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+  	
+	extern UART_HandleTypeDef UartHandle;
+	uint8_t ch = 0;
+	
+	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
+	{
+		ch = (uint16_t)READ_REG(UartHandle.Instance->DR);
+		if(0 == InsertUsartQueueRx(ch))
+		{
+			Error_Handler();
+		}
+	}
 }
 /**
   * @brief This function handles TIM2 global interrupt.

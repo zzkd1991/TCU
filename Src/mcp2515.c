@@ -401,7 +401,7 @@ static void mcp2515_hw_rx(int buf_idx)
 
 	memcpy(m.data, buf + RXBDAT_OFF, m.len);
 
-	if(0 == InsertCanQueueRx(m))
+	if(0 == InsertCan1QueueRx(m))
 	{
 		Error_Handler();
 	}

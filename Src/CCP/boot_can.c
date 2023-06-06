@@ -228,15 +228,15 @@ int ccpBootReceiveCro (unsigned char *msg)
   if (id == g_ccp_cro_id) return 1;            // if correctly received, return 1
   return 0;
 #endif
-	extern struct _CANQueue CANQueueRx;
+	extern struct _CANQueue CAN1QueueRx;
 	uint16_t head;
 	uint16_t cob_id;
 	Message RxMessage;
-	head = CANQueueRx.front;
-	if(1 == GetCanQueueRx(head, &RxMessage))
+	head = CAN1QueueRx.front;
+	if(1 == GetCan1QueueRx(head, &RxMessage))
 	{
 		head = (head + 1) % MAX_CAN_SIZE;
-		SetHeadCanQueueRx(head);
+		SetHeadCan1QueueRx(head);
 		
 		*msg++ = RxMessage.data[0];
 		*msg++ = RxMessage.data[1];

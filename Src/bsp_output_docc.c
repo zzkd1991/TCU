@@ -84,7 +84,7 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 	uint8_t dither_steps;
 	uint8_t conved_chan = 0;
 
-	dither_steps = (uint8_t)((30 * 1000000) / (dither_freq * 4));
+	dither_steps = (uint8_t)((FCLK) / (dither_freq * 4));
 	conved_dither_amp = ((1 << 15) * Rsense * dither_amp) / (2 * 320  * tag_tle_record.record_dither_steps);
 
 	tag_tle_record.record_dither_amp = dither_amp;

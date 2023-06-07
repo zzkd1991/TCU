@@ -41,7 +41,8 @@
 #define TLE7242_FAULT3_EXIT_IRQ		EXTI4_IRQn
 #define TLE7242_FAULT3_IRQHandler	EXTI4_IRQHandler
 
-#define Rsense  10
+#define Rsense  0.1
+#define FCLK	20 * 1000000
 
 //Message0
 typedef union
@@ -301,6 +302,8 @@ typedef  struct
 
 typedef struct
 {
+	uint32_t	record_Version_Number;
+	uint32_t 	record_Manuf_ID;
 	uint8_t 	record_mode;
 	uint16_t	record_freq;
 	uint16_t	record_PWM_Divider;
@@ -356,7 +359,7 @@ extern void TLE_Chip_Output_Enable(void);
 extern void TLE_Chip_Output_Disable(void);
 extern void TLE_Power_On_Init(void);
 
-
+extern uint8_t TLE_Manufacturer_Info_Read(void);
 extern uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8,uint16_t freq_u16);//MSID1
 extern uint8_t TLE_Channel_Time_Offset_Set(uint8_t channel_u8,uint16_t offset_u16);//MSID2
 extern uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8,uint16_t current_u16);//MSID3

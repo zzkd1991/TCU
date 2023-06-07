@@ -4,8 +4,9 @@
 #include "stm32f4xx_hal_spi.h"
 #include "stm32f4xx.h"
 #include "bsp_output_docc.h"
-/* Fclk范围为20-40  本历程中取30Mhz */
+/* Fclk范围为20-40  本历程中取20Mhz */
 /* fpwm频率范围为50-4000Hz*/
+
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -94,6 +95,21 @@ void TLE_Power_On_Init(void)
 	return;
 }
 
+uint8_t TLE_Manufacturer_Info_Read(void)
+{
+	tag_TLE_Register tle_register = {0};
+
+	tle_register.IC_Version.B.RW = 0;
+	tle_register.IC_Version.B.MSG_ID = TLE_MSG0_ID;
+
+	tle_register.IC_Version.U = TLE_Register_Operation_Data(tle_register.IC_Version.U);
+
+	tag_tle_record.record_Version_Number = tle_register.IC_Version.B.Version_Number;
+	tag_tle_record.record_Manuf_ID = tle_register.IC_Version.B.Manuf_ID;
+
+	return HAL_OK;
+}
+
 
 uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 {
@@ -101,7 +117,7 @@ uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 	tag_TLE_Register tle_register = {0};
 	
 	tag_tle_record.record_freq = freq_u16;	
-	N = (uint16_t )((30 * 1000000) / (32 * freq_u16));
+	N = (uint16_t )((FCLK) / (32 * freq_u16));
 
 	tag_tle_record.record_PWM_Divider = N;
 
@@ -147,7 +163,7 @@ uint8_t TLE_Channel_Dither_Enable(uint8_t channel_u8, uint8_t dither_en, uint16_
 
 	tag_tle_record.record_dither_en = dither_en;
 	tle_register.Current_Set.B.RW = 1;
-	tle_register.Current_Set.B.Dither_Enable = 1;
+	tle_register.Current_Set.B.Dither_Enable = dither_en;
 	tle_register.Current_Set.B.Step_Size = dither_step;
 	tle_register.Current_Set.B.MSG_ID = TLE_MSG3_ID;
 	tle_register.Current_Set.B.CH = channel_u8;
@@ -174,7 +190,7 @@ uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8, uint16_t dither_freq_u16
 	uint8_t Dither_Steps = 0;
 	tag_TLE_Register tle_register = {0};
 	
-	Dither_Steps = (uint8_t)((30 * 1000000) / (dither_freq_u16 * 4));
+	Dither_Steps = (uint8_t)((FCLK) / (dither_freq_u16 * 4));
 
 	tag_tle_record.record_dither_freq = dither_freq_u16;
 	tag_tle_record.record_dither_steps = Dither_Steps;
@@ -306,7 +322,7 @@ uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8)
 }
 
 
-uint16_t TLE_Channel_Current_Read(uint8_t channel_u8)
+uint16_t TLE_Channel_Current_Read(uint8_t channel_u8)//mA
 {
 	tag_TLE_Register tle_register = {0};
 	uint16_t current_value;
@@ -317,7 +333,7 @@ uint16_t TLE_Channel_Current_Read(uint8_t channel_u8)
 	
 	tle_register.Current_Read.U = TLE_Register_Operation_Data(tle_register.Current_Read.U);
 	
-	current_value = (uint16_t)((tle_register.Current_Read.U * (1 << 14)) * (230 / Rsense));
+	current_value = (uint16_t)((tle_register.Current_Read.B.Current_Read * (1 << 14)) * (320 / Rsense));
 	
 	return current_value;
 }

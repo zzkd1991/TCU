@@ -351,8 +351,7 @@ typedef enum
 	TLE_MODE_MAX,
 }TLE7242_MODE;
 
-extern void TLE_Write_Register_Data(uint8_t channel_u8,uint8_t mess_id_u8,uint32_t SPI_Data_u32);
-extern uint32_t TLE_Read_Register_Data(uint8_t channel_u8,uint8_t mess_id_u8);
+extern uint32_t TLE_Register_Operation_Data(uint32_t SPI_Data_u32);
 extern void TLE_Chip_Output_Enable(void);
 extern void TLE_Chip_Output_Disable(void);
 extern void TLE_Power_On_Init(void);

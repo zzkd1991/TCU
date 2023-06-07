@@ -18,7 +18,7 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS1_LOW();
 		conved_chan = chan_u8 - 1;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
@@ -28,7 +28,7 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS2_LOW();
 		conved_chan = chan_u8 - 5;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
@@ -38,13 +38,12 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS3_LOW();
 		conved_chan = chan_u8 - 9;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
 		TLE7242_CS3_HIGH();		
 	}
-
 }
 
 
@@ -157,7 +156,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 1;
 
 		TLE7242_CS1_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);//首先设置成On/Off模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);//首先设置成On/Off模式
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);		
 		TLE7242_CS1_HIGH();
 	}
@@ -166,7 +165,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 5;
 
 		TLE7242_CS2_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);
 		TLE7242_CS2_HIGH();
 	}
@@ -175,7 +174,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 9;
 
 		TLE7242_CS3_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);
 		TLE7242_CS3_HIGH();		
 	}
@@ -222,17 +221,17 @@ uint32_t flag_5ms_passed = 0;
 
 uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 {
-	uint32_t Diagnostic_info = 0;
 	uint8_t conved_chan;
 	uint16_t current_value = 0;
-	uint32_t autozero_read = 0;
+	tag_Diagnostic_Read Diagnostic_info = {0};
+	tag_Autozero_Read autozero = {0};
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
 		TLE7242_CS1_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
-		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
 		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS1_HIGH();
 	}
@@ -240,8 +239,8 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	{
 		conved_chan = chan_u8 - 5;
 		TLE7242_CS2_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
-		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
 		current_value = TLE_Channel_Current_Read(conved_chan);		
 		TLE7242_CS2_HIGH();
 	}
@@ -249,25 +248,24 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	{
 		conved_chan = chan_u8 - 9;
 		TLE7242_CS3_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
-		autozero_read = TLE_Channel_Autozero_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
 		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS3_HIGH();
 	}
 
-	
-	if(Diagnostic_info & (1 << 5) || Diagnostic_info & (1 << 11) || Diagnostic_info & (1 << 17) || Diagnostic_info & (1 << 23))//Short to Battery Fault
+	if(Diagnostic_info.B.SB3 == 1 || Diagnostic_info.B.SB2 == 1 || Diagnostic_info.B.SB1 == 1 || Diagnostic_info.B.SB0 == 1)
 	{
 		return 1;
 	}
 
-	if(Diagnostic_info & (1 << 7) || Diagnostic_info & (1 << 13) || Diagnostic_info & (1 << 19) || Diagnostic_info & (1 << 25))//short to ground
+	if(Diagnostic_info.B.SG3 == 1 || Diagnostic_info.B.SG2 == 1 || Diagnostic_info.B.SG1 == 1 || Diagnostic_info.B.SG0 == 1)
 	{
 		return 2;
 	}
 
-	if(Diagnostic_info & (1 << 2) || Diagnostic_info & (1 << 8) || Diagnostic_info & (1 << 14) || Diagnostic_info & (1 << 20)
-		|| Diagnostic_info & (1 << 3) || Diagnostic_info & (1 << 9) || Diagnostic_info & (1 << 15) || Diagnostic_info & (1 << 21))
+	if(Diagnostic_info.B.OL_ON3 == 1 || Diagnostic_info.B.OL_ON2 == 1 || Diagnostic_info.B.OL_ON1 == 1 || Diagnostic_info.B.OL_ON0 == 1
+		|| Diagnostic_info.B.OL_OFF3 == 1 || Diagnostic_info.B.OL_OFF2 == 1 || Diagnostic_info.B.OL_OFF1 == 1 || Diagnostic_info.B.OL_OFF0 == 1)
 	{
 		return 3;
 	}
@@ -286,7 +284,7 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 		flag_5ms_passed = 0;
 	}
 
-	if(autozero_read & (1 << 15))//Over Voltage
+	if(autozero.B.OVL == 1)//Over Voltage
 	{
 		return 5;
 	}
@@ -297,32 +295,63 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 void bsp_Diag_PO_Detect_Protect(void)//每5ms周期调用用于保护端口
 {
 	uint32_t result = 0;
-	
-	result = bsp_Diag_Reset_Fault_PO(PO1);
-	if(result == 0)
+	int channel_num = 0;
+
+	for(channel_num = 0; channel_num < 12; channel_num++)
 	{
-		return;
-	}
-	else if(result == 1)
-	{
-		printf("Short to Battery Fault\r\n");
-	}
-	else if(result == 2)//Short to Ground Fault
-	{
-		printf("Short to Ground Fault\r\n");
-		//BATP_EN引脚拉低
-	}
-	else if(result == 3)
-	{
-		printf("Open Load fault\r\n");
-	}
-	else if(result == 4)
-	{
-		printf("Over Current fault\r\n");
-	}
-	else if(result == 5)
-	{
-		printf("Over Voltage\r\n");
+		result = bsp_Diag_Reset_Fault_PO(channel_num);
+		if(result == 0)
+		{
+			return;
+		}
+		else if(result == 1)//shutdown current channel
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Short to Battery Fault\r\n");
+		}
+		else if(result == 2)//Short to Ground Fault
+		{
+			printf("Short to Ground Fault\r\n");
+			API_ConstantCurrent_Drive(1, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(2, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(3, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(4, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(5, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(6, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(7, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(8, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(9, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(10, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(11, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(12, 0, 0, 0, 0);
+			//BATP_EN引脚拉低
+		}
+		else if(result == 3)
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Open Load fault\r\n");
+		}
+		else if(result == 4)
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Over Current fault\r\n");
+		}
+		else if(result == 5)
+		{
+			printf("Over Voltage\r\n");		
+			API_ConstantCurrent_Drive(1, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(2, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(3, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(4, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(5, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(6, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(7, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(8, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(9, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(10, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(11, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(12, 0, 0, 0, 0);		
+		}
 	}
 }
 

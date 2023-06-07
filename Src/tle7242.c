@@ -3,6 +3,7 @@
 #include "spi.h"
 #include "stm32f4xx_hal_spi.h"
 #include "stm32f4xx.h"
+#include "bsp_output_docc.h"
 /* Fclk·¶Î§Îª20-40  ±¾Àú³ÌÖÐÈ¡30Mhz */
 /* fpwmÆµÂÊ·¶Î§Îª50-4000Hz*/
 
@@ -113,224 +114,190 @@ void TLE_Power_On_Init(void)
 uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8,uint16_t freq_u16)
 {
 	uint16_t N;
-	tag_TLE_Main_Period message1 = {0};
+	tag_TLE_Register tle_register = {0};
 	
 	N = (uint16_t )((30 * 1000000) / (32 * freq_u16)); 
 	
 	N_MACRO = N;
 
-	message1.B.PWM_Divider = N;
+	tle_register.Main_Period.B.PWM_Divider = N;
 	
-	TLE_Write_Register_Data(channel_u8, TLE_MSG1_ID, message1.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG1_ID, tle_register.Main_Period.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Time_Offset_Set(uint8_t channel_u8,uint16_t offset_u16)
 {
-	tag_TLE_PWM_Offset message2 = {0};
+	tag_TLE_Register tle_register = {0};
 
-	message2.B.Phase_Sync_Offset = offset_u16;
+	tle_register.PWM_Offset.B.Phase_Sync_Offset = offset_u16;
 
-	TLE_Write_Register_Data(channel_u8, TLE_MSG2_ID, message2.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG2_ID, tle_register.PWM_Offset.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8,uint16_t current_u16)
 {
-	tag_TLE_Current_Set message3 = {0};
+	tag_TLE_Register tle_register = {0};
 
-	message3.B.Current_Set_Point = current_u16;
+	tle_register.Current_Set.B.Current_Set_Point = current_u16;
 	
-	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, message3.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, tle_register.Current_Set.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Dither_Enable(uint8_t channel_u8,uint8_t dither_en,uint16_t dither_step)
 {
-#if 0
-	uint32_t temp;
-	
-	temp |= dither_en << 11;
-	temp |= dither_step << 12;
-#endif
-	tag_TLE_Current_Set message3 = {0};
+	tag_TLE_Register tle_register = {0};
 
-	message3.B.Dither_Enable = 1;
-	message3.B.Step_Size = dither_step;
+	tle_register.Current_Set.B.Dither_Enable = 1;
+	tle_register.Current_Set.B.Step_Size = dither_step;
 
-	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, message3.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, tle_register.Current_Set.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_OnOff_Operate(uint8_t channel_u8,uint8_t on_off_u8)
 {
-#if 0
-	uint32_t temp;
-	temp |= on_off_u8 << 21;
-#endif
-
-	tag_TLE_Current_Set message3 = {0};
-	message3.B.ON_OFF = on_off_u8;
-	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, message3.U);
+	tag_TLE_Register tle_register = {0};
+	tle_register.Current_Set.B.ON_OFF = on_off_u8;
+	TLE_Write_Register_Data(channel_u8, TLE_MSG3_ID, tle_register.Current_Set.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8,uint16_t dither_freq_u16)
 {
 	uint8_t Dither_Steps = 0;
-	tag_Dither_Period message4 = {0};
+	tag_TLE_Register tle_register = {0};
 	
 	Dither_Steps = (uint8_t)((30 * 1000000) / (dither_freq_u16 * 4));
 
-	message4.B.Dither_Steps = Dither_Steps;
+	tle_register.Dither_Period.B.Dither_Steps = Dither_Steps;
 	dither_steps = Dither_Steps;
 	
-	TLE_Write_Register_Data(channel_u8, TLE_MSG4_ID, message4.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG4_ID, tle_register.Dither_Period.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_KP_KI_Set(uint8_t channel_u8,uint16_t kp_u16,uint16_t ki_u16)
 {
-#if 0
-	uint32_t temp = 0;
-	
-	temp |= (kp_u16 & 0xfff) << 11;
-	temp |= ki_u16 & 0xfff;
-#endif
+	tag_TLE_Register tle_register = {0};
 
-	tag_KP_KI message5 = {0};
-
-	message5.B.KI = ki_u16;
-	message5.B.KP = kp_u16;
+	tle_register.KP_KI.B.KI = ki_u16;
+	tle_register.KP_KI.B.KP = kp_u16;
 	
-	TLE_Write_Register_Data(channel_u8, TLE_MSG5_ID, message5.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG5_ID, tle_register.KP_KI.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Dynamic_Threshold_Set(uint8_t channel_u8,uint16_t integrator_preload,uint16_t transient_threshold)
 {
-#if 0
-	uint32_t temp = 0;
-	
-	temp |= (integrator_preload & 0xfff);
-	temp |= (transient_threshold & 0x7ff) << 12;
-#endif
+	tag_TLE_Register tle_register = {0};
 
-	tag_Dynamic_Threshold message6 = {0};
+	tle_register.Dynamic_Threshold.B.Integrator_preload = integrator_preload;
+	tle_register.Dynamic_Threshold.B.Transient_Threshold = transient_threshold;
 
-	message6.B.Integrator_preload = integrator_preload;
-	message6.B.Transient_Threshold = transient_threshold;
-
-	TLE_Write_Register_Data(channel_u8, TLE_MSG6_ID, message6.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG6_ID, tle_register.Dynamic_Threshold.U);
 	
 	return HAL_OK;
 }
 uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8,uint8_t mode_u8)
 {
+	tag_TLE_Register tle_register = {0};
 	
-	tag_Fault_Mask message7 = {0};
-	
-	if(mode_u8 == 1)//å¼€å…³æ¨¡å¼
+	if(mode_u8 == TLE_MODE_ON_OFF)//å¼€å…³æ¨¡å¼
 	{
-		if(channel_u8 == 0)
+		if(channel_u8 == PO1)
 		{
-			message7.B.CM0 = 1;
+			tle_register.Fault_Mask.B.CM0 = 1;
 		}
-		else if(channel_u8 == 1)
+		else if(channel_u8 == PO2)
 		{
-			message7.B.CM1 = 1;
+			tle_register.Fault_Mask.B.CM1 = 1;
 		}
-		else if(channel_u8 == 2)
+		else if(channel_u8 == PO3)
 		{
-			message7.B.CM2 = 1;
+			tle_register.Fault_Mask.B.CM2 = 1;
 		}
-		else if(channel_u8 == 3)
+		else if(channel_u8 == PO4)
 		{
-			message7.B.CM3 = 1;
+			tle_register.Fault_Mask.B.CM3 = 1;
 		}
 
-		TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, message7.U);
+		TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, tle_register.Fault_Mask.U);
 	}
-	else if(mode_u8 == 0)//æ’æµæ¨¡å¼
+	else if(mode_u8 == TLE_MODE_CONST_CURRENT)//æ’æµæ¨¡å¼
 	{
-		if(channel_u8 == 0)
+		if(channel_u8 == PO1)
 		{
-			message7.B.CM0 = 0;
+			tle_register.Fault_Mask.B.CM0 = 0;
 		}
-		else if(channel_u8 == 1)
+		else if(channel_u8 == PO2)
 		{
-			message7.B.CM1 = 0;
+			tle_register.Fault_Mask.B.CM1 = 0;
 		}
-		else if(channel_u8 == 2)
+		else if(channel_u8 == PO3)
 		{
-			message7.B.CM2 = 0;
+			tle_register.Fault_Mask.B.CM2 = 0;
 		}
-		else if(channel_u8 == 3)
+		else if(channel_u8 == PO4)
 		{
-			message7.B.CM3 = 0;
+			tle_register.Fault_Mask.B.CM3 = 0;
 		}
 
-		TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, message7.U);
+		TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, tle_register.Fault_Mask.U);
 	}
 	return 0;	
 }
 
 void TLE_AutoZero_Enable(uint8_t channel_u8)
 {
-#if 0
-	uint32_t temp = 0;
-	temp |= 1 << 10;
-#endif
-	tag_Fault_Mask message7 = {0};
+	tag_TLE_Register tle_register = {0};	
 
-	message7.B.AZ_Disable = 1;
+	tle_register.Fault_Mask.B.AZ_Disable = 1;
 
 	
-	TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, message7.U);
+	TLE_Write_Register_Data(channel_u8, TLE_MSG7_ID, tle_register.Fault_Mask.U);
 }
 
 
 
 uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8)
 {
-	//uint32_t fault_info = 0;
-	//uint32_t fault_info_temp = 0;
-	
-	tag_Diagnostic_Read message9 = {0};
+	tag_TLE_Register tle_register = {0};
 
-	message9.U = TLE_Read_Register_Data(channel_u8, TLE_MSG9_ID);
+	tle_register.Diagnostic_Read.U = TLE_Read_Register_Data(channel_u8, TLE_MSG9_ID);
 
-	return message9.U;	
+	return tle_register.Diagnostic_Read.U;	
 }
 
 
 uint16_t TLE_Channel_Current_Read(uint8_t channel_u8)
 {
-	uint16_t current_read;
+	tag_TLE_Register tle_register = {0};
 	uint16_t current_value;
 	
-	current_read = TLE_Read_Register_Data(channel_u8, TLE_MSG10_ID);
+	tle_register.Current_Read.U = TLE_Read_Register_Data(channel_u8, TLE_MSG10_ID);
 	
-	current_value = (uint16_t)((current_read * (1 << 14)) * (230 / Rsense));
+	current_value = (uint16_t)((tle_register.Current_Read.U * (1 << 14)) * (230 / Rsense));
 	
 	return current_value;
 }
 uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8)
 {
-	uint32_t autozero_read;
+	tag_TLE_Register tle_register = {0};
 	
-	autozero_read = TLE_Read_Register_Data(channel_u8, TLE_MSG11_ID);
+	tle_register.Autozero_Read.U = TLE_Read_Register_Data(channel_u8, TLE_MSG11_ID);
 	
-	return autozero_read;
+	return tle_register.Autozero_Read.U;
 }
 uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8)
 {
-	tag_DutyCycle_Read message12 = {0};
-
+	tag_TLE_Register tle_register = {0};
 	
-	message12.U = TLE_Read_Register_Data(channel_u8, TLE_MSG12_ID);
+	tle_register.DutyCycle_Read.U = TLE_Read_Register_Data(channel_u8, TLE_MSG12_ID);
 	 	
-	return message12.B.Duty_Cycle;
+	return tle_register.DutyCycle_Read.B.Duty_Cycle;
 }
 void TLE_ALL_Register_Period_Read(uint8_t channel_u8,uint16_t period_u16)
 {

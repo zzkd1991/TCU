@@ -5,7 +5,9 @@
 #include "tle7242.h"
 #include "main.h"
 #include "bsp_test.h"
+#include "led.h"
 #include "usart_queue.h"
+#include "bsp_output_docc.h"
 
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
@@ -175,6 +177,61 @@ void Test_Function_Fram_WR(void)
 {
 	
 
+}
+
+void Test_Function_LED(void)
+{
+	uint32_t current_tick = 0;
+	current_tick = HAL_GetTick();
+	led1_show_yellow();
+	led2_show_yellow();
+	while(current_tick <= current_tick + 2000);
+	led1_show_purple();
+	led2_show_purple();
+	current_tick = HAL_GetTick();
+	while(current_tick <= current_tick + 2000);
+	led1_show_cyan();
+	led2_show_cyan();
+	current_tick = HAL_GetTick();
+	while(current_tick <= current_tick + 2000);
+	led1_show_white();
+	led2_show_white();
+}
+
+void Test_Function_TLE7242_PO(void)
+{
+	int i = 0;
+	uint16_t current_value[12] = {0};
+	uint16_t duty_value[12] = {0};
+
+	for(i = 0; i < 12; i++)
+	{
+		API_PO_Mode_Config(i, TLE_MODE_CONST_CURRENT);
+	}
+
+	API_ConstantCurrent_Drive(PO1, 500, 2000, 0.05, 0.05);	
+	API_ConstantCurrent_Drive(PO2, 600, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO3, 700, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO4, 800, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO5, 900, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO6, 1000, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO7, 1100, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO8, 1200, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO9, 1300, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO10, 1400, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO11, 1500, 2000, 0.05, 0.05);
+	API_ConstantCurrent_Drive(PO12, 1600, 2000, 0.05, 0.05);
+
+
+	for(i = 0; i < 12; i++)
+	{
+       current_value[i] = API_DynamicCurrent_Read(i);
+	}
+
+	for(i = 0; i < 12; i++)
+	{
+		duty_value[i] = API_Duty_Feedback_Read(i);
+	}
 }
 
 

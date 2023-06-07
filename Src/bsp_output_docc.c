@@ -1,5 +1,8 @@
 #include "bsp_output_docc.h"
 
+extern tag_TLE_CONFIG_RECORD tag_tle_record;
+
+
 void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t freq_u16,
 								float kp_f, float ki_f)
 {
@@ -82,7 +85,9 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 	uint8_t conved_chan = 0;
 
 	dither_steps = (uint8_t)((30 * 1000000) / (dither_freq * 4));
-	conved_dither_amp = ((1 << 15) * Rsense * dither_amp) / (2 * 320  * dither_steps);
+	conved_dither_amp = ((1 << 15) * Rsense * dither_amp) / (2 * 320  * tag_tle_record.record_dither_steps);
+
+	tag_tle_record.record_dither_amp = dither_amp;
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -185,14 +190,13 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	uint32_t duty_cycle = 0;
 	uint8_t actual_duty = 0;
 	uint8_t conved_chan = 0;
-	extern uint16_t N_MACRO;
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
 		TLE7242_CS1_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
@@ -200,7 +204,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 		conved_chan = chan_u8 - 5;
 		TLE7242_CS2_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
@@ -208,7 +212,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 		conved_chan = chan_u8 - 9;
 		TLE7242_CS3_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS3_HIGH();
 	}
 

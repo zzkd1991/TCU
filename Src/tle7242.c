@@ -11,12 +11,8 @@ extern SPI_HandleTypeDef hspi1;
 
 extern uint8_t spi2_trx(uint16_t len, uint8_t *w, uint8_t *r);
 
+tag_TLE_CONFIG_RECORD tag_tle_record = {0};
 
-#define TLE_INSTRUCTION_WRITE	0x80
-#define TLE_INSTRUCTION_READ	0x00
-
-uint16_t N_MACRO = 0;
-uint8_t dither_steps = 0;
 
 void TLE7242_GPIO_Init(void)
 {
@@ -104,9 +100,10 @@ uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 	uint16_t N;
 	tag_TLE_Register tle_register = {0};
 	
-	N = (uint16_t )((30 * 1000000) / (32 * freq_u16)); 
-	
-	N_MACRO = N;
+	tag_tle_record.record_freq = freq_u16;	
+	N = (uint16_t )((30 * 1000000) / (32 * freq_u16));
+
+	tag_tle_record.record_PWM_Divider = N;
 
 	tle_register.Main_Period.B.RW = 1;
 	tle_register.Main_Period.B.MSG_ID = TLE_MSG1_ID;
@@ -134,6 +131,7 @@ uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8, uint16_t current_u1
 {
 	tag_TLE_Register tle_register = {0};
 
+	tag_tle_record.record_current = current_u16;
 	tle_register.Current_Set.B.RW = 1;
 	tle_register.Current_Set.B.Current_Set_Point = current_u16;
 	tle_register.Current_Set.B.MSG_ID = TLE_MSG3_ID;
@@ -147,6 +145,7 @@ uint8_t TLE_Channel_Dither_Enable(uint8_t channel_u8, uint8_t dither_en, uint16_
 {
 	tag_TLE_Register tle_register = {0};
 
+	tag_tle_record.record_dither_en = dither_en;
 	tle_register.Current_Set.B.RW = 1;
 	tle_register.Current_Set.B.Dither_Enable = 1;
 	tle_register.Current_Set.B.Step_Size = dither_step;
@@ -177,11 +176,12 @@ uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8, uint16_t dither_freq_u16
 	
 	Dither_Steps = (uint8_t)((30 * 1000000) / (dither_freq_u16 * 4));
 
+	tag_tle_record.record_dither_freq = dither_freq_u16;
+	tag_tle_record.record_dither_steps = Dither_Steps;
 	tle_register.Dither_Period.B.RW = 1;
 	tle_register.Dither_Period.B.Dither_Steps = Dither_Steps;
 	tle_register.Dither_Period.B.MSG_ID = TLE_MSG4_ID;
 	tle_register.Dither_Period.B.CH = channel_u8;
-	dither_steps = Dither_Steps;
 	
 	TLE_Register_Operation_Data(tle_register.Dither_Period.U);
 	
@@ -191,6 +191,8 @@ uint8_t TLE_Channel_KP_KI_Set(uint8_t channel_u8, uint16_t kp_u16, uint16_t ki_u
 {
 	tag_TLE_Register tle_register = {0};
 
+	tag_tle_record.record_ki_value = ki_u16;
+	tag_tle_record.record_kp_value = kp_u16;
 	tle_register.KP_KI.B.RW = 1;
 	tle_register.KP_KI.B.KI = ki_u16;
 	tle_register.KP_KI.B.KP = kp_u16;

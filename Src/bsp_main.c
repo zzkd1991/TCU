@@ -59,7 +59,7 @@ void Driver_Init(void)
 	/*CAN1 + CAN2*/
 	ccpBootInit(CCP_CRO_ID, CCP_DTO_ID);
 
-	//printf("Init.....OK!!!\r\n");
+	printf("Init.....OK!!!\r\n");
 }
 
 void bsp_driver_task_loop(void)

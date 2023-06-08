@@ -172,6 +172,7 @@ void SystemClock_Config(void)
   */
 void Error_Handler(void)
 {
+	printf("%s, %d\r\n", __FUNCTION__, __LINE__);
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
 

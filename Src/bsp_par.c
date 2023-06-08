@@ -22,7 +22,7 @@ U16 API_PAR_Init(void)
 	if(Cal_Crc != Saved_Crc)
 	{
 //		par_val |= 1;
-		SET_PAR_STATUS_BIT(par_val, 0, 1)
+		SET_PAR_STATUS_BIT(par_val, 0, 1);
 	}
 
 	status = I2C_Fram_BufferRead((uint8_t *)PAR_BYTES, ParBack_BYTE_BASE, Max_BYTE_NUM);

@@ -29,8 +29,10 @@ enum {
 };
 
 void Bsp_Di_Init(void);
-
+void Reset_DI_Chara(uint8_t channel_u8, uint8_t signalType_u8);
+void DI_Screen(void);
 uint8_t Api_Di_Get(uint8_t channel_u8);
 uint8_t API_DI_Cfg(uint8_t channel_u8, uint8_t signalType_u8);
+
 #endif
 

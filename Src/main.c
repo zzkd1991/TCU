@@ -28,6 +28,7 @@
 #include "bsp_can.h"
 #include "temp_pres_drv.h"
 #include "bsp_input_ai.h"
+#include "bsp_input_di.h"
 #include "spi_flash.h"
 #include "ccp.h"
 #include "tle7242.h"
@@ -198,7 +199,7 @@ printf("222222\r\n");
 	//printf("FlashID %x\r\n", FlashID);
 	printf("FlashID %d\r\n", FlashID);
 	
-
+	Reset_DI_Chara(DIN1,0);//复用DI-测试
   while (1)
   {
 	extern __IO uint32_t uwTick;
@@ -206,7 +207,10 @@ printf("222222\r\n");
 	//mdelay(1000);
 	//uwTick = 0;
 	bsp_application_task_loop();
-	ADC_Smooth();
+	ADC_Smooth();//AI 采集
+
+  DI_Screen();//DI 采集
+	AI_Diagnose_State_Get();//AI1-AI6的诊断
 	//printf("message_read %s\n", message_read);
 	//printf("hello world\r\n");
  #if 0	

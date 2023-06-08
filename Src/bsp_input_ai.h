@@ -30,7 +30,6 @@ void ADC_Smooth(void);
 void AI_Diagnose_State_Get(void);
 void AI_Diag_Threshold_Set(uint8_t chan_u8,uint8_t diag_u8,uint16_t threshold_u16);
 void AI_Diag_Hysteresis_Set(uint8_t chan_u8,uint8_t diag_u8,uint16_t threshold_u16);
-
 #endif
 
 

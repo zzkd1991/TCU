@@ -112,7 +112,7 @@
 #define DI21_GPIO_CLK_ENABLE()		__GPIOD_CLK_ENABLE()
 
 
-uint8_t IMCA2136_DI[21] = {0};
+uint8_t TCU_DI[21] = {0};
 uint8_t IMCA2136_Flag[21] = {0};
 
 
@@ -165,82 +165,122 @@ void Bsp_Di_Init(void)
 
 	//DI2
 	GPIO_InitStructure.Pin = DI2_PIN;
+	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI2_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI3
 	GPIO_InitStructure.Pin = DI3_PIN;
+	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI3_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI4
 	GPIO_InitStructure.Pin = DI4_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI4_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI5
 	GPIO_InitStructure.Pin = DI5_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI5_GPIO_PORT,  &GPIO_InitStructure);
 
 	//DI6
 	GPIO_InitStructure.Pin = DI6_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI6_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI7
 	GPIO_InitStructure.Pin = DI7_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI7_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI8
 	GPIO_InitStructure.Pin = DI8_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI8_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI9
 	GPIO_InitStructure.Pin = DI9_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI9_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI10
 	GPIO_InitStructure.Pin = DI10_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI10_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI11
 	GPIO_InitStructure.Pin = DI11_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI11_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI12
 	GPIO_InitStructure.Pin = DI12_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI12_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI13
 	GPIO_InitStructure.Pin = DI13_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI13_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI14
 	GPIO_InitStructure.Pin = DI14_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI14_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI15
 	GPIO_InitStructure.Pin = DI15_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI15_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI16
 	GPIO_InitStructure.Pin = DI16_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI16_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI17
 	GPIO_InitStructure.Pin = DI17_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI17_GPIO_PORT, &GPIO_InitStructure);
 
 	//DI18
 	GPIO_InitStructure.Pin = DI18_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI18_GPIO_PORT, &GPIO_InitStructure);	
 
 	//DI19
 	GPIO_InitStructure.Pin = DI19_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI19_GPIO_PORT, &GPIO_InitStructure);	
 
 	//DI20
 	GPIO_InitStructure.Pin = DI20_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI20_GPIO_PORT, &GPIO_InitStructure);	
 
 	//DI21
 	GPIO_InitStructure.Pin = DI21_PIN;
+		GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;//管脚下拉
 	HAL_GPIO_Init(DI21_GPIO_PORT, &GPIO_InitStructure);		
 }
 
@@ -491,40 +531,109 @@ IMCA2163_ID14, IMCA2163_ID15, IMCA2163_ID16, IMCA2163_ID17, IMCA2163_ID18, IMCA2
 
 uint8_t *IMCA_Point[21];*/
 
-uint32_t DI_Screen(void)
+void DI_Screen(void)
 {
 	uint8_t channel = 0;
 
-	for(channel = 1; channel < 22; channel++)
+	for(channel = 0; channel < 21; channel++)
 	{
 		if(Api_Di_Get(channel) == 1)
 		{
 			if(IMCA2136_Flag[channel] == 0)
 			{
-				IMCA2136_DI[channel] = 1;
+				TCU_DI[channel] = 1;
 			}
 			else if(IMCA2136_Flag[channel] == 1)
 			{
-				IMCA2136_DI[channel] = 0;
+				TCU_DI[channel] = 0;
 			}
 		}
 		else
 		{
 			if(IMCA2136_Flag[channel] == 0)
 			{
-				IMCA2136_DI[channel] = 0;
+				TCU_DI[channel] = 0;
 			}
 			else if(IMCA2136_Flag[channel] == 1)
 			{
-				IMCA2136_DI[channel] = 1;
+				TCU_DI[channel] = 1;
 			}
 		}
 	}
 
-	return 0;
+
 
 }
 
+void Reset_DI_Chara(uint8_t channel_u8, uint8_t signalType_u8)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+	switch(channel_u8)
+	{
+
+		case(DIN1):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI1_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+	                                  GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI1_GPIO_PORT, &GPIO_InitStructure);
+							                      if(HAL_GPIO_ReadPin(DI1_GPIO_PORT, DI1_PIN)==0)
+																		IMCA2136_Flag[DIN1] = 1;
+							                      }
+               else{break;} 
+		
+		case(DIN11):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI11_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+								                    GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI11_GPIO_PORT, &GPIO_InitStructure);
+							                      if(HAL_GPIO_ReadPin(DI11_GPIO_PORT, DI11_PIN)==0)
+							                     IMCA2136_Flag[DIN11] = 1;
+							                      }
+               else{break;} 
+							 
+		case(DIN3):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI3_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+								                    GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI3_GPIO_PORT, &GPIO_InitStructure);
+							                      if(HAL_GPIO_ReadPin(DI3_GPIO_PORT, DI3_PIN)==1)
+							                      IMCA2136_Flag[DIN3] = 1;
+							                      }
+               else{break;} 
+							 
+		case(DIN4):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI4_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+								                    GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI4_GPIO_PORT, &GPIO_InitStructure);
+								                    if(HAL_GPIO_ReadPin(DI4_GPIO_PORT, DI4_PIN)==1)
+							                      IMCA2136_Flag[DIN4] = 1;
+							                      }
+               else{break;} 
+							 
+		case(DIN15):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI15_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+								                    GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI15_GPIO_PORT, &GPIO_InitStructure);
+							                      if(HAL_GPIO_ReadPin(DI15_GPIO_PORT, DI15_PIN)==1)
+							                      IMCA2136_Flag[DIN15] = 1;
+							                      }
+               else{break;} 
+
+		case(DIN20):if(signalType_u8==1){break;} 
+               if(signalType_u8==0){GPIO_InitStructure.Pin =  DI20_PIN;
+	                                  GPIO_InitStructure.Mode = GPIO_MODE_INPUT;//GPIO输入模式
+								                    GPIO_InitStructure.Pull = GPIO_PULLUP;//管脚上拉
+	                                  HAL_GPIO_Init(DI20_GPIO_PORT, &GPIO_InitStructure);
+							                      if(HAL_GPIO_ReadPin(DI20_GPIO_PORT, DI20_PIN)==1)
+							                      IMCA2136_Flag[DIN20] = 1;
+							                      }
+               else{break;} 							 
+		default: break;
+	}
 
 
+
+}
 

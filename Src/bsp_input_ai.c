@@ -4,14 +4,14 @@
 #define ADC_PORT_NUM_TOTAL 	20
 
 uint16_t REAL_BUF[ADC_PORT_NUM_TOTAL];
-uint8_t AI_Diagnose_State[6];//AI1-AI6的通道状态
+uint8_t AI_Diagnose_State[6]={0};//AI1-AI6的通道状态
 uint16_t AI_Diag_Threshold_High[6]={3932,3932,3932,3932,3932,3932,};//AI1-AI6的通道高阈值电压
 uint16_t AI_Diag_Threshold_Low[6]={328,328,328,328,328,328};//AI1-AI6的通道高阈值电压
-uint16_t AI_Diag_Hysteresis_High[6];
-uint16_t AI_Diag_Hysteresis_Low[6];
+uint16_t AI_Diag_Hysteresis_High[6]={20,20,20,20,20,20};
+uint16_t AI_Diag_Hysteresis_Low[6]={20,20,20,20,20,20};
 
-uint8_t Flag_vcc_short[6]={20,20,20,20,20,20};
-uint8_t Flag_gnd_short[6]={20,20,20,20,20,20};
+uint8_t Flag_vcc_short[6]={0};
+uint8_t Flag_gnd_short[6]={0};
 
 extern uint16_t ADC_AVG[6];
 extern uint16_t _ADC_AVG[10];
@@ -97,26 +97,27 @@ void AI_Diagnose_State_Get(void)
 		{AI_Diagnose_State[i]= 1;//对电源短路 
     Flag_vcc_short[i]=1;}		
 	
-		if( ADC_FINAL[i]<AI_Diag_Threshold_Low[i])
+	  if( ADC_FINAL[i]<AI_Diag_Threshold_Low[i])
 		{AI_Diagnose_State[i]= 2;//对地短路  
-		Flag_gnd_short[i]=1;}
+		Flag_gnd_short[i]=1;}		
+
 		
-			if(Flag_gnd_short[i]==1)
-		{
+//			if(Flag_gnd_short[i]==1)
+//		{
 			if(ADC_FINAL[i]>(AI_Diag_Threshold_Low[i]+AI_Diag_Hysteresis_Low[i]))
 		     {
 					 AI_Diagnose_State[i]= 0;
 				   Flag_gnd_short[i]=0; 
 				 }//正常状态			
-		 }	
+//		 }	
 		
-			if(Flag_vcc_short[i]==1)
-		{
+//			if(Flag_vcc_short[i]==1)
+//		{
 			if(ADC_FINAL[i]<(AI_Diag_Threshold_High[i]-AI_Diag_Hysteresis_High[i]))
 		     {
 					 AI_Diagnose_State[i]= 0;
 				   Flag_vcc_short[i]=0; 
 				 }//正常状态			
-		 }				 	 				 
+//		 }				 	 				 
 	}
 }	

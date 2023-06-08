@@ -19,7 +19,32 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+
+#include "main.h"
+//#include "adc.h"
+//#include "dma.h"
+#include "usart.h"
+#include "gpio.h"
+#include "tim.h"
+#include "bsp_can.h"
+#include "temp_pres_drv.h"
+#include "bsp_input_ai.h"
+#include "bsp_input_di.h"
+#include "spi_flash.h"
+#include "ccp.h"
+#include "tle7242.h"
+#include "fm25cl64b.h"
+#include "pi.h"
+#include "led.h"
+#include "mcp2515.h"
+#include "can_queue.h"
+#include "dac.h"
+#include "bsp_user.h"
+#include "fm24cl64b_i2c.h"
+#include "bsp_output_do.h"
+
 #include "bsp_main.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -82,10 +107,62 @@ int main(void)
    /* Infinite loop */
    /* USER CODE BEGIN WHILE */
 	
+
+	uint8_t message_write[8]= "hello\r\n";
+	
+	uint8_t message_read[8] = {0};
+	
+	if(HAL_OK != I2C_Fram_PageWrite(message_write, 0, 8))
+	{
+		printf("write error\r\n");
+	}
+	else
+	{
+		printf("write ok\r\n");
+	}
+	
+	if(HAL_OK != I2C_Fram_BufferRead(message_read, 0, 8))
+	{
+		printf("read error\r\n");
+	}
+	else
+	{
+		printf("read ok\r\n");
+	}
+
+  	printf("message_read %s\n", message_read);
+	
+	//printf("message_write %s\n", message_write);
+	extern uint32_t SPI_FLASH_ReadDeviceID(void);
+	extern uint32_t SPI_FLASH_ReadID(void);
+	
+	uint16_t device_id = 0;
+	
+	device_id = SPI_FLASH_ReadDeviceID();
+
+	uint32_t FlashID = 0;
+
+	FlashID = SPI_FLASH_ReadID();
+
+	printf("device_id is %x\r\n", device_id);
+	//printf("FlashID %x\r\n", FlashID);
+	printf("FlashID %d\r\n", FlashID);
+	
+	Reset_DI_Chara(DIN1,0);//复用DI-测试
+
+
   while (1)
   {
-	bsp_application_task_loop();
-	ADC_Smooth();
+
+	ADC_Smooth();//AI 采集
+
+  DI_Screen();//DI 采集
+	AI_Diagnose_State_Get();//AI1-AI6的诊断
+	//printf("message_read %s\n", message_read);
+	//printf("hello world\r\n");
+
+
+
  #if 0	
 	if(ccpBootReceiveCro(receive_buffer))
 	{   // if new CRO message received,

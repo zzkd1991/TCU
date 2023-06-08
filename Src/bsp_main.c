@@ -50,7 +50,17 @@ void Driver_Init(void)
 	
 	//Pi_Drv_Init();
 	//mcp2515_hw_init();
-
+	
+	/*PI*/
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM5_Init();
+  MX_TIM6_Init();
+  MX_TIM8_Init();
+  MX_TIM9_Init();
+  MX_TIM12_Init();
 	/*Fram */
 	I2C_Fram_Init();
 

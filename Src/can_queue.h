@@ -15,17 +15,23 @@ struct _CANQueue
 
 void ClearCanQueue(void);
 uint8_t IsEmptyCanQueueTx(void);
-uint8_t IsEmptyCanQueueRx(void);
-uint8_t IsFullCanQueueRx(void);
+uint8_t IsEmptyCan1QueueRx(void);
+uint8_t IsEmptyCan2QueueRx(void);
+uint8_t IsFullCan1QueueRx(void);
+uint8_t IsFullCan2QueueRx(void);
 uint8_t IsFullCanQueueTx(void);
-uint8_t InsertCanQueueRx(Message head);
+uint8_t InsertCan1QueueRx(Message element);
+uint8_t InsertCan2QueueRx(Message element);
 uint8_t InsertCanQueueTx(Message head);
-void SetHeadCanQueueRx(uint16_t head);
+void SetHeadCan1QueueRx(uint16_t head);
+void SetHeadCan2QueueRx(uint16_t head);
 void SetHeadCanQueueTx(uint16_t head);
-uint8_t GetCanQueueRx(uint16_t head, Message *element);
+uint8_t GetCan1QueueRx(uint16_t head, Message *element);
+uint8_t GetCan2QueueRx(uint16_t head, Message * element);
 uint8_t GetCanQueueTx(uint16_t head, Message *element);
 void Can_data_process(void);
-void ClearCanTxQueue(void);
+void ClearCan1TxQueue(void);
+void ClearCan2TxQueue(void);
 void ClearCanRxQueue(void);
 
 

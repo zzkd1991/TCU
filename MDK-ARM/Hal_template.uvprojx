@@ -489,11 +489,6 @@
               <FilePath>..\Src\tle7242.c</FilePath>
             </File>
             <File>
-              <FileName>pi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\pi.c</FilePath>
-            </File>
-            <File>
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\crc.c</FilePath>
@@ -557,6 +552,16 @@
               <FileName>bsp_par.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\bsp_par.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart_queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\usart_queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\bsp_main.c</FilePath>
             </File>
           </Files>
         </Group>

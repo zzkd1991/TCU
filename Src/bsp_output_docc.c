@@ -1,5 +1,8 @@
 #include "bsp_output_docc.h"
 
+extern tag_TLE_CONFIG_RECORD tag_tle_record;
+
+
 void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t freq_u16,
 								float kp_f, float ki_f)
 {
@@ -18,7 +21,7 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS1_LOW();
 		conved_chan = chan_u8 - 1;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
@@ -28,7 +31,7 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS2_LOW();
 		conved_chan = chan_u8 - 5;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
@@ -38,13 +41,12 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	{
 		TLE7242_CS3_LOW();
 		conved_chan = chan_u8 - 9;
-		TLE_Channel_Mode_Config(conved_chan, 0);//恒流模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
 		TLE7242_CS3_HIGH();		
 	}
-
 }
 
 
@@ -76,16 +78,16 @@ void API_PO_Mode_Config(uint8_t chan_u8, uint16_t mode_u8)
 
 }
 
-
-
 void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dither_freq, uint8_t dither_amp)
 {
 	uint16_t conved_dither_amp;
 	uint8_t dither_steps;
 	uint8_t conved_chan = 0;
 
-	dither_steps = (uint8_t)((30 * 1000000) / (dither_freq * 4));
-	conved_dither_amp = ((1 << 15) * Rsense * dither_amp) / (2 * 320  * dither_steps);
+	dither_steps = (uint8_t)((FCLK) / (dither_freq * 4));
+	conved_dither_amp = ((1 << 15) * Rsense * dither_amp) / (2 * 320  * tag_tle_record.record_dither_steps);
+
+	tag_tle_record.record_dither_amp = dither_amp;
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -159,7 +161,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 1;
 
 		TLE7242_CS1_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);//首先设置成On/Off模式
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);//首先设置成On/Off模式
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);		
 		TLE7242_CS1_HIGH();
 	}
@@ -168,7 +170,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 5;
 
 		TLE7242_CS2_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);
 		TLE7242_CS2_HIGH();
 	}
@@ -177,7 +179,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 		conved_chan = chan_u8 - 9;
 
 		TLE7242_CS3_LOW();
-		TLE_Channel_Mode_Config(conved_chan, 1);
+		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
 		TLE_Channel_OnOff_Operate(conved_chan, on_off_u8);
 		TLE7242_CS3_HIGH();		
 	}
@@ -188,14 +190,13 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	uint32_t duty_cycle = 0;
 	uint8_t actual_duty = 0;
 	uint8_t conved_chan = 0;
-	extern uint16_t N_MACRO;
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
 		TLE7242_CS1_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
@@ -203,7 +204,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 		conved_chan = chan_u8 - 5;
 		TLE7242_CS2_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
@@ -211,7 +212,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 		conved_chan = chan_u8 - 9;
 		TLE7242_CS3_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
-		actual_duty = 100 * (duty_cycle / (32 * N_MACRO));
+		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
 		TLE7242_CS3_HIGH();
 	}
 
@@ -219,36 +220,143 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	
 }
 
+uint32_t flag_5ms_passed = 0;
+
+
 uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 {
-	uint32_t Diagnostic_info = 0;
 	uint8_t conved_chan;
+	uint16_t current_value = 0;
+	tag_Diagnostic_Read Diagnostic_info = {0};
+	tag_Autozero_Read autozero = {0};
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
 		TLE7242_CS1_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
 		conved_chan = chan_u8 - 5;
 		TLE7242_CS2_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);		
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
 		conved_chan = chan_u8 - 9;
 		TLE7242_CS3_LOW();
-		Diagnostic_info = TLE_Channel_Diagnostic_Read(conved_chan);
+		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
+		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
+		current_value = TLE_Channel_Current_Read(conved_chan);
 		TLE7242_CS3_HIGH();
 	}
 
-	
-	return Diagnostic_info;
+	if(Diagnostic_info.B.SB3 == 1 || Diagnostic_info.B.SB2 == 1 || Diagnostic_info.B.SB1 == 1 || Diagnostic_info.B.SB0 == 1)
+	{
+		return 1;
+	}
+
+	if(Diagnostic_info.B.SG3 == 1 || Diagnostic_info.B.SG2 == 1 || Diagnostic_info.B.SG1 == 1 || Diagnostic_info.B.SG0 == 1)
+	{
+		return 2;
+	}
+
+	if(Diagnostic_info.B.OL_ON3 == 1 || Diagnostic_info.B.OL_ON2 == 1 || Diagnostic_info.B.OL_ON1 == 1 || Diagnostic_info.B.OL_ON0 == 1
+		|| Diagnostic_info.B.OL_OFF3 == 1 || Diagnostic_info.B.OL_OFF2 == 1 || Diagnostic_info.B.OL_OFF1 == 1 || Diagnostic_info.B.OL_OFF0 == 1)
+	{
+		return 3;
+	}
+
+	if(current_value >= 3000)
+	{
+		flag_5ms_passed++;
+		if(flag_5ms_passed >= 6)
+		{
+			flag_5ms_passed = 0;
+			return 4;
+		}
+	}
+	else
+	{
+		flag_5ms_passed = 0;
+	}
+
+	if(autozero.B.OVL == 1)//Over Voltage
+	{
+		return 5;
+	}
+
+	return 0;
 }
 
+void bsp_Diag_PO_Detect_Protect(void)//每5ms周期调用用于保护端口
+{
+	uint32_t result = 0;
+	int channel_num = 0;
+
+	for(channel_num = 0; channel_num < 12; channel_num++)
+	{
+		result = bsp_Diag_Reset_Fault_PO(channel_num);
+		if(result == 0)
+		{
+			return;
+		}
+		else if(result == 1)//shutdown current channel
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Short to Battery Fault\r\n");
+		}
+		else if(result == 2)//Short to Ground Fault
+		{
+			printf("Short to Ground Fault\r\n");
+			API_ConstantCurrent_Drive(1, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(2, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(3, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(4, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(5, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(6, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(7, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(8, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(9, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(10, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(11, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(12, 0, 0, 0, 0);
+			//BATP_EN引脚拉低
+		}
+		else if(result == 3)
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Open Load fault\r\n");
+		}
+		else if(result == 4)
+		{
+			API_ConstantCurrent_Drive(channel_num, 0, 0, 0, 0);
+			printf("Over Current fault\r\n");
+		}
+		else if(result == 5)
+		{
+			printf("Over Voltage\r\n");		
+			API_ConstantCurrent_Drive(1, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(2, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(3, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(4, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(5, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(6, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(7, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(8, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(9, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(10, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(11, 0, 0, 0, 0);
+			API_ConstantCurrent_Drive(12, 0, 0, 0, 0);		
+		}
+	}
+}
 
 

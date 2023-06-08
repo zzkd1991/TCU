@@ -22,6 +22,8 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "mcp2515.h"
+#include "usart_queue.h"
+#include "usart.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -61,6 +63,11 @@
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
 #endif
+
+extern DAC_HandleTypeDef hdac;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim8;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -188,20 +195,24 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
   extern uint8_t Time_1ms_Flag, Time_5ms_Flag, Time_10ms_Flag, Time_20ms_Flag, Time_50ms_Flag, Time_100ms_Flag, Time_500ms_Flag, Time_1000ms_Flag,
   Time_2000ms_Flag;
+  extern uint8_t Time_Bsp_1ms_Flag, Time_Bsp_5ms_Flag, Time_Bsp_10ms_Flag, Time_Bsp_100ms_Flag;
   extern __IO uint32_t uwTick;
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
 
   Time_1ms_Flag = 1;
+  Time_Bsp_1ms_Flag = 1;
 
   if(uwTick % 5 == 0)
   {
 	Time_5ms_Flag = 1;
+	Time_Bsp_5ms_Flag = 1;
   }
 
   if(uwTick % 10 == 0)
   {
 	Time_10ms_Flag = 1;
+    Time_Bsp_10ms_Flag = 1;	
   }
 
   if(uwTick % 20 == 0)
@@ -217,6 +228,7 @@ void SysTick_Handler(void)
   if(uwTick % 100 == 0)
   {
 	Time_100ms_Flag = 1;
+    Time_Bsp_100ms_Flag = 1;
   }
 
   if(uwTick % 500 == 0)
@@ -367,6 +379,18 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+  	
+	extern UART_HandleTypeDef UartHandle;
+	uint8_t ch = 0;
+	
+	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
+	{
+		ch = (uint16_t)READ_REG(UartHandle.Instance->DR);
+		if(0 == InsertUsartQueueRx(ch))
+		{
+			Error_Handler();
+		}
+	}
 }
 /**
   * @brief This function handles TIM2 global interrupt.
@@ -411,7 +435,75 @@ void DMA2_Stream1_IRQHandler(void)
   /* USER CODE END DMA2_Stream1_IRQn 1 */
 }
 
+/**
+  * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
+  */
+void TIM1_UP_TIM10_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
 
+  /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM1 capture compare interrupt.
+  */
+void TIM1_CC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_CC_IRQn 0 */
+
+  /* USER CODE END TIM1_CC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  /* USER CODE BEGIN TIM1_CC_IRQn 1 */
+
+  /* USER CODE END TIM1_CC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM8 update interrupt and TIM13 global interrupt.
+  */
+void TIM8_UP_TIM13_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim8);
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 1 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM8 capture compare interrupt.
+  */
+void TIM8_CC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM8_CC_IRQn 0 */
+
+  /* USER CODE END TIM8_CC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim8);
+  /* USER CODE BEGIN TIM8_CC_IRQn 1 */
+
+  /* USER CODE END TIM8_CC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM6 global interrupt, DAC1 and DAC2 underrun error interrupts.
+  */
+void TIM6_DAC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

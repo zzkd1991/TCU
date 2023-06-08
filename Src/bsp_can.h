@@ -118,6 +118,10 @@ uint8_t CanGet_SendQueue(void);
 
 uint8_t Can1_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *dat);
 void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms);
+void CAN2_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms);
+signed short CAN1_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data);
+signed short CAN2_ReceiveObj(uint32_t ID, uint8_t * Len, uint8_t * Data);
+
 
 #ifdef __cplusplus
 #if __cplusplus

@@ -170,6 +170,8 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	{
 	/* Execute user timeout callback */
 		//I2Cx_Error(Addr);
+		Error_Handler();
+		return status;
 	}
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
@@ -193,6 +195,12 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 	HAL_StatusTypeDef status = HAL_OK;
 	/* Write EEPROM_PAGESIZE */
 	status=HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t*)(pBuffer),NumByteToWrite, 100);
+
+	if(status != HAL_OK)
+	{
+		Error_Handler();
+		return status;
+	}
 
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{

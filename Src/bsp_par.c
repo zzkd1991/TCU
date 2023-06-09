@@ -4,10 +4,6 @@
 #include "par.h"
 
 
-#define PAR_TYPE_BYTE	1
-#define PAR_TYPE_WORD	2
-#define PAR_TYPE_DWORD	4
-
 U16 API_PAR_Init(void)
 {
 	U32 status = 0;
@@ -25,7 +21,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1;
+//		par_val |= 1;
+		SET_PAR_STATUS_BIT(par_val, 0, 1);
 	}
 
 	status = I2C_Fram_BufferRead((uint8_t *)PAR_BYTES, ParBack_BYTE_BASE, Max_BYTE_NUM);
@@ -37,7 +34,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1 << 1;
+//		par_val |= 1 << 1;
+		SET_PAR_STATUS_BIT(par_val, 1, 1);
 	}
 
 	/*Word*/
@@ -50,7 +48,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1 << 2;
+//		par_val |= 1 << 2;
+		SET_PAR_STATUS_BIT(par_val, 2, 1);
 	}
 
 	status = I2C_Fram_BufferRead((uint8_t *)PAR_WORDS, ParBack_WORD_BASE, Max_WORD_NUM * 2);
@@ -62,7 +61,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1 << 3;
+//		par_val |= 1 << 3;
+		SET_PAR_STATUS_BIT(par_val, 3, 1);
 	}
 
 	/*Real*/
@@ -75,7 +75,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1 << 4;
+//		par_val |= 1 << 4;
+		SET_PAR_STATUS_BIT(par_val, 4, 1);
 	}
 
 	status = I2C_Fram_BufferRead((uint8_t *)PAR_REALS, ParBack_REAL_BASE, Max_REAL_NUM * 4);
@@ -87,7 +88,8 @@ U16 API_PAR_Init(void)
 		return 0xff;
 	if(Cal_Crc != Saved_Crc)
 	{
-		par_val |= 1 << 5;
+//		par_val |= 1 << 5;
+		SET_PAR_STATUS_BIT(par_val, 5, 1);
 	}
 
 	return par_val;

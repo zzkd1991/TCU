@@ -3,7 +3,6 @@
 #include "bsp_can.h"
 #include "can_queue.h"
 #include <string.h>
-//#include "can_queue.h"
 
 #if 1
 
@@ -29,25 +28,15 @@ CAN_HandleTypeDef hcan2;
 #define CAN1_TX_IRQ		CAN1_TX_IRQn + 16
 #define CAN1_RX_IRQ		CAN1_RX0_IRQn + 16
 
-// pclk1 = sysclk(72M) / 4 = 36M
-// baudrate = PCLK1(36M) / (SJW+BS1+BS2) / Prescaler
-
+// pclk1 = sysclk(168M) / 4 = 42M
+// baudrate = PCLK1(42M) / (SJW+BS1+BS2) / Prescaler
  const can_baudrate_config_t baudrate_config[] = {
- { 1000000,   4, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	900000,   4, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_6TQ },
- {	800000,   5, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	600000,   5, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_8TQ },
- {	500000,   8, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	300000,  10, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_8TQ },
- {	250000,  16, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	200000,  20, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	125000,  32, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	100000,  40, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	 50000,  80, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	 40000, 100, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	 20000, 200, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	 10000, 400, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
- {	  5000, 800, CAN_SJW_1TQ, CAN_BS1_3TQ, CAN_BS2_5TQ },
+ { 1000000,   3, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
+ {	500000,   6, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
+ {	250000,  12, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
+ {	125000,  24, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
+ {	100000,  30, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
+ {	 50000,  60, CAN_SJW_1TQ, CAN_BS1_6TQ, CAN_BS2_7TQ},
  };
 
 void CAN_User_Init(CAN_HandleTypeDef* hcan) //???????
@@ -524,12 +513,11 @@ void MX_CAN1_Init(void)
 
 	/* USER CODE END CAN1_Init 1 */
 	hcan1.Instance = CAN1;
-	hcan1.Init.Prescaler = 12;//500kbsp
-	//hcan1.Init.Prescaler = 24;
+	hcan1.Init.Prescaler = 6;//500kbsp
 	hcan1.Init.Mode = CAN_MODE_NORMAL;
 	hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-	hcan1.Init.TimeSeg1 = CAN_BS1_3TQ;
-	hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
+	hcan1.Init.TimeSeg1 = CAN_BS1_6TQ;
+	hcan1.Init.TimeSeg2 = CAN_BS2_7TQ;
 	hcan1.Init.TimeTriggeredMode = DISABLE;
 	hcan1.Init.AutoBusOff = ENABLE;
 	hcan1.Init.AutoWakeUp = ENABLE;
@@ -553,12 +541,11 @@ void MX_CAN2_Init(void)
 
 	/* USER CODE END CAN2_Init 1 */
 	hcan2.Instance = CAN2;
-	hcan2.Init.Prescaler = 12;//500kbsp
-	//hcan1.Init.Prescaler = 24;
+	hcan2.Init.Prescaler = 12;//250kbsp
 	hcan2.Init.Mode = CAN_MODE_NORMAL;
 	hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-	hcan2.Init.TimeSeg1 = CAN_BS1_3TQ;
-	hcan2.Init.TimeSeg2 = CAN_BS2_3TQ;
+	hcan2.Init.TimeSeg1 = CAN_BS1_6TQ;
+	hcan2.Init.TimeSeg2 = CAN_BS2_7TQ;
 	hcan2.Init.TimeTriggeredMode = DISABLE;
 	hcan2.Init.AutoBusOff = ENABLE;
 	hcan2.Init.AutoWakeUp = ENABLE;
@@ -587,7 +574,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
 	  if(HAL_RCC_CAN1_CLK_ENABLED==1){
 		__HAL_RCC_CAN1_CLK_ENABLE();
 	  }
-	
+	#if 0
 	  __HAL_RCC_GPIOB_CLK_ENABLE();
 	  /**CAN1 GPIO Configuration
 	  PB8	  ------> CAN1_RX
@@ -599,7 +586,19 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
 	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	  GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
 	  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-	
+#else
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    /**CAN1 GPIO Configuration
+    PA11     ------> CAN1_RX
+    PA12     ------> CAN1_TX
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+#endif		
 	  /* CAN1 interrupt Init */
 	  HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);
 	  HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
@@ -662,13 +661,20 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *hcan)
 	  if(HAL_RCC_CAN1_CLK_ENABLED==0){
 		__HAL_RCC_CAN1_CLK_DISABLE();
 	  }
-	
+	#if 0
 	  /**CAN1 GPIO Configuration
 	  PB8	  ------> CAN1_RX
 	  PB9	  ------> CAN1_TX
 	  */
 	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
-	
+ #else
+    /**CAN1 GPIO Configuration
+    PA11     ------> CAN1_RX
+    PA12     ------> CAN1_TX
+    */
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
+ #endif		
+		
 	  /* CAN1 interrupt DeInit */
 	  HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
 	  HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
@@ -706,12 +712,14 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *hcan)
 
 }
 
-void CAN_Hardware_Config(void)
+void CAN_Hardware_Config(uint16_t can1_baud, uint16_t can2_baud)
 {
 	MX_CAN1_Init();
 
 	MX_CAN2_Init();
-
+	
+  CAN_Config(can1_baud,can2_baud);
+	
 	CAN_User_Init(&hcan1);
 
 	CAN_User_Init(&hcan2);
@@ -810,6 +818,7 @@ uint8_t Can1_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t 
 
 void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms)
 {
+#if 0
 	extern __IO uint32_t uwTick;
 	Message m = {0};
 	int i = 0;
@@ -836,10 +845,39 @@ void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t e
 		}
 	}
 	else if(mode == 2)//数据变化发送
-	{
-
-		
+	{	
 	}
+#else
+    static uint32_t lastTransmissionTime = 0xFFFFFFF;  
+    static uint8_t bCachedBytes[8];  
+    static uint8_t txMode = 0;  // 当前发送模式
+    static uint8_t i = 0;  // 当前发送序号
+    if (mode == 0) {  // 不发送
+        return;
+    }
+    if (mode == 2) {  // 改变数据值才发送
+        if (memcmp(bCachedBytes, bBytes, iNoBytes) == 0) {  
+            return;
+        }
+    }
+    if (mode != txMode) {  // 判断发送模式是否改变
+        txMode = mode;
+        i = 0;
+    }
+    if (txMode == 1) {  // 周期发送模式
+        if (HAL_GetTick() - lastTransmissionTime < cycle_ms) { 
+            return;
+        }
+        lastTransmissionTime = HAL_GetTick(); 
+    }
+    // 调用 Can1_Tx_Msg 函数发送数据
+    Can1_Tx_Msg(msgID, ext, 0, iNoBytes, bBytes);
+
+    for (i = 0; i < iNoBytes; i++) {
+        bCachedBytes[i] = bBytes[i];
+    }
+    i = (i + 1) % (iNoBytes + 1); 
+#endif
 }
 
 void CAN2_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms)

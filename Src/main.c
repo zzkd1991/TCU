@@ -78,7 +78,10 @@ void SystemClock_Config(void);
 unsigned int p_counter = 0;	//primitive counter
 unsigned char receive_buffer[8];	//receive buffer
 
-
+//测试CAN周期/数据变化发送
+uint8_t buf[8] = {0,1,2,3,4};
+uint8_t ii=0;
+uint16_t t=0;
 /* USER CODE END 0 */
 
 /**
@@ -162,9 +165,15 @@ int main(void)
 	AI_Diagnose_State_Get();//AI1-AI6的诊断
 	//printf("message_read %s\n", message_read);
 	//printf("hello world\r\n");
-
-
-
+#if 1
+	//测试CAN1数据变化发送	
+	if(t<=1000)	{
+		buf[0]=ii++;}
+	else{
+		buf[0]=0;}
+	t++;
+		CAN1_WriteData(0x202,buf,8,0,1,200);	
+#endif	
  #if 0	
 	if(ccpBootReceiveCro(receive_buffer))
 	{   // if new CRO message received,

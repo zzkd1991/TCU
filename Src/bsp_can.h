@@ -56,7 +56,8 @@ void CAN1_TX_HwiCreate(void);
 
 void CAN1_RX_HwiCreate(void);
 
-void CAN_Hardware_Config(void);
+//void CAN_Hardware_Config(void);
+void CAN_Hardware_Config(uint16_t can1_baud, uint16_t can2_baud);
 
 /*debug*/
 
@@ -104,7 +105,7 @@ static void Can_Gpio_Config(void);
 static void Can_NVIC_Config(void);
 static void Can_Mode_Config(void);
 static void Can_Filter_Config(uint32_t MessageId );
-void CAN_Hardware_Config(void);																	 
+//void CAN_Hardware_Config(void);																	 
 void Init_RxMes(void);
 int Set_Can_Baud_Rate(int rate, CAN_HandleTypeDef *hcan);
 int Can_Message_Dispatch(Message *m);
@@ -113,11 +114,12 @@ uint8_t CanInsert_SendQueue(CAN_PORT notused, Message *m);
 uint8_t CanGet_SendQueue(void);	
 
 uint8_t Can1_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *dat);
+uint8_t Can2_Tx_Msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *dat);
 void CAN1_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms);
 void CAN2_WriteData(uint32_t msgID, uint8_t bBytes[], int8_t iNoBytes, uint8_t ext, uint8_t mode, uint16_t cycle_ms);
 signed short CAN1_ReceiveObj(uint32_t ID, uint8_t *Len, uint8_t *Data);
 signed short CAN2_ReceiveObj(uint32_t ID, uint8_t * Len, uint8_t * Data);
-
+void CAN_Config(uint16_t can1_baud, uint16_t can2_baud);
 
 #ifdef __cplusplus
 #if __cplusplus

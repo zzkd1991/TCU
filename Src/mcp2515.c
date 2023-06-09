@@ -292,7 +292,11 @@ static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 	spi_tx_buf[1] = reg;
 	spi_tx_buf[2] = val;
 
+	mcp2515_cs_low();
+
 	spi3_trx(3, spi_tx_buf, NULL);
+
+	mcp2515_cs_high();
 }
 
 void mdelay(uint32_t delay)
@@ -315,10 +319,14 @@ static uint8_t mcp2515_read_reg(uint8_t reg)
 	spi_tx_buf[0] = INSTRUCTION_READ;
 	spi_tx_buf[1] = reg;
 
+	mcp2515_cs_low();
+
 	spi3_trx(2, spi_tx_buf, NULL);
 
 	spi3_trx(1, NULL, &spi_rx_buf);
 
+	mcp2515_cs_high();
+	
 	val = spi_rx_buf;
 
 	return val;
@@ -333,21 +341,31 @@ static void mcp2515_write_bits(uint8_t reg, uint8_t mask, uint8_t val)
 	spi_tx_buf[2] = mask;
 	spi_tx_buf[3] = val;
 
+	mcp2515_cs_low();
 	spi3_trx(4, spi_tx_buf, NULL);
-
+	mcp2515_cs_high();
 }
 
 static void mcp2515_read_2regs(uint8_t reg, uint8_t* v1, uint8_t* v2)
 {
+/*
+ the internal Address Pointer is automatically incremented to the next
+ address once each byte of data is shifted out. Therefore, it is possible
+ to read the next consecutive register address by continuing to provide
+ clock pulses.
+*/
 	uint8_t spi_tx_buf[2];
 	uint8_t spi_rx_buf[2];
 
 	spi_tx_buf[0] = INSTRUCTION_READ;
 	spi_tx_buf[1] = reg;
 
+	mcp2515_cs_low();
+
 	spi3_trx(2, spi_tx_buf, NULL);
 	spi3_trx(2, NULL, spi_rx_buf);
 
+	mcp2515_cs_high();
 	*v1 = spi_rx_buf[0];
 	*v2 = spi_rx_buf[1];
 }
@@ -619,8 +637,6 @@ int mcp2515_hw_init(void)
 	bt.phase_seg2 = 2;
 	
 	mcp2515_gpio_config();
-
-	mcp2515_cs_low();
 	
 	mcp2515_hw_probe();
 
@@ -647,16 +663,15 @@ static int mcp2515_stop(void)
 
 	mcp2515_hw_sleep();
 
-	mcp2515_cs_high();
 
 	return 0;
 }
 
 int mcp2515_can_ist(enum can_state state)
 {
-	int force_quit = 0;
+	//int force_quit = 0;
 
-	while(!force_quit)
+	//while(!force_quit)
 	{
 		enum can_state new_state;
 		uint8_t intf, eflag;
@@ -728,18 +743,18 @@ int mcp2515_can_ist(enum can_state state)
 
 		if(state == CAN_STATE_BUS_OFF)
 		{
-			force_quit = 1;
+			//force_quit = 1;
 			mcp2515_hw_sleep();
-			break;
+			//break;
 		}
 
-		if(intf == 0)
-			break;
 
 		if(intf & CANINTF_TX)
 		{
 			freelevel = 1;
 		}
+		//if(intf == 0)
+		//	break;
 	}
 
 	return 0;

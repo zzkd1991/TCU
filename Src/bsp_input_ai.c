@@ -97,27 +97,28 @@ void AI_Diagnose_State_Get(void)
 		{AI_Diagnose_State[i]= 1;//对电源短路 
     Flag_vcc_short[i]=1;}		
 	
-	  if( ADC_FINAL[i]<AI_Diag_Threshold_Low[i])
+	  else if( ADC_FINAL[i]<AI_Diag_Threshold_Low[i])
 		{AI_Diagnose_State[i]= 2;//对地短路  
 		Flag_gnd_short[i]=1;}		
 
 		
-//			if(Flag_gnd_short[i]==1)
-//		{
-			if(ADC_FINAL[i]>(AI_Diag_Threshold_Low[i]+AI_Diag_Hysteresis_Low[i]))
+			if(Flag_gnd_short[i]==1)
+		{
+			if((ADC_FINAL[i]<(AI_Diag_Threshold_High[i]-AI_Diag_Hysteresis_High[i]))&(ADC_FINAL[i]>(AI_Diag_Threshold_Low[i]+AI_Diag_Hysteresis_Low[i])))
 		     {
 					 AI_Diagnose_State[i]= 0;
 				   Flag_gnd_short[i]=0; 
 				 }//正常状态			
-//		 }	
+		 }	
 		
-//			if(Flag_vcc_short[i]==1)
-//		{
-			if(ADC_FINAL[i]<(AI_Diag_Threshold_High[i]-AI_Diag_Hysteresis_High[i]))
+			else if(Flag_vcc_short[i]==1)
+		{
+			if((ADC_FINAL[i]<(AI_Diag_Threshold_High[i]-AI_Diag_Hysteresis_High[i]))&(ADC_FINAL[i]>(AI_Diag_Threshold_Low[i]+AI_Diag_Hysteresis_Low[i])))
 		     {
 					 AI_Diagnose_State[i]= 0;
 				   Flag_vcc_short[i]=0; 
 				 }//正常状态			
-//		 }				 	 				 
+		 }				 	 				 
 	}
 }	
+

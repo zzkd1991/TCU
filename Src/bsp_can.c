@@ -15,8 +15,6 @@ extern void Error_Handler(void);
 //CAN_RxHeaderTypeDef RxMeg;
 
 /* USER CODE END 0*/
-
-uint32_t id1 = 0x0A;
 uint32_t hal_can_tx_counter1 = 0;
 uint32_t hal_can_tx_counter2 = 0;
 uint32_t dict_tx_err_counter = 0;

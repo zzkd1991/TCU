@@ -32,7 +32,7 @@ typedef struct {
 	uint32_t cob_id;	/**< message's ID*/
 	uint8_t rtr;		/** < remote transmission request. (0 if not rtr message, 1 if rtr message )*/
 	uint16_t len;		/**< messgae's length (0 to 8) */
-	uint8_t ide;		/*std or ext message */
+	uint8_t ide;		/*std(0) or ext(1) message */
 	uint8_t data[8];	/**< message's datas */
 	uint8_t msgType;
 }Message;
@@ -67,10 +67,6 @@ void CAN_Hardware_Config(void);
 
 #define CAN_SEND_OK			0
 #define CAN_SEND_ERR		1
-
-#ifndef getSDOcs
-#define getSDOcs(byte)	(byte >> 5)
-#endif
    
 // Log define
 #define CAN_INFO(fmt,arg...)           printf("<<-CAN-INFO->> "fmt"\n",##arg)

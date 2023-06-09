@@ -5,6 +5,21 @@
 #include "bsp_can.h"
 #include <stdint.h>
 
+/*
+ two receive buffers
+ six 29-bit acceptance filters
+ two 29-bit masks(one for each receive buffer)
+ three transmit buffers with prioritization and abort features
+
+ there are three pins available to initiate
+ immediate transmission of a message that has been
+ loaded into one of the three transmit registers. Use of
+ these pins is optional, as initiating message transmissions
+ can also be accomplished by utilizing control registers
+ accessed via the SPI interface.
+*/
+
+
 struct can_bittiming {
 	uint32_t bitrate;			/* Bit-rate in bits/sencond */
 	uint32_t sample_point;		/* Sample point in one-tenth of a percent */
@@ -111,6 +126,13 @@ enum can_state {
 #define CAN_ERR_TRX_CANL_SHORT_TO_VCC  0x60 /* 0110 0000 */
 #define CAN_ERR_TRX_CANL_SHORT_TO_GND  0x70 /* 0111 0000 */
 #define CAN_ERR_TRX_CANL_SHORT_TO_CANH 0x80 /* 1000 0000 */
+
+/* valid bits in CAN ID for frame formats */
+#define CAN_SFF_MASK 0x000007FFU /* standard frame format (SFF) */
+#define CAN_EFF_MASK 0x1FFFFFFFU /* extended frame format (EFF) */
+#define CAN_ERR_MASK 0x1FFFFFFFU /* omit EFF, RTR, ERR flags */
+
+
 
 /* controller specific additional information / data[5..7] */
 

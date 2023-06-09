@@ -18,72 +18,127 @@
 
 /* MPC251x registers */
 #define CANSTAT	      0x0e
+/*CANCTRL:CAN CONTROL REGISTER(ADDRESS:XFh)*/
 #define CANCTRL	      0x0f
+/*Request Operaton Mode bits
+ 000 = Sets Normal Operation mode
+ 001 = Sets Sleep mode
+ 010 = Sets Loopback mode
+ 011 = Sets Listen-Only mode
+ 100 = Sets Configuration mode
+*/
 #  define CANCTRL_REQOP_MASK	    0xe0
 #  define CANCTRL_REQOP_CONF	    0x80
 #  define CANCTRL_REQOP_LISTEN_ONLY 0x60
 #  define CANCTRL_REQOP_LOOPBACK    0x40
 #  define CANCTRL_REQOP_SLEEP	    0x20
 #  define CANCTRL_REQOP_NORMAL	    0x00
+/*OSM:One-Shot Mode bit
+ 1 = Enable;message will only attempt to transmit one time
+ 0 = Disable;message will reattempt transmission if required
+*/
 #  define CANCTRL_OSM		    0x08
+/*ABAT:Abort All Pending Transmissions bit*/
 #  define CANCTRL_ABAT		    0x10
+/*TEC:TRANSMIT ERROR COUNTER REGISGER(ADDRESS:1Ch)*/
 #define TEC	      0x1c
+/*REC:RECEIVE ERROR COUNTER REGISTER(ADDRESS:1Dh)*/
 #define REC	      0x1d
+/*CNF1:CONFIGURATION REGISTER 1(ADDRESS:2Ah)*/
 #define CNF1	      0x2a
 #  define CNF1_SJW_SHIFT   6
+/*CNF2:CONFIGURATION REGISTER 2(ADDRESS:29h)*/
 #define CNF2	      0x29
 #  define CNF2_BTLMODE	   0x80
 #  define CNF2_SAM         0x40
 #  define CNF2_PS1_SHIFT   3
+/*CNF3:CONFIGURATION REGISTER 3(ADDRESS:28h)*/
 #define CNF3	      0x28
 #  define CNF3_SOF	   0x08
 #  define CNF3_WAKFIL	   0x04
 #  define CNF3_PHSEG2_MASK 0x07
+/*CANINTE:CAN INTERRUPT ENABLE REGISTER(ADDRESS: 2Bh)*/
 #define CANINTE	      0x2b
+/*MERRE:Message Error Interrupt Enable bit*/
 #  define CANINTE_MERRE 0x80
+/*WAKIE:Wake-up Interrupt Enable bit*/
 #  define CANINTE_WAKIE 0x40
+/*ERRIE:Error Interrupt Enable bit(multiple sources in EFLG regiter)*/
 #  define CANINTE_ERRIE 0x20
+/*TX2IE:Transmit Buffer 2 Empty Interrupt Enable bit*/
 #  define CANINTE_TX2IE 0x10
+/*TX11E: Transmit Buffer 1 Empty Interrupt Enable bit*/
 #  define CANINTE_TX1IE 0x08
+/*TX0IE:Transmit Buffer 0 Empty Interrupt Enable bit*/
 #  define CANINTE_TX0IE 0x04
+/*RX1IE:Receive Buffer 1 Full Interrupt Enable bit*/
 #  define CANINTE_RX1IE 0x02
+/*RX0IE:Receive Buffer 0 Full Interrupt Enable bit*/
 #  define CANINTE_RX0IE 0x01
+/*CANINTF:CAN INTERUPT FLAG REGISTER(ADDRESS:2Ch)*/
 #define CANINTF	      0x2c
+/*MERRF:Message Error Interrupt Flag bit*/
 #  define CANINTF_MERRF 0x80
+/*WAKIF:Wake-up Interrupt Flag bit*/
 #  define CANINTF_WAKIF 0x40
+/*ERRIF:Error Interrupt Flag bit(multiple sources in EFLG register)*/
 #  define CANINTF_ERRIF 0x20
+/*TX2IF:Transmit Buffer 2 Empty Interrupt Flag bit*/
 #  define CANINTF_TX2IF 0x10
+/*TX1IF:Transmit Buffer 1 Empty Interrupt Flag bit*/
 #  define CANINTF_TX1IF 0x08
+/*TX0IF:Transmit Buffer 0 Empty Interrupt Flag bit*/
 #  define CANINTF_TX0IF 0x04
+/*RX1IF:Receive Buffer 1 Full Interrupt Flag bit*/
 #  define CANINTF_RX1IF 0x02
+/*RX0IF:Receive Buffer 0 Full Interrupt Flag bit*/
 #  define CANINTF_RX0IF 0x01
 #  define CANINTF_RX (CANINTF_RX0IF | CANINTF_RX1IF)
 #  define CANINTF_TX (CANINTF_TX2IF | CANINTF_TX1IF | CANINTF_TX0IF)
 #  define CANINTF_ERR (CANINTF_ERRIF)
+/*EFLG:ERROR FLAG REGISTER(ADDRESS:2Dh)*/
 #define EFLG	      0x2d
+/*EWARN:Error Warning Flag bit*/
 #  define EFLG_EWARN	0x01
+/*RXWAR:Receive Error Warning Flag bit*/
 #  define EFLG_RXWAR	0x02
+/*TXWAR:Transmit Error Warning Flag bit*/
 #  define EFLG_TXWAR	0x04
+/*RXEP:Receive Error-Passive Flag bit */
 #  define EFLG_RXEP	0x08
+/*TXEP:Transmit Error-Passive Flag bit*/
 #  define EFLG_TXEP	0x10
+/*TXBO:Bus-Off Error Flag bit*/
 #  define EFLG_TXBO	0x20
+/*RX0OVR:Receive Buffer 0 Overflow Flag bit*/
 #  define EFLG_RX0OVR	0x40
+/*RX1OVR:Receive Buffer 1 Overflow Flag bit*/
 #  define EFLG_RX1OVR	0x80
+/*TXBnCTRL: TRANSMIT BUFFER n CONTROL REGISTER (ADDRESS:30h,40h,50h)*/
 #define TXBCTRL(n)  (((n) * 0x10) + 0x30 + TXBCTRL_OFF)
+/*Message Aborted Flag bit*/
 #  define TXBCTRL_ABTF	0x40
+/*Message Lost Arbitration bit*/
 #  define TXBCTRL_MLOA	0x20
+/*Transmission Error Detected bit*/
 #  define TXBCTRL_TXERR 0x10
+/*Message Transmit Request bit*/
 #  define TXBCTRL_TXREQ 0x08
+/*TXBnSIDH: TRANSMIT BUFFER n STANDARD IDENTIFIER REGISTER HIGH(ADDRESS: 31h,41h,51h)*/
 #define TXBSIDH(n)  (((n) * 0x10) + 0x30 + TXBSIDH_OFF)
 #  define SIDH_SHIFT    3
+/*TXBnSIDL: TRANSMIT BUFFER n STADNARD IDENTIFIER REGISTER LOW(ADDRESS: 32h,42h,52h)*/
 #define TXBSIDL(n)  (((n) * 0x10) + 0x30 + TXBSIDL_OFF)
 #  define SIDL_SID_MASK    7
 #  define SIDL_SID_SHIFT   5
 #  define SIDL_EXIDE_SHIFT 3
 #  define SIDL_EID_SHIFT   16
 #  define SIDL_EID_MASK    3
+/*TXBnEID8:TRANSMIT BUFFER n EXTENDED IDENTIFIER 8 REGISTER HIGH(ADDRESS: 33h, 43h,53h)*/
 #define TXBEID8(n)  (((n) * 0x10) + 0x30 + TXBEID8_OFF)
+/*TXBnEID0:TRANSMIT BUFFER n EXTENDED IDENTIFIER 0 REGISTER LOW(ADDRESS: 34h,44h,54h)*/
 #define TXBEID0(n)  (((n) * 0x10) + 0x30 + TXBEID0_OFF)
+/*TXBnDLC:TRANSMIT BUFFER n DATA LENGTH CODE REGISTER(ADDRESS: 35h,45h,55h)*/
 #define TXBDLC(n)   (((n) * 0x10) + 0x30 + TXBDLC_OFF)
 #  define DLC_RTR_SHIFT    6
 #define TXBCTRL_OFF 0
@@ -93,19 +148,31 @@
 #define TXBEID0_OFF 4
 #define TXBDLC_OFF  5
 #define TXBDAT_OFF  6
+/*RXB0CTRL:RECEIVE BUFFER 0 CONTROL REGISTER(ADDRESS:60h)*/
+/*RXB1CTRL:RECEIVE BUFFER 1 CONTROL REGISTER(ADDRESS:70h)*/
 #define RXBCTRL(n)  (((n) * 0x10) + 0x60 + RXBCTRL_OFF)
+/*BUCK:Rollover Enable bit*/
 #  define RXBCTRL_BUKT	0x04
+/*RXM[1:0]:Receive Buffer Operating mode bit*/
 #  define RXBCTRL_RXM0	0x20
 #  define RXBCTRL_RXM1	0x40
+/*RXBnSIDH:RECEIVE BUFFER n STANDARD IDENTIFIER REGISTER HIGH(ADDRESS:61h, 71h)*/
 #define RXBSIDH(n)  (((n) * 0x10) + 0x60 + RXBSIDH_OFF)
 #  define RXBSIDH_SHIFT 3
+/*RXBnSIDL:RECEIVE BUFFER n STANDARD IDENTIFIER REGISTER LOW(ADDRESS:62h, 72h)*/
 #define RXBSIDL(n)  (((n) * 0x10) + 0x60 + RXBSIDL_OFF)
+/*Extended Identifier Flag bit,this bit indicates whether the received message was a standard or an extended frame.*/
 #  define RXBSIDL_IDE   0x08
+/*SRR:Standard Frame Remote Transmit Request bit(valid only if IDE bit = 0)*/
 #  define RXBSIDL_SRR   0x10
+/*Extended Identifier bits, these bits contain the two most significant bits of the extended identifier for the received message*/
 #  define RXBSIDL_EID   3
 #  define RXBSIDL_SHIFT 5
+/*RXBnEID8:RECEIVE BUFFER n EXTENDED IDENTIFIER REGISTER HIGH(ADDRESS:63h,73h)*/
 #define RXBEID8(n)  (((n) * 0x10) + 0x60 + RXBEID8_OFF)
+/*RXBnEID0:RECEIVED BUFFER n EXTENDED IDENTIFIER REGISTER LOW(ADDRESS:64h,74h)*/
 #define RXBEID0(n)  (((n) * 0x10) + 0x60 + RXBEID0_OFF)
+/*RXBnDLC:RECEIVE BUFFER n DATA LENGTH CODE REGISTER(ADDRESS:65h, 75h)*/
 #define RXBDLC(n)   (((n) * 0x10) + 0x60 + RXBDLC_OFF)
 #  define RXBDLC_LEN_MASK  0x0f
 #  define RXBDLC_RTR       0x40
@@ -218,6 +285,7 @@ void mcp2515_gpio_config(void)
 
 static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 {
+	/*Instruction + Address Byte + Data Byte*/
 	uint8_t spi_tx_buf[3];
 
 	spi_tx_buf[0] = INSTRUCTION_WRITE;
@@ -230,15 +298,16 @@ static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 void mdelay(uint32_t delay)
 {
 	extern __IO uint32_t uwTick;
+	uint32_t current_tick = 0;
 
-	while(uwTick < delay)
-	{
-
-	}
+	current_tick = HAL_GetTick();
+	
+	while(uwTick < (current_tick + delay));
 }
 
 static uint8_t mcp2515_read_reg(uint8_t reg)
 {
+	/*Instruction + Address Byte*/
 	uint8_t val = 0;
 
 	uint8_t spi_tx_buf[2];
@@ -294,19 +363,31 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 {
 	
 	uint8_t buf[SPI_TRANSFER_BUF_LEN] = {0};
-	uint32_t sid, rtr;
+	uint32_t sid, eid, exide, rtr;
 	uint8_t spi_tx_buf;
 
-	sid = m->cob_id;
-	rtr = m->rtr;
 	spi_tx_buf = INSTRUCTION_RTS(1 << tx_buf_idx);
 
+	exide = m->ide;/* Extended ID Enable */
+	if(exide)
+		sid = (m->cob_id & CAN_EFF_MASK) >> 18;
+	else
+		sid = m->cob_id & CAN_SFF_MASK;/* Standard ID */
+
+	eid = m->cob_id & CAN_SFF_MASK;/* Extended ID */
+	rtr = m->rtr;
+
 	buf[TXBCTRL_OFF] = INSTRUCTION_LOAD_TXB(tx_buf_idx);
-	buf[TXBSIDH_OFF] = sid >> SIDH_SHIFT;
-	buf[TXBSIDL_OFF] = ((sid & SIDL_SID_MASK) << SIDL_SID_SHIFT);
-	buf[TXBDLC_OFF] = (rtr << DLC_RTR_SHIFT) | m->len;
+	buf[TXBSIDH_OFF] = sid >> SIDH_SHIFT;/*帧ID高8位*/
+	buf[TXBSIDL_OFF] = ((sid & SIDL_SID_MASK) << SIDL_SID_SHIFT);/*帧ID低8位*/
+	buf[TXBSIDL_OFF] = ((sid & SIDL_SID_MASK) << SIDL_SID_SHIFT) |
+		(exide << SIDL_EXIDE_SHIFT) |
+		((eid >> SIDL_EID_SHIFT) & SIDL_EID_MASK);
+	buf[TXBEID8_OFF] = GET_BYTE(eid, 1);
+	buf[TXBEID0_OFF] = GET_BYTE(eid, 0);
+	buf[TXBDLC_OFF] = (rtr << DLC_RTR_SHIFT) | m->len;/*帧长度+是否为远程帧*/
 	memcpy(buf + TXBDAT_OFF, m->data, m->len);
-	mcp2515_hw_tx_frame(buf, m->len, tx_buf_idx);
+	mcp2515_hw_tx_frame(buf, m->len + TXBDAT_OFF, tx_buf_idx);
 
 	/*use INSTRUCTION_RST, to avoid "repeated frame problem" */
 	spi3_trx(1, &spi_tx_buf, NULL);
@@ -355,7 +436,6 @@ static void mcp2515_hw_rx_frame(uint8_t *buf, int buf_idx)
 	uint8_t recv_buf[SPI_TRANSFER_BUF_LEN] = {0};
 
 	send_buf[RXBCTRL_OFF] = INSTRUCTION_READ_RXB(buf_idx);
-	//spi_trx(SPI_TRANSFER_BUF_LEN, send_buf, recv_buf);
 	spi3_trx(SPI_TRANSFER_BUF_LEN, send_buf, NULL);
 	spi3_trx(SPI_TRANSFER_BUF_LEN, NULL, recv_buf);
 	memcpy(buf, recv_buf, SPI_TRANSFER_BUF_LEN);
@@ -371,7 +451,7 @@ static void mcp2515_hw_rx(int buf_idx)
 	if(buf[RXBSIDL_OFF] & RXBSIDL_IDE)
 	{
 		/* Extended ID format */
-		//m.cob_id = CAN_EFE_FLAG;
+		m.ide = 1;
 		/* Extended ID part*/
 		m.cob_id |= 
 		/* Extended ID part */
@@ -414,7 +494,7 @@ static void mcp2515_hw_sleep(void)
 
 static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 {
-	//unsigned long timeout;
+	uint32_t timeout;
 
 	/* Enable interrupts */
 	mcp2515_write_reg(CANINTE, CANINTE_ERRIE | CANINTE_TX2IE | CANINTE_TX1IE |
@@ -435,10 +515,12 @@ static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 		/* Put device into normal mode */
 		mcp2515_write_reg(CANCTRL, CANCTRL_REQOP_NORMAL);
 
+		timeout = HAL_GetTick();
 		/* Wait for the device to enter normal mode */
 		while(mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK)
 		{
-			
+			if(timeout + 100 < HAL_GetTick())
+				return -1;
 		}
 	}
 	return 0;
@@ -458,11 +540,11 @@ static int mcp2515_do_set_bittiming(struct can_bittiming *bt, uint32_t ctrlmode)
 
 static int mcp2515_setup(struct can_bittiming *bt, uint32_t ctrlmode)
 {
-	mcp2515_do_set_bittiming(bt, ctrlmode);
+	mcp2515_do_set_bittiming(bt, ctrlmode);//set baud rate
 
-	mcp2515_write_reg(RXBCTRL(0), RXBCTRL_BUKT | RXBCTRL_RXM0 | RXBCTRL_RXM1);
+	mcp2515_write_reg(RXBCTRL(0), RXBCTRL_BUKT | RXBCTRL_RXM0 | RXBCTRL_RXM1);//Turns mask/filter off;receive any message;Rollover Enable bit
 
-	mcp2515_write_reg(RXBCTRL(1), RXBCTRL_RXM0 | RXBCTRL_RXM1);
+	mcp2515_write_reg(RXBCTRL(1), RXBCTRL_RXM0 | RXBCTRL_RXM1);//Turns mask/fitler off;recive any message
 
 	return 0;
 }
@@ -470,6 +552,7 @@ static int mcp2515_setup(struct can_bittiming *bt, uint32_t ctrlmode)
 static int mcp2515_hw_reset(void)
 {
 	int ret;
+	uint32_t timeout;
 	uint8_t spi_tx_buf;
 
 	/* Wait fo oscillator startup timer after power up */
@@ -486,11 +569,12 @@ static int mcp2515_hw_reset(void)
 	mdelay(MCP2515_OST_DELAY_MS);
 
 	/* Wait for reset to finish */
+	timeout = HAL_GetTick();
 	while((mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK) !=
 			CANCTRL_REQOP_CONF)
 	{
-
-
+		if(timeout + 100 < HAL_GetTick())
+			return -1;
 	}
 
 	return 0;
@@ -544,7 +628,11 @@ int mcp2515_hw_init(void)
 	if(ret != 0)
 		return ret;
 	
-	ret = mcp2515_set_normal_mode(ctrlmode);
+	ret = mcp2515_set_normal_mode(ctrlmode);//set normal mode
+	if(ret != 0)
+	{
+		Error_Handler();
+	}
 
 	return ret;
 }
@@ -558,6 +646,8 @@ static int mcp2515_stop(void)
 	mcp2515_write_reg(TXBCTRL(0), 0);
 
 	mcp2515_hw_sleep();
+
+	mcp2515_cs_high();
 
 	return 0;
 }

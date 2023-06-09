@@ -6,9 +6,7 @@
 //I2C2_SCL----PF1
 //I2C2_SDA----PF0
 
-//#define EEPROM_PAGESIZE    8
-#define FRAM_PAGESIZE 	   8
-//#define EEPROM_PAGESIZE           16			
+#define FRAM_PAGESIZE 	   8			
 
 #define I2C_OWN_ADDRESS7      0X0A   
 
@@ -46,20 +44,16 @@
                                           }while(0)
 
 /* 
- * AT24C02 2kb = 2048bit = 2048/8 B = 256 B
- * 32 pages of 8 bytes each
- *
+ * fm24cl64b 64kb = 65536bit = 65536/8 B = 8192 B
+ * 8192 pages of 8 bytes each
+ * memory address rang 0000h~1FFFh
  * Device Address
- * 1 0 1 0 A2 A1 A0 R/W
- * 1 0 1 0 0  0  0  0 = 0XA0
- * 1 0 1 0 0  0  0  1 = 0XA1 
+ *|MSB                                        LSB|
+ *|<--Slave ID--->|   |<-Device Select-->|
+ * 1    0    1    0    A2      A1       A0     R/W
+ * 1    0    1    0    0       0        0       0 = 0XA0
+ * 1    0    1    0    0       0        0       1 = 0XA1 
  */
-
-/* RRAM Addresses defines */
-#define FRAM_Block0_ADDRESS 0xA0   /* E2 = 0 */
-#define FRAM_Block1_ADDRESS 0xA2 /* E2 = 0 */
-#define FRAM_Block2_ADDRESS 0xA4 /* E2 = 0 */
-#define FRAM_Block3_ADDRESS 0xA6 /* E2 = 0 */
 
 #define FRAM_ADDRESS        0xA0
 
@@ -70,7 +64,8 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr);
 uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByteToWrite);
 uint32_t I2C_Fram_BufferRead(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t NumByteToRead);
 
-extern I2C_HandleTypeDef  I2C_Handle; 
+extern I2C_HandleTypeDef  I2C_Handle;
+extern void Error_Handler(void);
 #endif /* __I2C_EE_H */
 
 

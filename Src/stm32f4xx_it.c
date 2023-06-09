@@ -288,7 +288,7 @@ void CAN2_RX0_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);		//调用中断处理公用函数
   /* USER CODE END EXTI2_IRQn 0 */
   //HAL_GPIO_EXTI_IRQHandler(INT_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */

@@ -42,6 +42,8 @@
 #include "bsp_user.h"
 #include "fm24cl64b_i2c.h"
 #include "bsp_output_do.h"
+#include "can_mcp2515.h"
+#include "exti.h"
 
 #include "bsp_main.h"
 

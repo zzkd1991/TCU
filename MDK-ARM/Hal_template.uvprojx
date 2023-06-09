@@ -563,6 +563,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\bsp_main.c</FilePath>
             </File>
+            <File>
+              <FileName>exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>CAN_MCP2515.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\CAN_MCP2515.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

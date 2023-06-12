@@ -162,7 +162,7 @@ uint32_t I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t Num
 uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 {
 	HAL_StatusTypeDef status = HAL_OK;
-	uint32_t timeout;
+	uint32_t tickstart;
 
 	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, 1, 100); 
 
@@ -175,10 +175,10 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 		return status;
 	}
 
-	timeout = HAL_GetTick();
+	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(timeout + 100 < HAL_GetTick())
+		if(tickstart + 100 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
 		}
@@ -188,10 +188,10 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	while (HAL_I2C_IsDeviceReady(&I2C_Handle, FRAM_ADDRESS, FRAM_MAX_TRIALS, I2Cx_TIMEOUT_MAX) == HAL_TIMEOUT);
 
 	/* Wait for the end of the transfer */
-	timeout = HAL_GetTick();
+	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(timeout + 100 < HAL_GetTick())
+		if(tickstart + 100 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
 		}
@@ -203,9 +203,9 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByteToWrite)
 {
 	HAL_StatusTypeDef status = HAL_OK;
-	uint32_t timeout;
+	uint32_t tickstart;
 	/* Write EEPROM_PAGESIZE */
-	status=HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t*)(pBuffer),NumByteToWrite, 100);
+	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t*)(pBuffer),NumByteToWrite, 100);
 
 	if(status != HAL_OK)
 	{
@@ -213,10 +213,10 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 		return status;
 	}
 
-	timeout = HAL_GetTick();
+	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(timeout + 100 < HAL_GetTick())
+		if(tickstart + 100 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
 		}
@@ -226,10 +226,10 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 	while (HAL_I2C_IsDeviceReady(&I2C_Handle, FRAM_ADDRESS, FRAM_MAX_TRIALS, I2Cx_TIMEOUT_MAX) == HAL_TIMEOUT);
 
 	/* Wait for the end of the transfer */
-	timeout = HAL_GetTick();
+	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(timeout + 100 < HAL_GetTick())
+		if(tickstart + 100 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
 		}

@@ -11,14 +11,8 @@ extern void Error_Handler(void);
 
 #define CAN1FIFO CAN_RX_FIFO0
 #define CAN2FIFO CAN_RX_FIFO1
-//CAN_TxHeaderTypeDef TxMeg;
-//CAN_RxHeaderTypeDef RxMeg;
 
 /* USER CODE END 0*/
-uint32_t hal_can_tx_counter1 = 0;
-uint32_t hal_can_tx_counter2 = 0;
-uint32_t dict_tx_err_counter = 0;
-uint32_t dict_tx_write_queue = 0;
 uint32_t received_packet_num = 0;
 
 
@@ -56,8 +50,6 @@ void CAN_User_Init(CAN_HandleTypeDef* hcan) //???????
 	HAL_StatusTypeDef HAL_Status;
 
 #if 1
-	//TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
-	//TxMeg.RTR = CAN_RTR_DATA;
 
 	sFilterConfig.FilterBank = 0;
 	sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;//???????
@@ -143,9 +135,6 @@ uint8_t CANx_SendNormalData(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData
 	uint16_t SendTimes, SendCNT = 0;
 	uint8_t FreeTxNum = 0;
 	uint32_t tx_mailbox;
-	//TxMeg.StdId = ID;
-	//TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
-	//TxMeg.RTR = CAN_RTR_DATA;
 	if(rtr == 0)//数据帧
 	{
 		TxMeg.RTR = CAN_RTR_DATA;
@@ -174,12 +163,10 @@ uint8_t CANx_SendNormalData(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_t *pData
 		if(0 == SendTimes){
 			if(Len % 8)
 				TxMeg.DLC = Len % 8;
-		}
-#if 1	
+		}	
 		while(0 == FreeTxNum){
 			FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
 		}
-#endif
 		HAL_RetVal = HAL_CAN_AddTxMessage(hcan, &TxMeg, pData + SendCNT, (uint32_t*)&tx_mailbox);
 		if(HAL_RetVal != HAL_OK)
 		{
@@ -200,9 +187,6 @@ uint8_t CANx_SendNormalData_No_Wait(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_
 	uint16_t SendTimes, SendCNT = 0;
 	uint8_t FreeTxNum = 0;
 	uint32_t tx_mailbox;
-	//TxMeg.StdId = ID;
-	//TxMeg.IDE = CAN_ID_STD;//CAN_ID_EXT;
-	//TxMeg.RTR = CAN_RTR_DATA;
 	if(rtr == 0)//数据帧
 	{
 		TxMeg.RTR = CAN_RTR_DATA;
@@ -226,22 +210,17 @@ uint8_t CANx_SendNormalData_No_Wait(CAN_HandleTypeDef *hcan, uint16_t ID, uint8_
 	if(!hcan || ! pData || !Len) return 1;
 	SendTimes = Len / 8 + ( Len % 8 ? 1 : 0);
 	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
+		
+	if(FreeTxNum == 0)
+	{
+		return 3;
+	}	
 	TxMeg.DLC = 8;
 	while(SendTimes--){
 		if(0 == SendTimes){
 			if(Len % 8)
 				TxMeg.DLC = Len % 8;
 		}
-#if 0	
-		while(0 == FreeTxNum){
-			FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
-		}
-#else
-		if(FreeTxNum == 0)
-		{
-			return 3;
-		}
-#endif
 		HAL_RetVal = HAL_CAN_AddTxMessage(hcan, &TxMeg, pData + SendCNT, (uint32_t*)&tx_mailbox);
 		if(HAL_RetVal != HAL_OK)
 		{

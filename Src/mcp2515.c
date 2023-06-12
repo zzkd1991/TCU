@@ -512,7 +512,7 @@ static void mcp2515_hw_sleep(void)
 
 static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 {
-	uint32_t timeout;
+	uint32_t tickstart;
 
 	/* Enable interrupts */
 	mcp2515_write_reg(CANINTE, CANINTE_ERRIE | CANINTE_TX2IE | CANINTE_TX1IE |
@@ -533,11 +533,11 @@ static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 		/* Put device into normal mode */
 		mcp2515_write_reg(CANCTRL, CANCTRL_REQOP_NORMAL);
 
-		timeout = HAL_GetTick();
+		tickstart = HAL_GetTick();
 		/* Wait for the device to enter normal mode */
 		while(mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK)
 		{
-			if(timeout + 100 < HAL_GetTick())
+			if(tickstart + 100 < HAL_GetTick())
 				return -1;
 		}
 	}
@@ -570,7 +570,7 @@ static int mcp2515_setup(struct can_bittiming *bt, uint32_t ctrlmode)
 static int mcp2515_hw_reset(void)
 {
 	int ret;
-	uint32_t timeout;
+	uint32_t tickstart;
 	uint8_t spi_tx_buf;
 
 	/* Wait fo oscillator startup timer after power up */
@@ -587,11 +587,11 @@ static int mcp2515_hw_reset(void)
 	mdelay(MCP2515_OST_DELAY_MS);
 
 	/* Wait for reset to finish */
-	timeout = HAL_GetTick();
+	tickstart = HAL_GetTick();
 	while((mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK) !=
 			CANCTRL_REQOP_CONF)
 	{
-		if(timeout + 100 < HAL_GetTick())
+		if(tickstart + 100 < HAL_GetTick())
 			return -1;
 	}
 

@@ -292,26 +292,23 @@ uint8_t ST_CanGet_SendQueue(void)
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
 {
 
-	hal_can_tx_counter1++;
+	//hal_can_tx_counter1++;
 }
 
 void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef * hcan)
 {
-	hal_can_tx_counter1++;
+	//hal_can_tx_counter1++;
 }
 
 void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
 {
-	hal_can_tx_counter1++;
+	//hal_can_tx_counter1++;
 }
 
 
 int Set_Can_Baud_Rate(int rate, CAN_HandleTypeDef *hcan)
 {
-	//int rate_array[9] = {10000, 20000, 50000, 100000, 125000, 250000, 500000, 800000, 1000000};
-	//int prescaler = 0;
 	int i = 0;
-	
 	for(i = 0; i < sizeof(baudrate_config) / sizeof(baudrate_config[0]); i++)
 	{
 		if(baudrate_config[i].bsp == rate * 1000)
@@ -697,7 +694,7 @@ void CAN_Hardware_Config(uint16_t can1_baud, uint16_t can2_baud)
 
 	MX_CAN2_Init();
 	
-  CAN_Config(can1_baud,can2_baud);
+  	CAN_Config(can1_baud,can2_baud);
 	
 	CAN_User_Init(&hcan1);
 

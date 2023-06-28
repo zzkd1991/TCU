@@ -28,7 +28,7 @@ U16 API_PAR_Init(void)
 	status = I2C_Fram_BufferRead((uint8_t *)PAR_BYTES, ParBack_BYTE_BASE, Max_BYTE_NUM);
 	if(status != 0)
 		return 0xff;
-	Cal_Crc = calc_crc32(0, PAR_WORDS, Max_BYTE_NUM);
+	Cal_Crc = calc_crc32(0, PAR_BYTES, Max_BYTE_NUM);
 	status = I2C_Fram_BufferRead((uint8_t *)&Saved_Crc, ParBackCheckCode_Base, 4);
 	if(status != 0)
 		return 0xff;

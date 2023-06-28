@@ -68,10 +68,15 @@ uint32_t TLE_Register_Operation_Data(uint32_t SPI_Data_u32)
 {
 	uint8_t spi_tx_buf[4];
 	uint32_t result = 0;
+	uint8_t ret = HAL_OK;
 	
 	memcpy(spi_tx_buf, &SPI_Data_u32, 4);
 
-	spi2_trx(4, spi_tx_buf, (uint8_t *)&result);
+	ret = spi2_trx(4, spi_tx_buf, (uint8_t *)&result);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
 	
 	return result;
 }

@@ -205,7 +205,7 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 	HAL_StatusTypeDef status = HAL_OK;
 	uint32_t tickstart;
 	/* Write EEPROM_PAGESIZE */
-	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t*)(pBuffer),NumByteToWrite, 100);
+	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_16BIT, (uint8_t*)(pBuffer),NumByteToWrite, 100);
 
 	if(status != HAL_OK)
 	{
@@ -242,7 +242,7 @@ uint32_t I2C_Fram_BufferRead(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t NumBy
 {
 	HAL_StatusTypeDef status = HAL_OK;
 	
-	status=HAL_I2C_Mem_Read(&I2C_Handle,FRAM_ADDRESS,ReadAddr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)pBuffer, NumByteToRead,1000);
+	status = HAL_I2C_Mem_Read(&I2C_Handle, FRAM_ADDRESS, ReadAddr, I2C_MEMADD_SIZE_16BIT, (uint8_t *)pBuffer, NumByteToRead, 1000);
 
 	return status;
 }

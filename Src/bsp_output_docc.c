@@ -3,6 +3,36 @@
 extern tag_TLE_CONFIG_RECORD tag_tle_record;
 
 
+void API_Manufacturer_Info_Get(uint8_t chan_u8)
+{
+
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return;
+	}
+
+	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
+	{
+		TLE7242_CS1_LOW();
+		TLE_Manufacturer_Info_Read();
+		TLE7242_CS1_HIGH();
+	}
+	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
+	{
+		TLE7242_CS2_LOW();
+		TLE_Manufacturer_Info_Read();
+		TLE7242_CS2_HIGH();
+	}
+	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
+	{
+		TLE7242_CS3_LOW();
+		TLE_Manufacturer_Info_Read();
+		TLE7242_CS3_HIGH();
+	}
+}
+
+
 void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t freq_u16,
 								float kp_f, float ki_f)
 {
@@ -16,6 +46,11 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 
 	conved_current = (current_u16 * (1 << 11) * Rsense) / 320;
 
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return;
+	}
 	
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -54,6 +89,12 @@ void API_PO_Mode_Config(uint8_t chan_u8, uint16_t mode_u8)
 {
 	uint8_t conved_chan = 0;
 
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return;
+	}	
+
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		TLE7242_CS1_LOW();
@@ -89,6 +130,12 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 
 	tag_tle_record.record_dither_amp = dither_amp;
 
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return;
+	}
+
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		conved_chan = chan_u8 - 1;
@@ -123,6 +170,12 @@ uint16_t API_DynamicCurrent_Read(uint8_t chan_u8)
 	uint8_t conved_chan;
 	uint16_t current_value = 0;
 
+
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+	}
+
 	
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -155,6 +208,13 @@ uint16_t API_DynamicCurrent_Read(uint8_t chan_u8)
 void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 {
 	uint8_t conved_chan;
+
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return;
+	}
+
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -190,6 +250,13 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	uint32_t duty_cycle = 0;
 	uint8_t actual_duty = 0;
 	uint8_t conved_chan = 0;
+
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return 0xff;
+	}
+
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
@@ -229,6 +296,13 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	uint16_t current_value = 0;
 	tag_Diagnostic_Read Diagnostic_info = {0};
 	tag_Autozero_Read autozero = {0};
+
+	if(chan_u8 > PO12)
+	{
+		Error_Handler();
+		return 0xff;
+	}
+
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{

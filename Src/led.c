@@ -129,6 +129,48 @@ void LED_GPIO_Config(void)
  红+绿+蓝 = 白
 */
 
+void led1_show_blue(void)
+{
+	LED1(ON);
+	LED2(OFF);
+	LED3(OFF);
+}
+
+void led1_show_green(void)
+{
+	LED1(OFF);
+	LED2(ON);
+	LED3(OFF);
+}
+
+void led1_show_red(void)
+{
+	LED1(OFF);
+	LED2(OFF);
+	LED3(ON);
+}
+
+void led2_show_blue(void)
+{
+	LED3(ON);
+	LED4(OFF);
+	LED5(OFF);
+}
+
+void led2_show_green(void)
+{
+	LED3(OFF);
+	LED4(ON);
+	LED5(OFF);
+}
+
+void led2_show_red(void)
+{
+	LED3(OFF);
+	LED4(OFF);
+	LED5(ON);
+}
+
 void led1_show_yellow(void)
 {
 	LED1(OFF);
@@ -184,6 +226,20 @@ void led2_show_white(void)
 	LED4(ON);
 	LED5(ON);
 	LED6(ON);
+}
+
+void led1_off(void)
+{
+	LED1(OFF);
+	LED2(OFF);
+	LED3(OFF);	
+}
+
+void led2_off(void)
+{
+	LED4(OFF);
+	LED5(OFF);
+	LED6(OFF);
 }
 
 void LED_GPIO_DeConfig(void)

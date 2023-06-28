@@ -54,13 +54,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 	DEBUG_UART_CLK_ENABLE();
 	DEBUG_UART_RX_GPIO_CLK_ENABLE();
 	DEBUG_UART_TX_GPIO_CLK_ENABLE();	
-	/**UART4 GPIO Configuration
-	PC10	----------> USART3_TX
-	PC11	----------> USART3_RX
+	/**UART3 GPIO Configuration
+	PB10	----------> USART3_TX
+	PB11	----------> USART3_RX
 	*/
 	GPIO_InitStruct.Pin = DEBUG_UART_TX_PIN | DEBUG_UART_RX_PIN;
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = DEBUG_UART_TX_AF;
 	HAL_GPIO_Init(DEBUG_UART_TX_GPIO_PORT, &GPIO_InitStruct);
@@ -71,8 +71,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 {
-	__HAL_RCC_USART3_CLK_DISABLE();
+	DEBUG_UART_CLK_DISABLE();
 	HAL_GPIO_DeInit(DEBUG_UART_TX_GPIO_PORT, DEBUG_UART_TX_PIN | DEBUG_UART_RX_PIN);
+	HAL_NVIC_DisableIRQ(USART3_IRQn);
 }
 
 

@@ -170,7 +170,6 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	if(status != HAL_OK)
 	{
 	/* Execute user timeout callback */
-		//I2Cx_Error(Addr);
 		Error_Handler();
 		return status;
 	}

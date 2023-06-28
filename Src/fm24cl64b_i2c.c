@@ -164,7 +164,7 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	HAL_StatusTypeDef status = HAL_OK;
 	uint32_t tickstart;
 
-	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, 1, 100); 
+	status = HAL_I2C_Mem_Write(&I2C_Handle, FRAM_ADDRESS, WriteAddr, I2C_MEMADD_SIZE_16BIT, pBuffer, 1, 100); 
 
 	/* Check the communication status */
 	if(status != HAL_OK)

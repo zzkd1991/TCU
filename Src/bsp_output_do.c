@@ -249,7 +249,7 @@ uint8_t API_OUT_Do_Get_State(uint8_t channel_u8)
 
 uint8_t API_OUT_Do_Cfg(uint8_t channel_u8, uint8_t OutMode_u8)
 {
-	if(channel_u8 < DOUT1 || channel_u8 > DOUT6)
+	if(channel_u8 > DOUT6)
 		return 1;
 
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -291,7 +291,7 @@ uint8_t API_OUT_Do_Cfg(uint8_t channel_u8, uint8_t OutMode_u8)
 
 uint8_t API_OUT_Do_Set(uint8_t channel_u8, uint8_t value)
 {
-	if(channel_u8 < DOUT1 || channel_u8 > DOUT6)
+	if(channel_u8 > DOUT6)
 		return 1;
 
 	if(value != 0 || value != 1)

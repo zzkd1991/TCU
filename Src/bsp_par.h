@@ -20,9 +20,9 @@ Sum = 3584*2 = 7168
 #define ParBack_WORD_BASE		0x1000
 #define ParBack_REAL_BASE		0x1400
 
-#define Max_BYTE_NUM           512
-#define Max_WORD_NUM           512
-#define Max_REAL_NUM           512
+#define Max_BYTE_NUM           30
+#define Max_WORD_NUM           30
+#define Max_REAL_NUM           30
 
 #define ParMainCheckCode_Base	0x1C00      //主存储区校验起始地址4*3
 #define ParBackCheckCode_Base	0x1C0C      //备份区校验起始地址4*3
@@ -31,10 +31,17 @@ Sum = 3584*2 = 7168
 #define SYS_PRODUCT_BACKUP          0x1F00      //系统/产品信息存储地址
 
 
-U8 Par_Init_State;
-U8 PAR_BYTES[Max_BYTE_NUM];
-U16 PAR_WORDS[Max_WORD_NUM];
-REAL32 PAR_REALS[Max_REAL_NUM];
+extern U8 Par_Init_State;
+extern U8 PAR_BYTES[Max_BYTE_NUM];
+extern U16 PAR_WORDS[Max_WORD_NUM];
+extern REAL32 PAR_REALS[Max_REAL_NUM];
+
+typedef union
+{
+	float x;
+	U8 s[4];
+}f32_sep;
+
 
 
 void bsp_PAR_Init(void);

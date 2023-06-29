@@ -1,5 +1,6 @@
 #include "bsp_user.h"
 #include "stdio.h"
+#include "led.h"
 
 extern uint8_t Time_1ms_Flag, Time_5ms_Flag, Time_10ms_Flag, Time_20ms_Flag, Time_50ms_Flag, 
 Time_100ms_Flag, Time_500ms_Flag, Time_1000ms_Flag,
@@ -100,11 +101,27 @@ void bsp_application_task_500ms(void)
 
 void bsp_application_task_1000ms(void)
 {
+	extern uint8_t read_buffer[30];
+	static int flag = 0;
+	if(flag == 0)
+	{
+		led1_show_blue();
+		led2_show_blue();
+		flag = 1;
+	}
+	else if(flag == 1)
+	{
+		led1_off();
+		led2_off();
+		flag = 0;
+	}
 
+	//printf("hello world\r\n");
 }
 
 void bsp_application_task_2000ms(void)
 {
+#if 0
 	int i;
 	extern uint16_t ADC_AVG[9];
 	extern uint16_t _ADC_AVG[10];
@@ -117,6 +134,7 @@ void bsp_application_task_2000ms(void)
 		printf("_ADC_AVG[%d], %d\r\n", i, _ADC_AVG[i]);
 	}		
 	//printf("hello world11\r\n");	
+#endif
 }
 
 

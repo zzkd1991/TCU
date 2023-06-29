@@ -20,10 +20,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "stm32f4xx_hal_uart.h"
+#include "main.h"
 #include <stdio.h>
 
 UART_HandleTypeDef UartHandle;
-extern void Error_Handler(void);
 
 
 void DEBUG_UART_Config(void)

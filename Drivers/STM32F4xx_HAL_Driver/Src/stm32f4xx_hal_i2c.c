@@ -317,8 +317,11 @@
 /** @addtogroup I2C_Private_Define
   * @{
   */
-#define I2C_TIMEOUT_FLAG          35U         /*!< Timeout 35 ms             */
-#define I2C_TIMEOUT_BUSY_FLAG     25U         /*!< Timeout 25 ms             */
+//#define I2C_TIMEOUT_FLAG          35U         /*!< Timeout 35 ms             */
+//#define I2C_TIMEOUT_BUSY_FLAG     25U         /*!< Timeout 25 ms             */
+#define I2C_TIMEOUT_FLAG          350U         /*!< Timeout 350 ms             */
+#define I2C_TIMEOUT_BUSY_FLAG     250U         /*!< Timeout 250 ms             */
+
 #define I2C_NO_OPTION_FRAME       0xFFFF0000U /*!< XferOptions default value */
 
 /* Private define for @ref PreviousState usage */

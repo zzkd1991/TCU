@@ -6,8 +6,6 @@
 
 #if 1
 
-extern void Error_Handler(void);
-
 #define CAN1FIFO CAN_RX_FIFO0
 #define CAN2FIFO CAN_RX_FIFO1
 

@@ -177,10 +177,10 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(tickstart + 100 < HAL_GetTick())
+		/*if(tickstart + 5000 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
-		}
+		}*/
 	}
 
 	/* Check if the EEPROM is ready for a new operation */
@@ -190,10 +190,10 @@ uint32_t I2C_Fram_ByteWrite(uint8_t* pBuffer, uint16_t WriteAddr)
 	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(tickstart + 100 < HAL_GetTick())
+		/*if(tickstart + 5000 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
-		}
+		}*/
 	}
 	return status;
 }
@@ -209,16 +209,17 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 	if(status != HAL_OK)
 	{
 		Error_Handler();
+		printf("status %d\r\n", status);
 		return status;
 	}
 
 	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(tickstart + 100 < HAL_GetTick())
+		/*if(tickstart + 5000 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
-		}
+		}*/
 	}
 
 	/* Check if the EEPROM is ready for a new operation */
@@ -228,10 +229,10 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 	tickstart = HAL_GetTick();
 	while (HAL_I2C_GetState(&I2C_Handle) != HAL_I2C_STATE_READY)
 	{
-		if(tickstart + 100 < HAL_GetTick())
+		/*if(tickstart + 5000 < HAL_GetTick())
 		{
 			return HAL_TIMEOUT;
-		}
+		}*/
 	}
 	return status;
 }

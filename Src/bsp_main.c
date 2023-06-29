@@ -66,7 +66,7 @@ void Driver_Init(void)
 	ClearCanQueue();
 	//init_timer_0(10);
 	/*CAN1 + CAN2*/
-	ccpBootInit(CCP_CRO_ID, CCP_DTO_ID);
+	//ccpBootInit(CCP_CRO_ID, CCP_DTO_ID);
 
 	printf("Init.....OK!!!\r\n");
 }

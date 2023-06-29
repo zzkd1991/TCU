@@ -2,6 +2,7 @@
 #define	__I2C_EE_H
 
 #include "stm32f4xx.h"
+#include "main.h"
 
 //I2C2_SCL----PF1
 //I2C2_SDA----PF0
@@ -65,7 +66,6 @@ uint32_t I2C_Fram_PageWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t NumByt
 uint32_t I2C_Fram_BufferRead(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t NumByteToRead);
 
 extern I2C_HandleTypeDef  I2C_Handle;
-extern void Error_Handler(void);
 #endif /* __I2C_EE_H */
 
 

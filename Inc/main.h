@@ -52,7 +52,16 @@ extern "C" {
 
 /* USER CODE END EM */
 
-extern void Error_Handler(void);
+static void _Error_Handler(char *file, int line)
+{
+	printf("%s, %d\n", file, line);
+	//while(1){}
+}
+
+
+
+#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+
 
 /* USER CODE BEGIN Private defines */
 //void reload_iwdg(void);

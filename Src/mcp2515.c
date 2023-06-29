@@ -215,8 +215,6 @@ uint32_t freelevel = 1;
 
 enum can_state state;
 
-extern void Error_Handler(void);
-
 extern uint8_t spi3_trx(uint16_t len, uint8_t *w, uint8_t *r);
 
 

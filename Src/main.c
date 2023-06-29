@@ -44,6 +44,7 @@
 #include "bsp_output_do.h"
 #include "can_mcp2515.h"
 #include "exti.h"
+#include "bsp_test.h"
 
 #include "bsp_main.h"
 
@@ -78,10 +79,6 @@ void SystemClock_Config(void);
 unsigned int p_counter = 0;	//primitive counter
 unsigned char receive_buffer[8];	//receive buffer
 
-//测试CAN周期/数据变化发送
-uint8_t buf[8] = {0,1,2,3,4};
-uint8_t ii=0;
-uint16_t t=0;
 /* USER CODE END 0 */
 
 /**
@@ -109,71 +106,18 @@ int main(void)
 	
    //ccpInit();
 
-   /* Infinite loop */
-   /* USER CODE BEGIN WHILE */
-	
-
-	uint8_t message_write[8]= "hello\r\n";
-	
-	uint8_t message_read[8] = {0};
-	
-	if(HAL_OK != I2C_Fram_PageWrite(message_write, 0, 8))
-	{
-		printf("write error\r\n");
-	}
-	else
-	{
-		printf("write ok\r\n");
-	}
-	
-	if(HAL_OK != I2C_Fram_BufferRead(message_read, 0, 8))
-	{
-		printf("read error\r\n");
-	}
-	else
-	{
-		printf("read ok\r\n");
-	}
-
-  	printf("message_read %s\n", message_read);
-	
-	//printf("message_write %s\n", message_write);
-	extern uint32_t SPI_FLASH_ReadDeviceID(void);
-	extern uint32_t SPI_FLASH_ReadID(void);
-	
-	uint16_t device_id = 0;
-	
-	device_id = SPI_FLASH_ReadDeviceID();
-
-	uint32_t FlashID = 0;
-
-	FlashID = SPI_FLASH_ReadID();
-
-	printf("device_id is %x\r\n", device_id);
-	//printf("FlashID %x\r\n", FlashID);
-	printf("FlashID %d\r\n", FlashID);
-	
-	Reset_DI_Chara(DIN1,0);//复用DI-测试
-
-
   while (1)
   {
 
 	ADC_Smooth();//AI 采集
 
-  DI_Screen();//DI 采集
+    DI_Screen();//DI 采集
 	AI_Diagnose_State_Get();//AI1-AI6的诊断
-	//printf("message_read %s\n", message_read);
-	//printf("hello world\r\n");
-#if 1
-	//测试CAN1数据变化发送	
-	if(t<=1000)	{
-		buf[0]=ii++;}
-	else{
-		buf[0]=0;}
-	t++;
-		CAN1_WriteData(0x202,buf,8,0,1,200);	
-#endif	
+	bsp_application_task_loop();
+
+	Test_Function_LED();
+
+	
  #if 0	
 	if(ccpBootReceiveCro(receive_buffer))
 	{   // if new CRO message received,
@@ -258,15 +202,6 @@ void SystemClock_Config(void)
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
-{
-	printf("%s, %d\r\n", __FUNCTION__, __LINE__);
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-
-  /* USER CODE END Error_Handler_Debug */
-}
-
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number

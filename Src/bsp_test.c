@@ -311,18 +311,10 @@ void Test_Function_Fram_WR(void)
 
 void Test_Function_LED(void)
 {
-	led1_show_yellow();
-	led2_show_yellow();
-	HAL_Delay(2000);
-	led1_show_purple();
-	led2_show_purple();
-	HAL_Delay(2000);
-	led1_show_cyan();
-	led2_show_cyan();
-	HAL_Delay(2000);
-	led1_show_white();
-	led2_show_white();
-	HAL_Delay(2000);
+
+	Api_Led_Color_Blink_Freq(LED1, LED_COLOR_GREEN, LED_COLOR_MAGENTA, 1);
+
+	Api_Led_Color_Blink_Freq(LED2, LED_COLOR_RED, LED_COLOR_MAGENTA, 2);
 }
 
 void Test_Function_TLE7242_PO(void)

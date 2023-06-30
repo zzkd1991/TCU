@@ -105,14 +105,14 @@ void bsp_application_task_1000ms(void)
 	static int flag = 0;
 	if(flag == 0)
 	{
-		led1_show_blue();
-		led2_show_blue();
+		API_Led_Color_Control(LED1, LED_COLOR_BLUE);
+		API_Led_Color_Control(LED2, LED_COLOR_BLUE);
 		flag = 1;
 	}
 	else if(flag == 1)
 	{
-		led1_off();
-		led2_off();
+		API_Led_Color_Control(LED1, LED_COLOR_OFF);
+		API_Led_Color_Control(LED2, LED_COLOR_OFF);
 		flag = 0;
 	}
 

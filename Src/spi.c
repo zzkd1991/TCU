@@ -242,7 +242,7 @@ uint8_t spi2_trx(uint16_t len, uint8_t *w, uint8_t *r)
       s = HAL_OK;  
     }
   }
-  return s == HAL_OK ? 1: 0;
+  return s == HAL_OK ? 0: 1;
 }
 
 uint8_t spi3_trx(uint16_t len, uint8_t *w, uint8_t *r)
@@ -271,7 +271,7 @@ uint8_t spi3_trx(uint16_t len, uint8_t *w, uint8_t *r)
 			s = HAL_OK;
 		}
 	}
-	return s == HAL_OK ? 1 : 0;
+	return s == HAL_OK ? 0 : 1;
 }
 
 uint8_t spi3_read_write_byte(uint8_t txdata)

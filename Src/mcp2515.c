@@ -285,6 +285,7 @@ static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 {
 	/*Instruction + Address Byte + Data Byte*/
 	uint8_t spi_tx_buf[3];
+	uint8_t ret = HAL_OK;
 
 	spi_tx_buf[0] = INSTRUCTION_WRITE;
 	spi_tx_buf[1] = reg;
@@ -292,7 +293,12 @@ static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 
 	mcp2515_cs_low();
 
-	spi3_trx(3, spi_tx_buf, NULL);
+	ret = spi3_trx(3, spi_tx_buf, NULL);
+	
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
 
 	mcp2515_cs_high();
 }
@@ -311,6 +317,7 @@ static uint8_t mcp2515_read_reg(uint8_t reg)
 {
 	/*Instruction + Address Byte*/
 	uint8_t val = 0;
+	uint8_t ret = HAL_OK;
 
 	uint8_t spi_tx_buf[2];
 	uint8_t spi_rx_buf;
@@ -319,9 +326,20 @@ static uint8_t mcp2515_read_reg(uint8_t reg)
 
 	mcp2515_cs_low();
 
-	spi3_trx(2, spi_tx_buf, NULL);
+	ret = spi3_trx(2, spi_tx_buf, NULL);
 
-	spi3_trx(1, NULL, &spi_rx_buf);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}	
+
+	ret = spi3_trx(1, NULL, &spi_rx_buf);
+
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
 
 	mcp2515_cs_high();
 	
@@ -333,6 +351,7 @@ static uint8_t mcp2515_read_reg(uint8_t reg)
 static void mcp2515_write_bits(uint8_t reg, uint8_t mask, uint8_t val)
 {
 	uint8_t spi_tx_buf[4];
+	uint8_t ret = HAL_OK;
 
 	spi_tx_buf[0] = INSTRUCTION_BIT_MODIFY;
 	spi_tx_buf[1] = reg;
@@ -340,7 +359,15 @@ static void mcp2515_write_bits(uint8_t reg, uint8_t mask, uint8_t val)
 	spi_tx_buf[3] = val;
 
 	mcp2515_cs_low();
-	spi3_trx(4, spi_tx_buf, NULL);
+	
+	ret = spi3_trx(4, spi_tx_buf, NULL);
+
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	
 	mcp2515_cs_high();
 }
 
@@ -354,14 +381,24 @@ static void mcp2515_read_2regs(uint8_t reg, uint8_t* v1, uint8_t* v2)
 */
 	uint8_t spi_tx_buf[2];
 	uint8_t spi_rx_buf[2];
+	uint8_t ret = HAL_OK;
 
 	spi_tx_buf[0] = INSTRUCTION_READ;
 	spi_tx_buf[1] = reg;
 
 	mcp2515_cs_low();
 
-	spi3_trx(2, spi_tx_buf, NULL);
-	spi3_trx(2, NULL, spi_rx_buf);
+	ret = spi3_trx(2, spi_tx_buf, NULL);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+	
+	ret = spi3_trx(2, NULL, spi_rx_buf);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}	
 
 	mcp2515_cs_high();
 	*v1 = spi_rx_buf[0];
@@ -372,7 +409,14 @@ static void mcp2515_read_2regs(uint8_t reg, uint8_t* v1, uint8_t* v2)
 
 static void mcp2515_hw_tx_frame(uint8_t *buf, int len, int tx_buf_idx)
 {
-	spi3_trx(TXBDAT_OFF + len, buf, NULL);
+	uint8_t ret = HAL_OK;
+	
+	ret = spi3_trx(TXBDAT_OFF + len, buf, NULL);
+	
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
@@ -381,6 +425,7 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 	uint8_t buf[SPI_TRANSFER_BUF_LEN] = {0};
 	uint32_t sid, eid, exide, rtr;
 	uint8_t spi_tx_buf;
+	uint8_t ret = HAL_OK;
 
 	spi_tx_buf = INSTRUCTION_RTS(1 << tx_buf_idx);
 
@@ -406,7 +451,12 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 	mcp2515_hw_tx_frame(buf, m->len + TXBDAT_OFF, tx_buf_idx);
 
 	/*use INSTRUCTION_RST, to avoid "repeated frame problem" */
-	spi3_trx(1, &spi_tx_buf, NULL);
+	ret = spi3_trx(1, &spi_tx_buf, NULL);
+
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 void mcp2515_send(Message *m)
@@ -450,10 +500,21 @@ static void mcp2515_hw_rx_frame(uint8_t *buf, int buf_idx)
 {
 	uint8_t send_buf[SPI_TRANSFER_BUF_LEN] = {0};
 	uint8_t recv_buf[SPI_TRANSFER_BUF_LEN] = {0};
+	uint8_t ret = HAL_OK;
 
 	send_buf[RXBCTRL_OFF] = INSTRUCTION_READ_RXB(buf_idx);
-	spi3_trx(SPI_TRANSFER_BUF_LEN, send_buf, NULL);
-	spi3_trx(SPI_TRANSFER_BUF_LEN, NULL, recv_buf);
+	ret = spi3_trx(SPI_TRANSFER_BUF_LEN, send_buf, NULL);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	ret = spi3_trx(SPI_TRANSFER_BUF_LEN, NULL, recv_buf);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
 	memcpy(buf, recv_buf, SPI_TRANSFER_BUF_LEN);
 }
 
@@ -578,8 +639,11 @@ static int mcp2515_hw_reset(void)
 	
 	ret = spi3_trx(1, &spi_tx_buf, NULL);
 
-	if(ret != 1)
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
 		return ret;
+	}
 
 	/* Wait for oscillator startup timer after reset */
 	mdelay(MCP2515_OST_DELAY_MS);

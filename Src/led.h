@@ -11,26 +11,34 @@ extern "C" {
 #include "stm32f4xx.h"
 
 
-void LED_GPIO_Config(void);
+typedef enum
+{
+	LED1 = 0,
+	LED2,
 
+	LED_MAX
+}LED_NUM;
+
+enum
+{
+	LED_COLOR_OFF = 0,
+	LED_COLOR_BLUE,
+	LED_COLOR_GREEN,
+	LED_COLOR_RED,
+	LED_COLOR_CYAN,
+	LED_COLOR_MAGENTA,
+	LED_COLOR_YELLOW,
+	LED_COLOR_WHITE,
+
+	LED_COLOR_MAX
+};
+	
 void LED_GPIO_DeConfig(void);
 
-void led1_show_blue(void);
-void led1_show_green(void);
-void led1_show_red(void);
-void led2_show_blue(void);
-void led2_show_green(void);
-void led2_show_red(void);
-void led1_show_yellow(void);
-void led2_show_yellow(void);
-void led1_show_purple(void);
-void led2_show_purple(void);
-void led1_show_cyan(void);
-void led2_show_cyan(void);
-void led1_show_white(void);
-void led2_show_white(void);
-void led1_off(void);
-void led2_off(void);
+void API_Led_Color_Control(LED_NUM led_num, uint8_t color_u8);
+void Api_Led_Color_Blink_Freq(LED_NUM led_num, uint8_t color1_u8, uint8_t color2_u8, uint16_t blink_freq);
+
+void bsp_Led_Init(void);
 
 
 

@@ -22,7 +22,7 @@ uint16_t ADC_FINAL[20];
 void Driver_Init(void)
 {
 	/*led */
-	LED_GPIO_Config();
+	bsp_Led_Init();
 	/*tle7242*/
 	TLE7242_GPIO_Init();
 	/*AI*/

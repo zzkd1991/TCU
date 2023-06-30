@@ -88,7 +88,7 @@
 			LED3_OFF
 
 
-void LED_GPIO_Config(void)
+void bsp_Led_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -128,118 +128,120 @@ void LED_GPIO_Config(void)
  蓝+绿 = 青
  红+绿+蓝 = 白
 */
-
-void led1_show_blue(void)
+void API_Led_Color_Control(LED_NUM led_num, uint8_t color_u8)
 {
-	LED1(ON);
-	LED2(OFF);
-	LED3(OFF);
+	if(color_u8 > LED_COLOR_MAX)
+	{
+		return;
+	}
+
+	if(led_num == LED2)
+	{
+		if(color_u8 == LED_COLOR_OFF)
+		{
+			LED3(OFF);
+			LED4(OFF);
+			LED5(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_BLUE)
+		{
+			LED3(ON);
+			LED4(OFF);
+			LED5(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_CYAN)
+		{
+			LED4(ON);
+			LED5(ON);
+			LED6(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_GREEN)
+		{
+			LED3(OFF);
+			LED4(ON);
+			LED5(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_MAGENTA)
+		{
+			LED4(ON);
+			LED5(OFF);
+			LED6(ON);
+
+		}
+		else if(color_u8 == LED_COLOR_YELLOW)
+		{
+			LED4(OFF);
+			LED5(ON);
+			LED6(ON);		
+		}
+		else if(color_u8 == LED_COLOR_WHITE)
+		{
+			LED4(ON);
+			LED5(ON);
+			LED6(ON);		
+		}
+	}
+	else if(led_num == LED1)
+	{
+		if(color_u8 == LED_COLOR_OFF)
+		{
+			LED1(OFF);
+			LED2(OFF);
+			LED3(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_BLUE)
+		{
+			LED1(ON);
+			LED2(OFF);
+			LED3(OFF);	
+		}
+		else if(color_u8 == LED_COLOR_CYAN)
+		{
+			LED1(ON);
+			LED2(ON);
+			LED3(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_GREEN)
+		{
+			LED1(OFF);
+			LED2(ON);
+			LED3(OFF);		
+		}
+		else if(color_u8 == LED_COLOR_MAGENTA)
+		{
+			LED1(ON);
+			LED2(OFF);
+			LED3(ON);
+		}
+		else if(color_u8 == LED_COLOR_YELLOW)
+		{
+			LED1(OFF);
+			LED2(ON);
+			LED3(ON);		
+		}
+		else if(color_u8 == LED_COLOR_WHITE)
+		{
+			LED1(ON);
+			LED2(ON);
+			LED3(ON);		
+		}			
+	}
 }
 
-void led1_show_green(void)
+void Api_Led_Color_Blink_Freq(LED_NUM led_num, uint8_t color1_u8, uint8_t color2_u8, uint16_t blink_freq)
 {
-	LED1(OFF);
-	LED2(ON);
-	LED3(OFF);
-}
+	uint32_t period;
+	period = 1000 / blink_freq;
+	
+	if(color1_u8 > LED_COLOR_MAX || color2_u8 > LED_COLOR_MAX)
+	{
+		return;
+	}
 
-void led1_show_red(void)
-{
-	LED1(OFF);
-	LED2(OFF);
-	LED3(ON);
-}
-
-void led2_show_blue(void)
-{
-	LED3(ON);
-	LED4(OFF);
-	LED5(OFF);
-}
-
-void led2_show_green(void)
-{
-	LED3(OFF);
-	LED4(ON);
-	LED5(OFF);
-}
-
-void led2_show_red(void)
-{
-	LED3(OFF);
-	LED4(OFF);
-	LED5(ON);
-}
-
-void led1_show_yellow(void)
-{
-	LED1(OFF);
-	LED2(ON);
-	LED3(ON);
-}
-
-void led2_show_yellow(void)
-{
-	LED4(OFF);
-	LED5(ON);
-	LED6(ON);
-}
-
-
-void led1_show_purple(void)
-{
-	LED1(ON);
-	LED2(OFF);
-	LED3(ON);
-}
-
-void led2_show_purple(void)
-{
-	LED4(ON);
-	LED5(OFF);
-	LED6(ON);
-}
-
-void led1_show_cyan(void)//青色
-{
-	LED1(ON);
-	LED2(ON);
-	LED3(OFF);
-}
-
-void led2_show_cyan(void)
-{
-	LED4(ON);
-	LED5(ON);
-	LED6(OFF);
-}
-
-void led1_show_white(void)
-{
-	LED1(ON);
-	LED2(ON);
-	LED3(ON);
-}
-
-void led2_show_white(void)
-{
-	LED4(ON);
-	LED5(ON);
-	LED6(ON);
-}
-
-void led1_off(void)
-{
-	LED1(OFF);
-	LED2(OFF);
-	LED3(OFF);	
-}
-
-void led2_off(void)
-{
-	LED4(OFF);
-	LED5(OFF);
-	LED6(OFF);
+	API_Led_Color_Control(led_num, color1_u8);
+	HAL_Delay(period);
+	API_Led_Color_Control(led_num, color2_u8);
+	HAL_Delay(period);
 }
 
 void LED_GPIO_DeConfig(void)

@@ -43,6 +43,7 @@
 #include "fm24cl64b_i2c.h"
 #include "bsp_output_do.h"
 #include "can_mcp2515.h"
+#include "bsp_output_docc.h"
 #include "exti.h"
 #include "bsp_test.h"
 
@@ -90,6 +91,7 @@ extern int ccpBootTransmitCrmPossible( void );
 extern void _timer_0(void);
 extern int flag;
 extern void init_timer_0 (unsigned long millisec);
+extern tag_TLE_CONFIG_RECORD tag_tle_record;
 
 int main(void)
 {
@@ -105,6 +107,10 @@ int main(void)
 
 	
    //ccpInit();
+	API_Manufacturer_Info_Get(PO1);
+
+  printf("record_Version_Number %d\r\n", tag_tle_record.record_Version_Number);
+  printf("record_Manuf_ID %d\r\n", tag_tle_record.record_Manuf_ID);
 
   while (1)
   {

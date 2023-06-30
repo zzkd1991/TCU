@@ -11,6 +11,7 @@
 
 /* USER CODE END 0*/
 uint32_t received_packet_num = 0;
+CAN_MESSAGE_STATIC can_message_static;
 
 
 CAN_HandleTypeDef hcan1;
@@ -290,18 +291,65 @@ uint8_t ST_CanGet_SendQueue(void)
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
 {
 
-	//hal_can_tx_counter1++;
+	can_message_static.tx_mailbox0_snd_num++;
 }
 
 void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef * hcan)
 {
-	//hal_can_tx_counter1++;
+	can_message_static.tx_mailbox1_snd_num++;
 }
 
 void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
 {
-	//hal_can_tx_counter1++;
+	can_message_static.tx_mailbox2_snd_num++;
 }
+
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
+{
+	__IO uint32_t error_code = 0;
+	error_code = hcan->ErrorCode;
+	if(error_code & HAL_CAN_ERROR_EWG)
+	{
+		can_message_static.can_it_error_warning++;
+	}
+
+	if(error_code & HAL_CAN_ERROR_EPV)
+	{
+		can_message_static.can_it_error_passive++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_BOF)
+	{
+		can_message_static.can_it_busoff++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_STF)
+	{
+		can_message_static.can_error_stf++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_FOR)
+	{
+		can_message_static.can_error_for++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_ACK)
+	{
+		can_message_static.can_error_ack++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_BR)
+	{
+		can_message_static.can_error_br++;
+	}
+	
+	if(error_code & HAL_CAN_ERROR_CRC)
+	{
+		can_message_static.can_error_crc++;
+	}
+
+}
+
 
 
 int Set_Can_Baud_Rate(int rate, CAN_HandleTypeDef *hcan)
@@ -467,15 +515,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)//FIFO1 ??????
 	stm32can_rxinterrupt(hcan, 1);
 }
 
-
-
-void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
-{
-	//Error_Handler();
-}
-
-
-
 /* CAN1 init function */
 void MX_CAN1_Init(void)
 {
@@ -548,7 +587,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
 	  if(HAL_RCC_CAN1_CLK_ENABLED==1){
 		__HAL_RCC_CAN1_CLK_ENABLE();
 	  }
-	#if 0
+	  
 	  __HAL_RCC_GPIOB_CLK_ENABLE();
 	  /**CAN1 GPIO Configuration
 	  PB8	  ------> CAN1_RX
@@ -560,19 +599,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
 	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	  GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
 	  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-#else
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**CAN1 GPIO Configuration
-    PA11     ------> CAN1_RX
-    PA12     ------> CAN1_TX
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-#endif		
+	
 	  /* CAN1 interrupt Init */
 	  HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);
 	  HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
@@ -635,19 +662,12 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *hcan)
 	  if(HAL_RCC_CAN1_CLK_ENABLED==0){
 		__HAL_RCC_CAN1_CLK_DISABLE();
 	  }
-	#if 0
 	  /**CAN1 GPIO Configuration
 	  PB8	  ------> CAN1_RX
 	  PB9	  ------> CAN1_TX
 	  */
 	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
- #else
-    /**CAN1 GPIO Configuration
-    PA11     ------> CAN1_RX
-    PA12     ------> CAN1_TX
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
- #endif		
+      HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);	
 		
 	  /* CAN1 interrupt DeInit */
 	  HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);

@@ -47,6 +47,26 @@ typedef struct {
 }can_baudrate_config_t;
 
 
+typedef struct CAN_MESSAGE_STATIC_STRUCT
+{
+	uint32_t tx_mailbox0_snd_num;
+	uint32_t tx_mailbox1_snd_num;
+	uint32_t tx_mailbox2_snd_num;
+	uint32_t fifo0_recv_num;
+	uint32_t fifo1_recv_num;
+	uint32_t can_it_error_warning;/* Error warning interrupt */
+	uint32_t can_it_error_passive;/* Error passive interrupt */
+	uint32_t can_it_busoff;/* bus-off interrupt */
+	uint32_t can_it_error;/* error interrupt */
+	uint32_t can_error_stf;/* can error code to stuff error*/
+	uint32_t can_error_for;/* can error code to form error */
+	uint32_t can_error_ack;/* can error code to acknowledgement error */
+	uint32_t can_error_br;/* can error code to bit recessive error */
+	uint32_t can_error_db;/* can error code to bit dominant error */
+	uint32_t can_error_crc;/* can error code to crc error */
+}CAN_MESSAGE_STATIC;
+
+
 void MX_CAN1_Init(void);
 
 /* USER CODE BEGIN Prototypes */

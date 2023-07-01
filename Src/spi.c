@@ -229,19 +229,29 @@ uint8_t spi2_trx(uint16_t len, uint8_t *w, uint8_t *r)
 {
   HAL_StatusTypeDef s = HAL_OK;
 
-  if(w){
-    if(r){
+  if(w)
+  {
+    if(r)
+	{
       s = HAL_SPI_TransmitReceive(&hspi2, w, r, len, SPI_WAIT);    
-    }else{
+    }
+	else
+	{
       s = HAL_SPI_Transmit(&hspi2, w, len, SPI_WAIT);
     }
-  }else{
-    if(r){
+  }
+  else
+  {
+    if(r)
+	{
       s = HAL_SPI_Receive(&hspi2, r, len, SPI_WAIT);
-    }else{
+    }
+	else
+	{
       s = HAL_OK;  
     }
   }
+  
   return s == HAL_OK ? 0: 1;
 }
 

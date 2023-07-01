@@ -29,6 +29,7 @@ extern tag_TLE_Register TLE7242_Test_Register_Read;
 
 void Test_Function_Can1_Send(void);
 void Test_Function_Can2_Send(void);
+void Test_Function_Can3_Send(void);
 void Test_Function_Can1_Receive(void);
 void Test_Function_Can2_Receive(void);
 void Test_Function_Init_Handle(void);

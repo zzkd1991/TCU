@@ -108,6 +108,48 @@ void Test_Function_Can2_Send(void)
 	}
 }
 
+void Test_Function_Can3_Send(void)
+{
+	uint8_t i = 0;
+	Message m = {0};
+	uint8_t Send_Buffer[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x00, 0x00};
+
+	memcpy(m.data, Send_Buffer, 8);
+	m.len = 8;
+
+	for(i = 0; i < 10; i++)
+	{
+		m.cob_id = i + 0x10;
+		m.rtr = 0;
+		m.ide = 0;
+		CanInsert_SendQueue(NULL, &m);
+	}
+
+	/*for(i = 0; i < 10; i++)
+	{
+		m.cob_id = i + 0x20;
+		m.rtr = 0;
+		m.ide = 1;
+		CanInsert_SendQueue(NULL, &m);
+	}
+
+	for(i = 0; i < 10; i++)
+	{
+		m.cob_id = i + 0x30;
+		m.rtr = 1;
+		m.ide = 0;
+		CanInsert_SendQueue(NULL, &m);
+	}
+
+	for(i = 0; i < 10; i++)
+	{
+		m.cob_id = i + 0x40;
+		m.rtr = 1;
+		m.ide = 1;
+		CanInsert_SendQueue(NULL, &m);
+	}*/
+}
+
 
 void Test_Function_Can1_Receive(void)
 {	

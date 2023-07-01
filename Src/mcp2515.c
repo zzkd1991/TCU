@@ -266,8 +266,8 @@ void mcp2515_gpio_config(void)
 	MCP2515_INT_GPIO_CLK_ENABLE();
 
 	GPIO_InitStructure.Pin = MCP2515_INT_GPIO_PIN;
-	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
-	GPIO_InitStructure.Pull = GPIO_NOPULL;
+	GPIO_InitStructure.Mode = GPIO_MODE_EVT_FALLING;
+	GPIO_InitStructure.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(MCP2515_INT_GPIO_PORT, &GPIO_InitStructure);
 
 	HAL_NVIC_SetPriority(MCP2515_INT_EXTI_IRQ, 0, 0);
@@ -305,12 +305,7 @@ static void mcp2515_write_reg(uint8_t reg, uint8_t val)
 
 void mdelay(uint32_t delay)
 {
-	extern __IO uint32_t uwTick;
-	uint32_t current_tick = 0;
-
-	current_tick = HAL_GetTick();
-	
-	while(uwTick < (current_tick + delay));
+	HAL_Delay(delay);
 }
 
 static uint8_t mcp2515_read_reg(uint8_t reg)
@@ -409,13 +404,11 @@ static void mcp2515_read_2regs(uint8_t reg, uint8_t* v1, uint8_t* v2)
 
 static void mcp2515_hw_tx_frame(uint8_t *buf, int len, int tx_buf_idx)
 {
-	uint8_t ret = HAL_OK;
-	
-	ret = spi3_trx(TXBDAT_OFF + len, buf, NULL);
-	
-	if(ret != HAL_OK)
+	int i;
+
+	for(i = 1; i < TXBDAT_OFF + len; i++)
 	{
-		Error_Handler();
+		mcp2515_write_reg(TXBCTRL(tx_buf_idx) + i, buf[i]);
 	}
 }
 
@@ -435,12 +428,11 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 	else
 		sid = m->cob_id & CAN_SFF_MASK;/* Standard ID */
 
-	eid = m->cob_id & CAN_SFF_MASK;/* Extended ID */
+	eid = m->cob_id & CAN_EFF_MASK;/* Extended ID */
 	rtr = m->rtr;
 
 	buf[TXBCTRL_OFF] = INSTRUCTION_LOAD_TXB(tx_buf_idx);
-	buf[TXBSIDH_OFF] = sid >> SIDH_SHIFT;/*帧ID高8位*/
-	buf[TXBSIDL_OFF] = ((sid & SIDL_SID_MASK) << SIDL_SID_SHIFT);/*帧ID低8位*/
+	buf[TXBSIDH_OFF] = sid >> SIDH_SHIFT;/*标准帧ID高8位*/
 	buf[TXBSIDL_OFF] = ((sid & SIDL_SID_MASK) << SIDL_SID_SHIFT) |
 		(exide << SIDL_EXIDE_SHIFT) |
 		((eid >> SIDL_EID_SHIFT) & SIDL_EID_MASK);
@@ -448,8 +440,10 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 	buf[TXBEID0_OFF] = GET_BYTE(eid, 0);
 	buf[TXBDLC_OFF] = (rtr << DLC_RTR_SHIFT) | m->len;/*帧长度+是否为远程帧*/
 	memcpy(buf + TXBDAT_OFF, m->data, m->len);
-	mcp2515_hw_tx_frame(buf, m->len + TXBDAT_OFF, tx_buf_idx);
 
+	mcp2515_hw_tx_frame(buf, m->len, tx_buf_idx);
+
+	mcp2515_cs_low();
 	/*use INSTRUCTION_RST, to avoid "repeated frame problem" */
 	ret = spi3_trx(1, &spi_tx_buf, NULL);
 
@@ -457,6 +451,8 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 	{
 		Error_Handler();
 	}
+
+	mcp2515_cs_high();
 }
 
 void mcp2515_send(Message *m)
@@ -480,12 +476,14 @@ uint8_t MCP2515_CanGet_SendQueue(void)
 
 	if(1 == GetCanQueueTx(head, &TxMessage))
 	{
+		//printf("%s, %d\r\n", __FUNCTION__, __LINE__);
+		HAL_Delay(100);
 		head = (head + 1) % MAX_CAN_SIZE;
 		SetHeadCanQueueTx(head);
 
-		while(freelevel == 0);
+		//while(freelevel == 0);
 		mcp2515_hw_tx(&TxMessage, 0);
-		freelevel = 0;
+		//freelevel = 0;
 		
 		return 0;
 	}
@@ -503,6 +501,10 @@ static void mcp2515_hw_rx_frame(uint8_t *buf, int buf_idx)
 	uint8_t ret = HAL_OK;
 
 	send_buf[RXBCTRL_OFF] = INSTRUCTION_READ_RXB(buf_idx);
+
+	mcp2515_cs_low();
+
+	
 	ret = spi3_trx(SPI_TRANSFER_BUF_LEN, send_buf, NULL);
 	if(ret != HAL_OK)
 	{
@@ -514,6 +516,8 @@ static void mcp2515_hw_rx_frame(uint8_t *buf, int buf_idx)
 	{
 		Error_Handler();
 	}
+
+	mcp2515_cs_high();
 
 	memcpy(buf, recv_buf, SPI_TRANSFER_BUF_LEN);
 }
@@ -575,7 +579,7 @@ static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 
 	/* Enable interrupts */
 	mcp2515_write_reg(CANINTE, CANINTE_ERRIE | CANINTE_TX2IE | CANINTE_TX1IE |
-						CANINTE_ERRIE | CANINTE_RX1IE | CANINTE_RX0IE);
+						CANINTE_TX0IE | CANINTE_RX1IE | CANINTE_RX0IE);
 
 	if(ctrlmode & CAN_CTRLMODE_LOOPBACK)
 	{
@@ -596,8 +600,12 @@ static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 		/* Wait for the device to enter normal mode */
 		while(mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK)
 		{
-			if(tickstart + 100 < HAL_GetTick())
+			if(tickstart + 1000 < HAL_GetTick())
+			{
+				Error_Handler();
 				return -1;
+			}
+
 		}
 	}
 	return 0;
@@ -635,6 +643,9 @@ static int mcp2515_hw_reset(void)
 	/* Wait fo oscillator startup timer after power up */
 	mdelay(MCP2515_OST_DELAY_MS);
 
+	mcp2515_cs_low();
+
+
 	spi_tx_buf = INSTRUCTION_RESET;
 	
 	ret = spi3_trx(1, &spi_tx_buf, NULL);
@@ -644,6 +655,7 @@ static int mcp2515_hw_reset(void)
 		Error_Handler();
 		return ret;
 	}
+	mcp2515_cs_high();
 
 	/* Wait for oscillator startup timer after reset */
 	mdelay(MCP2515_OST_DELAY_MS);
@@ -653,10 +665,13 @@ static int mcp2515_hw_reset(void)
 	while((mcp2515_read_reg(CANSTAT) & CANCTRL_REQOP_MASK) !=
 			CANCTRL_REQOP_CONF)
 	{
-		if(tickstart + 100 < HAL_GetTick())
+		if(tickstart + 3000 < HAL_GetTick())
+		{
+			Error_Handler();
 			return -1;
+		}
 	}
-
+			
 	return 0;
 }
 
@@ -667,7 +682,10 @@ static int mcp2515_hw_probe(void)
 
 	ret = mcp2515_hw_reset();
 	if(ret)
+	{
+		Error_Handler();
 		return ret;
+	}
 
 	ctrl = mcp2515_read_reg(CANCTRL);
 
@@ -680,26 +698,27 @@ static int mcp2515_hw_probe(void)
 
 int mcp2515_hw_init(void)
 {
-	int ret;
+	int ret = 0;
 	uint32_t ctrlmode = CAN_CTRLMODE_ONE_SHOT;
 	struct can_bittiming bt = {0};
 
 	/*
-	 * 设置SJW = 0, BRP = 0x03。以8M晶振为例TQ = 2 * (3 + 1) / 8M = 1us
-	 * PS1 = (2 + 1) * TQ = 3TQ;
-	 * PS0 = (0 + 1) * TQ = TQ;
-	 * PS2 = (2 + 1) * TQ = 3TQ;
-	 * SJQ = 1 * TQ = TQ;
-	 * Tbit = 1us * (1 + PS0 + PS1 + PS2) = 8us 波特率= 125K
+	 * Tsyncseg = 1Tq
+	 * 设置SJW = 0, BRP = 0x03。以8M晶振为例Tqs = 2 * (3 + 1) / 8M = 1us(Tq = 2 * (BRP[5:0] + 1)/Fosc)
+	 * PhaseSeg1 = (2 + 1) * Tqs = 3Tqs;(PS1 is programmable from 1-8Tqs)
+	 * PropSeg = (0 + 1) * Tqs = Tqs;(The ProgSeg is programmable from 1-8Tqs)
+	 * PhaseSeg2 = (2 + 1) * Tqs = 3Tqs(PS2 is programmable from 2-8Tqs);
+	 * SYNCHRONIZATION JUMP WIDTH(SJW) = 1 * Tqs = Tqs;(by 1-4 Tqs to maintain synchroniztion with transmitted message)
+	 * Tbit = Tsyncseg + Tpropseg + Tps1 + Tps2 = (1Tqs + 1Tqs + 3Tqs + 3Tqs) = 8Tqs = 8us 波特率= 125K
 	*/
-	bt.sjw = 0;
-	bt.brp = 0x03;
-	bt.phase_seg1 = 2;
-	bt.prop_seg = 0;
-	bt.phase_seg2 = 2;
+	bt.sjw = 1;
+	bt.brp = 0x04;
+	bt.phase_seg1 = 3;
+	bt.prop_seg = 1;
+	bt.phase_seg2 = 3;
 	
 	mcp2515_gpio_config();
-	
+#if 1	
 	mcp2515_hw_probe();
 
 	ret = mcp2515_setup(&bt, ctrlmode);
@@ -711,6 +730,7 @@ int mcp2515_hw_init(void)
 	{
 		Error_Handler();
 	}
+#endif
 
 	return ret;
 }
@@ -732,7 +752,7 @@ static int mcp2515_stop(void)
 int mcp2515_can_ist(enum can_state state)
 {
 	//int force_quit = 0;
-
+	enum can_state state1;
 	//while(!force_quit)
 	{
 		enum can_state new_state;
@@ -742,6 +762,8 @@ int mcp2515_can_ist(enum can_state state)
 
 		mcp2515_read_2regs(CANINTF, &intf, &eflag);
 
+		printf("intf %d\r\n", intf);
+		printf("eflag %d\r\n", eflag);
 		/* mask out flags we don't care about */
 		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
 
@@ -801,9 +823,9 @@ int mcp2515_can_ist(enum can_state state)
 			new_state = CAN_STATE_ERROR_ACTIVE;
 		}
 
-		state = new_state;
+		state1 = new_state;
 
-		if(state == CAN_STATE_BUS_OFF)
+		if(state1 == CAN_STATE_BUS_OFF)
 		{
 			//force_quit = 1;
 			mcp2515_hw_sleep();
@@ -821,5 +843,21 @@ int mcp2515_can_ist(enum can_state state)
 
 	return 0;
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  
+    switch(GPIO_Pin)
+    {
+
+        case GPIO_PIN_2:
+				mcp2515_can_ist(state);
+				
+        break;
+				default:break;
+
+    }
+}
+
 
 

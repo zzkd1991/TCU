@@ -712,6 +712,19 @@ static int mcp2515_hw_probe(void)
 }
 
 
+/*
+ * ProgSeg + PS1 >= PS2
+ * ProgSeg + PS1 >= Tdelay(Tdelay is 1-2 Tqs)
+ * PS2 >= SJW
+ * Tsyncseg = 1Tq
+ * 设置SJW = 0, BRP = 0x03。以8M晶振为例Tqs = 2 * (3 + 1) / 8M = 1us(Tq = 2 * (BRP[5:0] + 1)/Fosc)
+ * PhaseSeg1 = (2 + 1) * Tqs = 3Tqs;(PS1 is programmable from 1-8Tqs)
+ * PropSeg = (0 + 1) * Tqs = Tqs;(The ProgSeg is programmable from 1-8Tqs)
+ * PhaseSeg2 = (2 + 1) * Tqs = 3Tqs(PS2 is programmable from 2-8Tqs);
+ * SYNCHRONIZATION JUMP WIDTH(SJW) = 1 * Tqs = Tqs;(by 1-4 Tqs to maintain synchroniztion with transmitted message)
+ * Tbit = Tsyncseg + Tpropseg + Tps1 + Tps2 = (1Tqs + 1Tqs + 3Tqs + 3Tqs) = 8Tqs = 8us 波特率= 125K
+*/
+
 struct can_bittiming can_bit[6] =
 {
 	{50000,  0, 1, 3, 8, 8, 1, 4},//20Tqs 1Tqs = 1us
@@ -722,28 +735,11 @@ struct can_bittiming can_bit[6] =
 	{1000000, 0, 1, 1, 1, 1, 1, 1},//4Tqs  1Tqs = 0.25us
 };
 
-
 int mcp2515_hw_init(int rate)
 {
 	int ret = 0;
 	int i = 0;
 	uint32_t ctrlmode = CAN_CTRLMODE_ONE_SHOT;
-	//struct can_bittiming bt;
-
-	/*
-	 * Tsyncseg = 1Tq
-	 * 设置SJW = 0, BRP = 0x03。以8M晶振为例Tqs = 2 * (3 + 1) / 8M = 1us(Tq = 2 * (BRP[5:0] + 1)/Fosc)
-	 * PhaseSeg1 = (2 + 1) * Tqs = 3Tqs;(PS1 is programmable from 1-8Tqs)
-	 * PropSeg = (0 + 1) * Tqs = Tqs;(The ProgSeg is programmable from 1-8Tqs)
-	 * PhaseSeg2 = (2 + 1) * Tqs = 3Tqs(PS2 is programmable from 2-8Tqs);
-	 * SYNCHRONIZATION JUMP WIDTH(SJW) = 1 * Tqs = Tqs;(by 1-4 Tqs to maintain synchroniztion with transmitted message)
-	 * Tbit = Tsyncseg + Tpropseg + Tps1 + Tps2 = (1Tqs + 1Tqs + 3Tqs + 3Tqs) = 8Tqs = 8us 波特率= 125K
-	*/
-	/*bt.sjw = 1;
-	bt.brp = 0x04;
-	bt.phase_seg1 = 3;
-	bt.prop_seg = 1;
-	bt.phase_seg2 = 3;*/
 	
 	for(i = 0; i < sizeof(can_bit) / sizeof(can_bit[0]); i++)
 	{
@@ -760,14 +756,10 @@ int mcp2515_hw_init(int rate)
 	}
 	
 	mcp2515_gpio_config();
-#if 1	
 	mcp2515_hw_probe();
 
-#if 1
 	ret = mcp2515_setup(&can_bit[i], ctrlmode);
-#else
-	ret = mcp2515_setup(&bt, ctrlmode);
-#endif
+
 	if(ret != 0)
 		return ret;
 	
@@ -776,8 +768,7 @@ int mcp2515_hw_init(int rate)
 	{
 		Error_Handler();
 	}
-#endif
-
+	
 	return ret;
 }
 

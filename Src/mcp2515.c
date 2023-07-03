@@ -207,7 +207,7 @@
 
 #define MCP2515_OST_DELAY_MS	(5)
 
-uint32_t freelevel = 1;
+uint32_t mcp2515_freelevel = 1;
 
 /* CAN payload length and DLC definitions according to ISO 11898-1 */
 #define CAN_MAX_DLC 8
@@ -266,8 +266,8 @@ void mcp2515_gpio_config(void)
 	MCP2515_INT_GPIO_CLK_ENABLE();
 
 	GPIO_InitStructure.Pin = MCP2515_INT_GPIO_PIN;
-	GPIO_InitStructure.Mode = GPIO_MODE_EVT_RISING_FALLING;
-	GPIO_InitStructure.Pull = GPIO_PULLUP;
+	GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
+	GPIO_InitStructure.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(MCP2515_INT_GPIO_PORT, &GPIO_InitStructure);
 
 	HAL_NVIC_SetPriority(MCP2515_INT_EXTI_IRQ, 0, 0);
@@ -275,7 +275,7 @@ void mcp2515_gpio_config(void)
 	
 	GPIO_InitStructure.Pin = MCP2515_CS_GPIO_PIN;
 	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-	HAL_GPIO_Init(MCP2515_CS_GPIO_PORT, &GPIO_InitStructure);	
+	HAL_GPIO_Init(MCP2515_CS_GPIO_PORT, &GPIO_InitStructure);
 
 #endif
 }
@@ -414,7 +414,6 @@ static void mcp2515_hw_tx_frame(uint8_t *buf, int len, int tx_buf_idx)
 
 static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 {
-	
 	uint8_t buf[SPI_TRANSFER_BUF_LEN] = {0};
 	uint32_t sid, eid, exide, rtr;
 	uint8_t spi_tx_buf;
@@ -457,40 +456,56 @@ static void mcp2515_hw_tx(Message* m, int tx_buf_idx)
 
 void mcp2515_send(Message *m)
 {
-	//while(freelevel == 0);
-
-	//mcp2515_hw_tx(m, 0);
-
-	//freelevel = 0;
 	CanInsert_SendQueue(NULL, m);
 }
 
 
-uint8_t MCP2515_CanGet_SendQueue(void)
+uint8_t MCP2515_CanGet_RxSdQueue(void)
 {
-	extern struct _CANQueue CANQueueTx;
+	extern struct _CANQueue CANQueueTx;	
+	extern struct _CANQueue CAN1QueueRx;
 	uint16_t head;
+	uint16_t head1;
 	//uint8_t result;
 	Message TxMessage = {0};
+	Message RxMessage = {0};
 	head = CANQueueTx.front;
+	head1 = CAN1QueueRx.front;
+
 
 	if(1 == GetCanQueueTx(head, &TxMessage))
 	{
-		//printf("%s, %d\r\n", __FUNCTION__, __LINE__);
-		HAL_Delay(100);
-		head = (head + 1) % MAX_CAN_SIZE;
-		SetHeadCanQueueTx(head);
-
-		//while(freelevel == 0);
-		mcp2515_hw_tx(&TxMessage, 0);
-		//freelevel = 0;
-		
+		if(mcp2515_freelevel == 1)
+		{
+			head = (head + 1) % MAX_CAN_SIZE;
+			SetHeadCanQueueTx(head);		
+			mcp2515_freelevel = 0;
+			mcp2515_hw_tx(&TxMessage, 0);
+		}		
 		return 0;
 	}
 	else
 	{
 		return 1;
 	}
+
+	if(1 == GetCan1QueueRx(head1, &RxMessage))
+	{
+		if(mcp2515_freelevel == 1)
+		{
+			head1 = (head1 + 1) % MAX_CAN_SIZE;
+
+			SetHeadCan1QueueRx(head1);
+			mcp2515_hw_tx(&RxMessage, 0);
+		}
+
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+	
 }
 
 
@@ -785,8 +800,8 @@ int mcp2515_can_ist(enum can_state state)
 
 		mcp2515_read_2regs(CANINTF, &intf, &eflag);
 
-		printf("intf %d\r\n", intf);
-		printf("eflag %d\r\n", eflag);
+		//printf("intf %d\r\n", intf);
+		//printf("eflag %d\r\n", eflag);
 		/* mask out flags we don't care about */
 		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
 
@@ -854,14 +869,12 @@ int mcp2515_can_ist(enum can_state state)
 			mcp2515_hw_sleep();
 			//break;
 		}
-
-
+		
 		if(intf & CANINTF_TX)
 		{
-			freelevel = 1;
+			mcp2515_freelevel = 1;
+
 		}
-		//if(intf == 0)
-		//	break;
 	}
 
 	return 0;
@@ -869,9 +882,7 @@ int mcp2515_can_ist(enum can_state state)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	mcp2515_can_ist(state);
-
-    /*switch(GPIO_Pin)
+    switch(GPIO_Pin)
     {
 
         case GPIO_PIN_2:
@@ -880,7 +891,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         break;
 				default:break;
 
-    }*/
+    }
 }
 
 

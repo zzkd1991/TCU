@@ -141,7 +141,7 @@ int mcp2515_hw_init(int rate);
 void mcp2515_gpio_config(void);
 int mcp2515_can_ist(enum can_state state);
 void mcp2515_send(Message *m);
-uint8_t MCP2515_CanGet_SendQueue(void);
+uint8_t MCP2515_CanGet_RxSdQueue(void);
 
 
 

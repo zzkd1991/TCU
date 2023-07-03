@@ -137,7 +137,7 @@ enum can_state {
 /* controller specific additional information / data[5..7] */
 
 
-int mcp2515_hw_init(void);
+int mcp2515_hw_init(int rate);
 void mcp2515_gpio_config(void);
 int mcp2515_can_ist(enum can_state state);
 void mcp2515_send(Message *m);

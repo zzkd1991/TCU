@@ -266,7 +266,7 @@ void mcp2515_gpio_config(void)
 	MCP2515_INT_GPIO_CLK_ENABLE();
 
 	GPIO_InitStructure.Pin = MCP2515_INT_GPIO_PIN;
-	GPIO_InitStructure.Mode = GPIO_MODE_EVT_FALLING;
+	GPIO_InitStructure.Mode = GPIO_MODE_EVT_RISING_FALLING;
 	GPIO_InitStructure.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(MCP2515_INT_GPIO_PORT, &GPIO_InitStructure);
 
@@ -573,10 +573,25 @@ static void mcp2515_hw_sleep(void)
 	mcp2515_write_reg(CANCTRL, CANCTRL_REQOP_SLEEP);
 }
 
+static int mcp2515_stop(void)
+{
+	/* Disable and clear pending interrupts */
+	mcp2515_write_reg(CANINTE, 0x00);
+	mcp2515_write_reg(CANINTF, 0x00);
+
+	mcp2515_write_reg(TXBCTRL(0), 0);
+
+	mcp2515_hw_sleep();
+
+
+	return 0;
+}
+
+
 static int mcp2515_set_normal_mode(uint32_t ctrlmode)
 {
 	uint32_t tickstart;
-
+	
 	/* Enable interrupts */
 	mcp2515_write_reg(CANINTE, CANINTE_ERRIE | CANINTE_TX2IE | CANINTE_TX1IE |
 						CANINTE_TX0IE | CANINTE_RX1IE | CANINTE_RX0IE);
@@ -696,11 +711,24 @@ static int mcp2515_hw_probe(void)
 	return 0;
 }
 
-int mcp2515_hw_init(void)
+
+struct can_bittiming can_bit[6] =
+{
+	{50000,  0, 1, 3, 8, 8, 1, 4},//20Tqs 1Tqs = 1us
+	{100000,  0, 1, 1, 4, 4, 1, 4},//10Tqs 1Tqs = 1us
+	{125000,  0, 1, 1, 3, 3, 1, 4},//8Tqs  1Tqs = 1us
+	{250000,  0, 1, 1, 1, 1, 1, 4},//4Tqs  1Tqs = 1us
+	{500000,  0, 1, 1, 1, 1, 1, 2},//4Tqs  1Tqs = 0.5us
+	{1000000, 0, 1, 1, 1, 1, 1, 1},//4Tqs  1Tqs = 0.25us
+};
+
+
+int mcp2515_hw_init(int rate)
 {
 	int ret = 0;
+	int i = 0;
 	uint32_t ctrlmode = CAN_CTRLMODE_ONE_SHOT;
-	struct can_bittiming bt = {0};
+	//struct can_bittiming bt;
 
 	/*
 	 * Tsyncseg = 1Tq
@@ -711,17 +739,35 @@ int mcp2515_hw_init(void)
 	 * SYNCHRONIZATION JUMP WIDTH(SJW) = 1 * Tqs = Tqs;(by 1-4 Tqs to maintain synchroniztion with transmitted message)
 	 * Tbit = Tsyncseg + Tpropseg + Tps1 + Tps2 = (1Tqs + 1Tqs + 3Tqs + 3Tqs) = 8Tqs = 8us 波特率= 125K
 	*/
-	bt.sjw = 1;
+	/*bt.sjw = 1;
 	bt.brp = 0x04;
 	bt.phase_seg1 = 3;
 	bt.prop_seg = 1;
-	bt.phase_seg2 = 3;
+	bt.phase_seg2 = 3;*/
+	
+	for(i = 0; i < sizeof(can_bit) / sizeof(can_bit[0]); i++)
+	{
+		if(can_bit[i].bitrate == rate * 1000)
+		{
+			break;
+		}
+	}
+	
+	if(i == (sizeof(can_bit) / sizeof(can_bit[0]) + i))
+	{
+		printf("rate is not supported\n");
+		return -1;
+	}
 	
 	mcp2515_gpio_config();
 #if 1	
 	mcp2515_hw_probe();
 
+#if 1
+	ret = mcp2515_setup(&can_bit[i], ctrlmode);
+#else
 	ret = mcp2515_setup(&bt, ctrlmode);
+#endif
 	if(ret != 0)
 		return ret;
 	
@@ -733,20 +779,6 @@ int mcp2515_hw_init(void)
 #endif
 
 	return ret;
-}
-
-static int mcp2515_stop(void)
-{
-	/* Disable and clear pending interrupts */
-	mcp2515_write_reg(CANINTE, 0x00);
-	mcp2515_write_reg(CANINTF, 0x00);
-
-	mcp2515_write_reg(TXBCTRL(0), 0);
-
-	mcp2515_hw_sleep();
-
-
-	return 0;
 }
 
 int mcp2515_can_ist(enum can_state state)
@@ -846,8 +878,9 @@ int mcp2515_can_ist(enum can_state state)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  
-    switch(GPIO_Pin)
+	mcp2515_can_ist(state);
+
+    /*switch(GPIO_Pin)
     {
 
         case GPIO_PIN_2:
@@ -856,7 +889,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         break;
 				default:break;
 
-    }
+    }*/
 }
 
 

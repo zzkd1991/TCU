@@ -125,7 +125,7 @@ void Test_Function_Can3_Send(void)
 		CanInsert_SendQueue(NULL, &m);
 	}
 
-	/*for(i = 0; i < 10; i++)
+	for(i = 0; i < 10; i++)
 	{
 		m.cob_id = i + 0x20;
 		m.rtr = 0;
@@ -147,7 +147,7 @@ void Test_Function_Can3_Send(void)
 		m.rtr = 1;
 		m.ide = 1;
 		CanInsert_SendQueue(NULL, &m);
-	}*/
+	}
 }
 
 
@@ -370,29 +370,88 @@ void Test_Function_TLE7242_PO(void)
 		API_PO_Mode_Config(i, TLE_MODE_CONST_CURRENT);
 	}
 
-	API_ConstantCurrent_Drive(PO1, 500, 2000, 0.05, 0.05);	
+	API_ConstantCurrent_Drive(PO1, 500, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[0] = API_DynamicCurrent_Read(0);
+	duty_value[0] = API_Duty_Feedback_Read(0);	
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO2, 600, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[1] = API_DynamicCurrent_Read(1);
+	duty_value[1] = API_Duty_Feedback_Read(1);	
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO3, 700, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[2] = API_DynamicCurrent_Read(2);
+	duty_value[2] = API_Duty_Feedback_Read(2);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO4, 800, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[3] = API_DynamicCurrent_Read(3);
+	duty_value[3] = API_Duty_Feedback_Read(3);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO5, 900, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[4] = API_DynamicCurrent_Read(4);
+	duty_value[4] = API_Duty_Feedback_Read(4);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO6, 1000, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[5] = API_DynamicCurrent_Read(5);
+	duty_value[5] = API_Duty_Feedback_Read(5);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO7, 1100, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[6] = API_DynamicCurrent_Read(6);
+	duty_value[6] = API_Duty_Feedback_Read(6);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO8, 1200, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[7] = API_DynamicCurrent_Read(7);
+	duty_value[7] = API_Duty_Feedback_Read(7);
+	HAL_Delay(4000);
+
+	
 	API_ConstantCurrent_Drive(PO9, 1300, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[8] = API_DynamicCurrent_Read(8);
+	duty_value[8] = API_Duty_Feedback_Read(8);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO10, 1400, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[9] = API_DynamicCurrent_Read(9);
+	duty_value[9] = API_Duty_Feedback_Read(9);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO11, 1500, 2000, 0.05, 0.05);
+	HAL_Delay(1000);
+	current_value[10] = API_DynamicCurrent_Read(10);
+	duty_value[10] = API_Duty_Feedback_Read(10);
+	HAL_Delay(4000);
+
+
 	API_ConstantCurrent_Drive(PO12, 1600, 2000, 0.05, 0.05);
-
-
-	for(i = 0; i < 12; i++)
-	{
-       current_value[i] = API_DynamicCurrent_Read(i);
-	}
-
-	for(i = 0; i < 12; i++)
-	{
-		duty_value[i] = API_Duty_Feedback_Read(i);
-	}
+	HAL_Delay(1000);
+	current_value[11] = API_DynamicCurrent_Read(11);
+	duty_value[11] = API_Duty_Feedback_Read(11);
+	HAL_Delay(4000);
 }
 
 

@@ -27,25 +27,25 @@ void TLE7242_GPIO_Init(void)
 	GPIO_InitStruct.Pin = TLE7242_CS1_PIN;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	HAL_GPIO_Init(TLE7242_CS1_PORT, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.Pin = TLE7242_CS2_PIN;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	//GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	HAL_GPIO_Init(TLE7242_CS2_PORT, &GPIO_InitStruct);
 
 	GPIO_InitStruct.Pin = TLE7242_CS3_PIN;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	//GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	HAL_GPIO_Init(TLE7242_CS3_PORT, &GPIO_InitStruct);
 
 
 	TLE7242_FAULT1_GPIO_CLK_ENABLE();
 	GPIO_InitStruct.Pin = TLE7242_FAULT1_PIN;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(TLE7242_FAULT1_INT_GPIO_PORT, &GPIO_InitStruct);
 	HAL_NVIC_SetPriority(TLE7242_FAULT1_EXTI_IRQ, 0, 0);
@@ -66,18 +66,42 @@ void TLE7242_GPIO_Init(void)
 
 uint32_t TLE_Register_Operation_Data(uint32_t SPI_Data_u32)
 {
-	uint8_t spi_tx_buf[4];
 	uint32_t result = 0;
+	int i = 0;
 	uint8_t ret = HAL_OK;
-	
-	memcpy(spi_tx_buf, &SPI_Data_u32, 4);
+	uint8_t read_value[4] = {0};
+	uint8_t write_value[4] = {0};
 
-	ret = spi2_trx(4, spi_tx_buf, (uint8_t *)&result);
+	write_value[0] = (SPI_Data_u32 & 0xff000000) >> 24;
+	write_value[1] = (SPI_Data_u32 & 0xff0000) >> 16;
+	write_value[2] = (SPI_Data_u32 & 0xff00) >> 8;
+	write_value[3] = SPI_Data_u32 & 0xff;
+
+	/*for(i = 0; i < 4; i++)
+	{
+		printf("write_value[%d] %x\r\n", i, write_value[i]);
+
+	}*/
+	
+	ret = spi2_trx(4, write_value, NULL);
 	if(ret != HAL_OK)
 	{
 		Error_Handler();
 	}
+
+	/*ret = spi2_trx(4, NULL, (uint8_t *)read_value);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}*/
+
 	
+	//result = (read_value[0] << 24) | (read_value[1] << 16) | (read_value[2] << 8) | read_value[3];
+	//printf("SPI_Data_u32 %x\r\n", SPI_Data_u32);
+	//printf("result %x\r\n", result);
+	
+
+
 	return result;
 }
 
@@ -100,14 +124,65 @@ void TLE_Power_On_Init(void)
 	return;
 }
 
+uint32_t test_value = 0;
+
+
 uint8_t TLE_Manufacturer_Info_Read(void)
 {
 	tag_TLE_Register tle_register = {0};
+	uint8_t ret;
+	//int i;
+	uint8_t read_value1[4] = {0};
+	//uint8_t read_value2[4] = {0};
+	uint8_t write_value[4] = {0};
 
+	//tle_register.IC_Version.U = 0xC10200(0x2c100);
+	
 	tle_register.IC_Version.B.RW = 0;
 	tle_register.IC_Version.B.MSG_ID = TLE_MSG0_ID;
+	//tle_register.IC_Version.B.Version_Number = 2;
+	//tle_register.IC_Version.B.Manuf_ID = 0xC1;
 
-	tle_register.IC_Version.U = TLE_Register_Operation_Data(tle_register.IC_Version.U);
+	write_value[0] = (tle_register.IC_Version.U & 0xff000000) >> 24;
+	write_value[1] = (tle_register.IC_Version.U & 0xff0000) >> 16;
+	write_value[2] = (tle_register.IC_Version.U & 0xff00) >> 8;
+	write_value[3] = tle_register.IC_Version.U & 0xff;
+
+
+	/*ret = spi2_trx(4, write_value, NULL);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}*/
+
+	HAL_Delay(2000);
+
+	
+	ret = spi2_trx(4, NULL, read_value1);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	/*ret = spi2_trx(4, write_value, NULL);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+		
+	ret = spi2_trx(4, NULL, read_value2);
+	if(ret != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	for(i = 0; i < 4; i++)
+	{
+		printf("read_value2[%d], %x\r\n", i, read_value2[i]);
+	}*/
+
+	tle_register.IC_Version.B.Manuf_ID = read_value1[1];
+	tle_register.IC_Version.B.Version_Number = read_value1[2];
 
 	tag_tle_record.record_Version_Number = tle_register.IC_Version.B.Version_Number;
 	tag_tle_record.record_Manuf_ID = tle_register.IC_Version.B.Manuf_ID;
@@ -124,6 +199,8 @@ uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 	tag_tle_record.record_freq = freq_u16;	
 	N = (uint16_t )((FCLK) / (32 * freq_u16));
 
+	printf("N %d\r\n", N);
+
 	tag_tle_record.record_PWM_Divider = N;
 
 	tle_register.Main_Period.B.RW = 1;
@@ -132,6 +209,8 @@ uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 	tle_register.Main_Period.B.CH = channel_u8;
 	
 	TLE_Register_Operation_Data(tle_register.Main_Period.U);
+
+	printf("dddd\r\n");
 	
 	return HAL_OK;
 }
@@ -154,11 +233,15 @@ uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8, uint16_t current_u1
 
 	tag_tle_record.record_current = current_u16;
 	tle_register.Current_Set.B.RW = 1;
+	tle_register.Current_Set.B.EN = 1;
+	tle_register.Current_Set.B.Dither_Enable = 1;
 	tle_register.Current_Set.B.Current_Set_Point = current_u16;
 	tle_register.Current_Set.B.MSG_ID = TLE_MSG3_ID;
 	tle_register.Current_Set.B.CH = channel_u8;
 	
 	TLE_Register_Operation_Data(tle_register.Current_Set.U);
+
+	//printf("bbbbb\r\n");
 	
 	return HAL_OK;
 }
@@ -195,12 +278,14 @@ uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8, uint16_t dither_freq_u16
 	uint8_t Dither_Steps = 0;
 	tag_TLE_Register tle_register = {0};
 	
-	Dither_Steps = (uint8_t)((FCLK) / (dither_freq_u16 * 4));
+	//Dither_Steps = (uint8_t)((FCLK) / (dither_freq_u16 * 4));
 
 	tag_tle_record.record_dither_freq = dither_freq_u16;
 	tag_tle_record.record_dither_steps = Dither_Steps;
 	tle_register.Dither_Period.B.RW = 1;
-	tle_register.Dither_Period.B.Dither_Steps = Dither_Steps;
+	//tle_register.Dither_Period.B.Dither_Steps = Dither_Steps;
+	tle_register.Dither_Period.B.Dither_Steps = 0;
+	
 	tle_register.Dither_Period.B.MSG_ID = TLE_MSG4_ID;
 	tle_register.Dither_Period.B.CH = channel_u8;
 	
@@ -221,6 +306,8 @@ uint8_t TLE_Channel_KP_KI_Set(uint8_t channel_u8, uint16_t kp_u16, uint16_t ki_u
 	tle_register.KP_KI.B.CH = channel_u8;
 	
 	TLE_Register_Operation_Data(tle_register.KP_KI.U);
+
+	printf("cccc\r\n");
 	
 	return HAL_OK;
 }
@@ -241,6 +328,7 @@ uint8_t TLE_Channel_Dynamic_Threshold_Set(uint8_t channel_u8, uint16_t integrato
 uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8, uint8_t mode_u8)
 {
 	tag_TLE_Register tle_register = {0};
+	uint32_t result = 0;
 
 	tle_register.Fault_Mask.B.RW = 1;
 	tle_register.Fault_Mask.B.MSG_ID = TLE_MSG7_ID;
@@ -285,7 +373,9 @@ uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8, uint8_t mode_u8)
 			tle_register.Fault_Mask.B.CM3 = 0;
 		}
 
-		TLE_Register_Operation_Data(tle_register.Fault_Mask.U);
+		//printf("tle_register.Fault_Mask.U %x\r\n", tle_register.Fault_Mask.U);
+		result = TLE_Register_Operation_Data(tle_register.Fault_Mask.U);
+		//printf("result %x\r\n", result);
 	}
 
 	

@@ -3,9 +3,18 @@
 extern tag_TLE_CONFIG_RECORD tag_tle_record;
 
 
+void delay(void)
+{
+	unsigned char i;
+	for (i = 0; i < 50; i++)
+  {
+		;
+  }
+}
+
+
 void API_Manufacturer_Info_Get(uint8_t chan_u8)
 {
-
 	if(chan_u8 > PO12)
 	{
 		Error_Handler();
@@ -15,17 +24,23 @@ void API_Manufacturer_Info_Get(uint8_t chan_u8)
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		TLE7242_CS1_LOW();
+		TLE7242_CS2_HIGH();
+		TLE7242_CS3_HIGH();
 		TLE_Manufacturer_Info_Read();
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
+		TLE7242_CS1_HIGH();
 		TLE7242_CS2_LOW();
+		TLE7242_CS3_HIGH();
 		TLE_Manufacturer_Info_Read();
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
+		TLE7242_CS1_HIGH();
+		TLE7242_CS2_HIGH();
 		TLE7242_CS3_LOW();
 		TLE_Manufacturer_Info_Read();
 		TLE7242_CS3_HIGH();
@@ -55,31 +70,66 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		TLE7242_CS1_LOW();
-		conved_chan = chan_u8 - 1;
+		TLE7242_CS2_HIGH();
+		TLE7242_CS3_HIGH();
+		delay();
+		delay();	
+
+		conved_chan = chan_u8;
+		//Message #7
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
+	delay();
+	delay();		
+		//Message #3
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
-		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
+	delay();
+	delay();		
+		//Message #1
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
+	delay();
+	delay();		
+		//Message #2
+		TLE_Channel_Time_Offset_Set(conved_chan, 0);
+	delay();
+	delay();		
+		//Message #4
+		TLE_Channel_Dither_Freq_Set(conved_chan, 1);
+	delay();
+	delay();		
+		//Message #5
+		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);
+	delay();
+	delay();		
+		//Message #6
+		TLE_Channel_Dynamic_Threshold_Set(conved_chan, 5, 0);
+	delay();
+	delay();		
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
+		TLE7242_CS1_HIGH();
 		TLE7242_CS2_LOW();
-		conved_chan = chan_u8 - 5;
+		TLE7242_CS3_HIGH();
+
+		conved_chan = chan_u8 - 4;
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
-		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
+		//TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
 		TLE7242_CS2_HIGH();		
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
+		TLE7242_CS1_HIGH();
+		TLE7242_CS2_HIGH();
 		TLE7242_CS3_LOW();
-		conved_chan = chan_u8 - 9;
+
+		conved_chan = chan_u8 - 8;
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);	
-		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
+		//TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
 		TLE7242_CS3_HIGH();		
 	}
 }
@@ -98,21 +148,21 @@ void API_PO_Mode_Config(uint8_t chan_u8, uint16_t mode_u8)
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
 		TLE7242_CS1_LOW();
-		conved_chan = chan_u8 -1;
+		conved_chan = chan_u8;
 		TLE_Channel_Mode_Config(conved_chan, mode_u8);
 		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
 		TLE7242_CS2_LOW();
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 		TLE_Channel_Mode_Config(conved_chan, mode_u8);
 		TLE7242_CS2_HIGH();
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
 		TLE7242_CS3_LOW();
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 		TLE_Channel_Mode_Config(conved_chan, mode_u8);
 		TLE7242_CS3_HIGH();
 	}
@@ -138,7 +188,7 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
-		conved_chan = chan_u8 - 1;
+		conved_chan = chan_u8;
 
 		TLE7242_CS1_LOW();
 		TLE_Channel_Dither_Enable(conved_chan, dither_enable, conved_dither_amp);
@@ -147,7 +197,7 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 
 		TLE7242_CS2_LOW();
 		TLE_Channel_Dither_Enable(conved_chan, dither_enable, conved_dither_amp);
@@ -156,7 +206,7 @@ void API_Dither_Par_Config(uint8_t chan_u8, uint8_t dither_enable, uint16_t dith
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 
 		TLE7242_CS3_LOW();
 		TLE_Channel_Dither_Enable(conved_chan, dither_enable, conved_dither_amp);
@@ -179,7 +229,7 @@ uint16_t API_DynamicCurrent_Read(uint8_t chan_u8)
 	
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
-		conved_chan = chan_u8 - 1;
+		conved_chan = chan_u8;
 
 		TLE7242_CS1_LOW();
 		current_value = TLE_Channel_Current_Read(conved_chan);
@@ -187,7 +237,7 @@ uint16_t API_DynamicCurrent_Read(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 
 		TLE7242_CS2_LOW();
 		current_value = TLE_Channel_Current_Read(conved_chan);
@@ -195,7 +245,7 @@ uint16_t API_DynamicCurrent_Read(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 
 		TLE7242_CS3_LOW();
 		current_value = TLE_Channel_Current_Read(conved_chan);
@@ -218,7 +268,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
-		conved_chan = chan_u8 - 1;
+		conved_chan = chan_u8;
 
 		TLE7242_CS1_LOW();
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);//首先设置成On/Off模式
@@ -227,7 +277,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 
 		TLE7242_CS2_LOW();
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
@@ -236,7 +286,7 @@ void API_Power_Switch_Set(uint8_t chan_u8, uint8_t on_off_u8)
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 
 		TLE7242_CS3_LOW();
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_ON_OFF);
@@ -260,7 +310,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
-		conved_chan = chan_u8 - 1;
+		conved_chan = chan_u8;
 		TLE7242_CS1_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
 		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
@@ -268,7 +318,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 		TLE7242_CS2_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
 		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
@@ -276,7 +326,7 @@ uint16_t API_Duty_Feedback_Read(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 		TLE7242_CS3_LOW();
 		duty_cycle = TLE_Channel_Duty_Read(conved_chan);	
 		actual_duty = 100 * (duty_cycle / (32 * tag_tle_record.record_PWM_Divider));
@@ -306,7 +356,7 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{
-		conved_chan = chan_u8 - 1;
+		conved_chan = chan_u8;
 		TLE7242_CS1_LOW();
 		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
 		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
@@ -315,7 +365,7 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{
-		conved_chan = chan_u8 - 5;
+		conved_chan = chan_u8 - 4;
 		TLE7242_CS2_LOW();
 		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
 		autozero.U = TLE_Channel_Autozero_Read(conved_chan);
@@ -324,7 +374,7 @@ uint32_t bsp_Diag_Reset_Fault_PO(uint8_t chan_u8)
 	}
 	else if(chan_u8 == PO9 || chan_u8 == PO10 || chan_u8 == PO11 || chan_u8 == PO12)
 	{
-		conved_chan = chan_u8 - 9;
+		conved_chan = chan_u8 - 8;
 		TLE7242_CS3_LOW();
 		Diagnostic_info.U = TLE_Channel_Diagnostic_Read(conved_chan);
 		autozero.U = TLE_Channel_Autozero_Read(conved_chan);

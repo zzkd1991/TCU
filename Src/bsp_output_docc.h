@@ -30,7 +30,7 @@ void API_Dither_Par_Config(uint8_t chan_u8,uint8_t dither_enable,uint16_t dither
 void API_Power_Switch_Set(uint8_t chan_u8,uint8_t on_off_u8);
 uint8_t API_Diagnostics_Fault_Read(uint8_t chan_u8);
 uint16_t API_Duty_Feedback_Read(uint8_t chan_u8);
-void API_Manufacturer_Info_Get(uint8_t chan_u8);
+uint8_t API_Manufacturer_Info_Get(uint8_t chan_u8);
 
 
 

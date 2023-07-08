@@ -454,5 +454,3 @@ void Test_Function_TLE7242_PO(void)
 	HAL_Delay(4000);
 }
 
-
-

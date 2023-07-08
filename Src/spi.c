@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "spi.h"
 #include "spi_flash.h"
+#include "delay.h"
 
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
@@ -47,7 +48,7 @@ void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -97,7 +98,6 @@ void MX_SPI3_Init(void)
   /* USER CODE BEGIN SPI3_Init 2 */
 
   /* USER CODE END SPI3_Init 2 */
-
 }
 
 
@@ -225,6 +225,15 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 
 /* USER CODE BEGIN 1 */
 // trx
+uint8_t spi2_trx_bk(uint16_t len, uint8_t *w, uint8_t *r)
+{
+	HAL_StatusTypeDef s = HAL_OK;
+
+	s = HAL_SPI_TransmitReceive(&hspi2, w, r, len, SPI_WAIT);	 
+
+	return s == HAL_OK ? 0: 1;
+}
+
 uint8_t spi2_trx(uint16_t len, uint8_t *w, uint8_t *r)
 {
   HAL_StatusTypeDef s = HAL_OK;
@@ -290,6 +299,41 @@ uint8_t spi3_read_write_byte(uint8_t txdata)
     HAL_SPI_TransmitReceive(&hspi3, &txdata, &rxdata, 1, 1000);
     return rxdata;
 }
+
+uint32_t SPI_send(uint32_t data1)
+{
+	uint8_t i;
+	uint32_t tmp,tp1;
+	SCK_CLR;
+	for(i=0; i<10; i++){};
+	SPI_CS0;
+	delay_us(20);
+	tp1=0;
+	for(i=0; i<32; i++)
+	{
+		tmp = (data1 >> (31-i));
+		tmp &=(uint32_t)1;
+		if(tmp)//
+			MOSI_SET;
+		else
+			MOSI_CLR;
+		delay_us(10);
+#if 1
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2) == 1)	
+		tp1 |= (1<<(31-i));
+		SCK_SET; //SCK
+		delay_us(10);
+		SCK_CLR;//SCK
+#endif	 
+	}
+	delay_us(30);
+	//SPI_CS1;
+	delay_us(30);
+	return tp1;
+}
+
+
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

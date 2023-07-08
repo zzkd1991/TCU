@@ -46,6 +46,7 @@ void Test_Function_CAN_Interface(void);
 void Test_Function_PI_Double_Pulse(void);
 void Test_Function_TLE7242_PO(void);
 
+void PY_usDelayTest(void);
 
 
 #endif

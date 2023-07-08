@@ -44,6 +44,15 @@
 #define Rsense  0.1
 #define FCLK	20 * 1000000
 
+typedef struct
+{
+	uint8_t Mes0_7	: 8;
+	uint8_t Mes8_15 : 8;
+	uint8_t Mes16_23	: 8;
+	uint8_t Mes24_31	: 8;
+}MesgDef;
+
+
 //Message0
 typedef union
 {
@@ -57,6 +66,7 @@ typedef union
 		uint32_t RW					:1; //bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;
 }tag_TLE_IC_Version;
 
 //Message1
@@ -64,13 +74,14 @@ typedef union
 {
 	struct
 	{
-		uint32_t	PWM_Divider : 14;//bit0-bit13
+		uint32_t	PWM_Divider : 14;//bit0-bit13 PWM Divider N; Fpwm = Fclk/(32*N)
 		uint32_t 	reserve0	:10;//bit14-bit23
-		uint32_t	CH			:2;//bit24-bit25
-		uint32_t	MSG_ID		:5;//bit26-bit30
-		uint32_t	RW			:1;//bit31
+		uint32_t	CH			:2;//bit24-bit25 channel number 00/01/10/11
+		uint32_t	MSG_ID		:5;//bit26-bit30 Message Identifier 00001
+		uint32_t	RW			:1;//bit31 read command 0
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_TLE_Main_Period;
 
 //Message2
@@ -85,6 +96,7 @@ typedef union
 		uint32_t RW					:1;//bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_TLE_PWM_Offset;
 
 
@@ -93,16 +105,17 @@ typedef union
 {
 	struct
 	{
-		uint32_t Current_Set_Point	:11;//bit0-bit10
-		uint32_t Dither_Enable		:1;//bit11
-		uint32_t Step_Size			:10;//bit12-bit21
-		uint32_t ON_OFF				:1;//bit22
-		uint32_t EN					:1;//bit23
+		uint32_t Current_Set_Point	:11;//bit0-bit10 Average Current Set Point
+		uint32_t Dither_Enable		:1;//bit11 Dither Enable
+		uint32_t Step_Size			:10;//bit12-bit21 Dither Setp Size
+		uint32_t ON_OFF				:1;//bit22 Used when the channel is configured for on/off operation
+		uint32_t EN					:1;//bit23 Set behavior of channel when the pin ENABLE is low
 		uint32_t CH					:2;//bit24-bit25
-		uint32_t MSG_ID				:5;//bit26-bit30
+		uint32_t MSG_ID				:5;//bit26-bit30 00011
 		uint32_t RW					:1;//bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_TLE_Current_Set;
 
 
@@ -111,13 +124,14 @@ typedef union
 {
 	struct
 	{
-		uint32_t	Dither_Steps	:6;//bit0-bit5
+		uint32_t	Dither_Steps	:6;//bit0-bit5 Dither Step- # of Dither Steps in 1/4 of the dither waveform period
 		uint32_t	reserve0		:18;//bit6-bit23
 		uint32_t	CH				:2;//bit24-bit30
 		uint32_t 	MSG_ID			:5;//bit26-bit30
 		uint32_t	RW				:1;//bit31
 	}B;	
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_Dither_Period;
 
 
@@ -126,13 +140,14 @@ typedef union
 {
 	struct
 	{
-		uint32_t KI			:12;//bit0-bit11
-		uint32_t KP			:12;//bit12-bit23
+		uint32_t KI			:12;//bit0-bit11 KI-Intergral Coeffient
+		uint32_t KP			:12;//bit12-bit23 KP-Proportional Coefficient 
 		uint32_t CH			:2;//bit24-bit25
-		uint32_t MSG_ID		:5;//bit26-bit30
+		uint32_t MSG_ID		:5;//bit26-bit30 00101
 		uint32_t RW			:1;//bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;
 }tag_KP_KI;
 
 //Message6
@@ -140,14 +155,15 @@ typedef union
 {
 	struct
 	{
-		uint32_t Integrator_preload		:12;//bit0-bit11
+		uint32_t Integrator_preload		:12;//bit0-bit11 Integrator Preload Value. This value will be loaded into the integrator when the controller transitions from transient mode to steady state mode.
 		uint32_t Transient_Threshold	:11;//bit12-bit22
 		uint32_t reserve0				:1;//bit23
-		uint32_t CH						:2;//bit24-bit25
+		uint32_t CH						:2;//bit24-bit25 Channel Number
 		uint32_t MSG_ID					:5;//bit26-bit30
 		uint32_t RW						:1;//bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_Dynamic_Threshold;
 
 //Message7
@@ -156,7 +172,7 @@ typedef union
 	struct
 	{
 		uint32_t	reserve0							:11;	//bit0-bit10
-		uint32_t	AZ_Disable						:1;		//bit11
+		uint32_t	AZ_Disable						:1;		//bit11 Auto-Zero Disable 0 = Auto-Zero Enable 1 = Auto-Zero Disable
 		uint32_t	DIAG_TMR							:2;		//bit12-bit13			
 		uint32_t	FME							:1;		//bit14
 		uint32_t	FMR							:1;		//bit15
@@ -173,6 +189,7 @@ typedef union
 		uint32_t	RW							:1;		//bit31			
 	}B;
 	uint32_t U;
+	MesgDef Mesg;
 }tag_Fault_Mask;
 
 //Message8
@@ -193,6 +210,7 @@ typedef union
 		uint32_t	RW							:1;		//bit31			
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_Diagnostic_Cfg;
 
 //Message9
@@ -230,6 +248,7 @@ typedef union
 		uint32_t	RW							:1;		//bit31			
 	}B;
 	uint32_t U;
+	MesgDef Mesg;
 }tag_Diagnostic_Read;
 
 
@@ -245,6 +264,7 @@ typedef union
 		uint32_t	RW				:1;//bit31
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_Current_Read;
 
 
@@ -265,6 +285,7 @@ typedef union
 		uint32_t	RW							:1;		//bit31			
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_Autozero_Read;
 
 //Message12
@@ -279,6 +300,7 @@ typedef union
 		uint32_t	reserve1				:1;		//bit31				
 	}B;
 	uint32_t U;
+	MesgDef Mesg;	
 }tag_DutyCycle_Read;
 
 
@@ -354,7 +376,7 @@ typedef enum
 	TLE_MODE_MAX,
 }TLE7242_MODE;
 
-extern uint32_t TLE_Register_Operation_Data(uint32_t SPI_Data_u32);
+extern uint32_t TLE_Register_Operation_Data(MesgDef Mesg);
 extern void TLE_Chip_Output_Enable(void);
 extern void TLE_Chip_Output_Disable(void);
 extern void TLE_Power_On_Init(void);
@@ -369,10 +391,10 @@ extern uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8,uint16_t dither_fr
 extern uint8_t TLE_Channel_KP_KI_Set(uint8_t channel_u8,uint16_t kp_u16,uint16_t ki_u16);//MSID5
 extern uint8_t TLE_Channel_Dynamic_Threshold_Set(uint8_t channel_u8,uint16_t integrator_preload,uint16_t transient_threshold);//MSID6
 extern uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8,uint8_t mode_u8);//MSID7
-extern uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8);//MSID9
-extern uint16_t TLE_Channel_Current_Read(uint8_t channel_u8);//MSID10
-extern uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8);//MSID11
-extern uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8);//MSID12
+extern uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8, uint32_t *Diagnostic_Info);//MSID9
+extern uint16_t TLE_Channel_Current_Read(uint8_t channel_u8, uint16_t *Current_Value);//MSID10
+extern uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8, uint32_t *autozero);//MSID11
+extern uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8, uint32_t *DutyCycle);//MSID12
 extern void TLE_ALL_Register_Period_Read(uint8_t channel_u8,uint16_t period_u16);
 
 void TLE7242_GPIO_Init(void);

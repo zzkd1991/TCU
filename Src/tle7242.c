@@ -147,6 +147,48 @@ uint8_t TLE_Register_WriteReg(MesgDef Mesg)
 	}
 }
 
+uint8_t __TLE_Register_WriteReg(uint32_t write_data)
+{
+	uint32_t read_data;
+	SPI_Send(write_data);
+	read_data = SPI_Send(0);
+	uint32_t mask_value = 1 << 31;
+
+	//printf("write_data %x, read_data %x\r\n", write_data, read_data);
+
+	
+	if((read_data & ~mask_value) != (write_data & ~mask_value))
+	{
+		Error_Handler();
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+uint8_t __TLE_Register_ReadReg(uint32_t write_data, uint32_t *read_data)
+{
+	uint32_t __read_data;
+	SPI_Send(write_data);
+
+	__read_data = SPI_Send(0);
+
+	if((__read_data >> 24) != (write_data >> 24))
+	{
+		Error_Handler();
+		*read_data = __read_data;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+
 uint32_t TLE_Register_Operation_Data(MesgDef Mesg)
 {
 	uint32_t result = 0;
@@ -251,7 +293,7 @@ uint8_t TLE_Manufacturer_Info_Read(void)
 	}
 
 #else
-	tle_register.IC_Version.U = SPI_send(tle_register.IC_Version.U);
+	tle_register.IC_Version.U = SPI_Send(tle_register.IC_Version.U);
 #endif
 
 	printf("tle_register.IC_Version.U %x\r\n", tle_register.IC_Version.U);
@@ -291,37 +333,19 @@ uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8, uint16_t freq_u16)
 	tle_register.Main_Period.B.PWM_Divider = N;
 	tle_register.Main_Period.B.CH = channel_u8;
 
-#if 0	
+#if 0
 	TLE_Register_WriteReg(tle_register.Main_Period.Mesg);
 	if(ret != 0)
 	{
 		Error_Handler();
 	}
 #else
-	SPI_send(tle_register.Main_Period.U);
+	//SPI_Send(tle_register.Main_Period.U);
+	__TLE_Register_WriteReg(tle_register.Main_Period.U);
 #endif
 	
 	return ret;
 }
-
-uint8_t TLE_Channel_Pwm_Freq_Get(uint8_t channel_u8)
-{
-	tag_TLE_Register tle_register = {0};
-	uint8_t ret = 0;
-
-	tle_register.Main_Period.B.RW = 0;
-	tle_register.Main_Period.B.MSG_ID = TLE_MSG1_ID;
-	tle_register.Main_Period.B.CH = channel_u8;
-	
-	TLE_Register_WriteReg(tle_register.Main_Period.Mesg);
-	if(ret != 0)
-	{
-		Error_Handler();
-	}
-	
-	return ret;
-}
-
 
 uint8_t TLE_Channel_Time_Offset_Set(uint8_t channel_u8, uint16_t offset_u16)
 {
@@ -340,10 +364,13 @@ uint8_t TLE_Channel_Time_Offset_Set(uint8_t channel_u8, uint16_t offset_u16)
 		Error_Handler();
 	}
 #else
-	SPI_send(tle_register.PWM_Offset.U);
+	//SPI_Send(tle_register.PWM_Offset.U);
+	__TLE_Register_WriteReg(tle_register.PWM_Offset.U);
 #endif
 	return ret;
 }
+
+
 uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8, uint16_t current_u16)
 {
 	tag_TLE_Register tle_register = {0};
@@ -367,7 +394,8 @@ uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8, uint16_t current_u1
 
 	printf("bbbbb\r\n");
 #else
-	SPI_send(tle_register.Current_Set.U);
+	//SPI_Send(tle_register.Current_Set.U);
+	__TLE_Register_WriteReg(tle_register.Current_Set.U);
 #endif
 	return ret;
 }
@@ -382,12 +410,17 @@ uint8_t TLE_Channel_Dither_Enable(uint8_t channel_u8, uint8_t dither_en, uint16_
 	tle_register.Current_Set.B.Step_Size = dither_step;
 	tle_register.Current_Set.B.MSG_ID = TLE_MSG3_ID;
 	tle_register.Current_Set.B.CH = channel_u8;
-	
+
+#if 0	
 	ret = TLE_Register_WriteReg(tle_register.Current_Set.Mesg);
 	if(ret != 0)
 	{
 		Error_Handler();
 	}
+#else
+	//SPI_Send(tle_register.Current_Set.U);
+	__TLE_Register_WriteReg(tle_register.Current_Set.U);
+#endif
 	
 	return ret;
 }
@@ -399,11 +432,17 @@ uint8_t TLE_Channel_OnOff_Operate(uint8_t channel_u8, uint8_t on_off_u8)
 	tle_register.Current_Set.B.ON_OFF = on_off_u8;
 	tle_register.Current_Set.B.MSG_ID = TLE_MSG3_ID;
 	tle_register.Current_Set.B.CH = channel_u8;
-	
+
+#if 0	
 	TLE_Register_WriteReg(tle_register.Current_Set.Mesg);
-	
+#else
+	//SPI_Send(tle_register.Current_Set.U);
+	__TLE_Register_WriteReg(tle_register.Current_Set.U);
+#endif
 	return HAL_OK;
 }
+
+
 uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8, uint16_t dither_freq_u16)
 {
 	uint8_t Dither_Steps = 0;
@@ -427,7 +466,8 @@ uint8_t TLE_Channel_Dither_Freq_Set(uint8_t channel_u8, uint16_t dither_freq_u16
 		Error_Handler();
 	}
 #else
-	SPI_send(tle_register.Dither_Period.U);
+	//SPI_Send(tle_register.Dither_Period.U);
+	__TLE_Register_WriteReg(tle_register.Dither_Period.U);
 #endif
 	return HAL_OK;
 }
@@ -454,7 +494,8 @@ uint8_t TLE_Channel_KP_KI_Set(uint8_t channel_u8, uint16_t kp_u16, uint16_t ki_u
 
 	//printf("cccc\r\n");
 #else
-	SPI_send(tle_register.KP_KI.U);
+	//SPI_Send(tle_register.KP_KI.U);
+	__TLE_Register_WriteReg(tle_register.KP_KI.U);
 #endif
 	return ret;
 }
@@ -477,8 +518,8 @@ uint8_t TLE_Channel_Dynamic_Threshold_Set(uint8_t channel_u8, uint16_t integrato
 		Error_Handler();
 	}
 #else
-	SPI_send(tle_register.Dynamic_Threshold.U);
-
+	//SPI_Send(tle_register.Dynamic_Threshold.U);
+	__TLE_Register_WriteReg(tle_register.Dynamic_Threshold.U);
 #endif
 	return ret;
 }
@@ -518,7 +559,8 @@ uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8, uint8_t mode_u8)
 			Error_Handler();
 		}
 #else
-		SPI_send(tle_register.Fault_Mask.U);
+		//SPI_Send(tle_register.Fault_Mask.U);
+		__TLE_Register_WriteReg(tle_register.Fault_Mask.U);
 #endif
 	}
 	else if(mode_u8 == TLE_MODE_CONST_CURRENT)//恒流模式
@@ -549,7 +591,8 @@ uint8_t TLE_Channel_Mode_Config(uint8_t channel_u8, uint8_t mode_u8)
 		}		
 		//printf("result %x\r\n", result);
 #else
-		SPI_send(tle_register.Fault_Mask.U);
+		//SPI_Send(tle_register.Fault_Mask.U);
+		__TLE_Register_WriteReg(tle_register.Fault_Mask.U);
 #endif
 	}
 
@@ -572,7 +615,13 @@ void TLE_AutoZero_Enable(int enable)
 	}
 	tle_register.Fault_Mask.B.MSG_ID = TLE_MSG7_ID;
 
+#if 0
 	TLE_Register_WriteReg(tle_register.Fault_Mask.Mesg);
+#else
+	//SPI_Send(tle_register.Fault_Mask.U);
+	__TLE_Register_WriteReg(tle_register.Fault_Mask.U);
+#endif
+
 }
 
 
@@ -585,6 +634,7 @@ uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8, uint32_t *Diagnostic_In
 	tle_register.Diagnostic_Read.B.RW = 0;
 	tle_register.Diagnostic_Read.B.MSG_ID = TLE_MSG9_ID;
 
+#if 0
 	ret = TLE_Register_ReadReg(tle_register.Diagnostic_Read.Mesg, &rd_mesg);
 	if(ret != 0)
 	{
@@ -594,7 +644,9 @@ uint32_t TLE_Channel_Diagnostic_Read(uint8_t channel_u8, uint32_t *Diagnostic_In
 	{
 		*Diagnostic_Info = (rd_mesg.Mes24_31 << 24) | (rd_mesg.Mes16_23 << 16) | (rd_mesg.Mes8_15 << 8) | rd_mesg.Mes0_7;
 	}
-
+#endif
+	//*Diagnostic_Info = SPI_Send(tle_register.Diagnostic_Read.U);
+	__TLE_Register_ReadReg(tle_register.Diagnostic_Read.U, Diagnostic_Info);
 	return ret;	
 }
 
@@ -608,7 +660,8 @@ uint16_t TLE_Channel_Current_Read(uint8_t channel_u8, uint16_t *Current_Value)//
 	tle_register.Current_Read.B.RW = 0;
 	tle_register.Current_Read.B.CH = channel_u8;
 	tle_register.Current_Read.B.MSG_ID = TLE_MSG10_ID;
-	
+
+#if 0
 	ret = TLE_Register_ReadReg(tle_register.Current_Read.Mesg, &rd_mesg);
 	if(ret != 0)
 	{
@@ -619,7 +672,11 @@ uint16_t TLE_Channel_Current_Read(uint8_t channel_u8, uint16_t *Current_Value)//
 		tle_register.Current_Read.U = (rd_mesg.Mes24_31 << 24) | (rd_mesg.Mes16_23 << 16) | (rd_mesg.Mes8_15 << 8) | rd_mesg.Mes0_7;
 		*Current_Value = (uint16_t)((tle_register.Current_Read.B.Current_Read * (1 << 14)) * (320 / Rsense));	
 	}
-
+#else
+	//tle_register.Current_Read.U = SPI_Send(tle_register.Current_Read.U);
+	__TLE_Register_ReadReg(tle_register.Current_Read.U, &tle_register.Current_Read.U);
+	*Current_Value = (tle_register.Current_Read.B.Current_Read * 320) / ((1 << 14) * Rsense);
+#endif
 	return ret;
 }
 
@@ -634,6 +691,7 @@ uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8, uint32_t *autozero)
 	tle_register.Autozero_Read.B.CH = channel_u8;
 	tle_register.Autozero_Read.B.MSG_ID = TLE_MSG11_ID;
 
+#if 0
 	ret = TLE_Register_ReadReg(tle_register.Autozero_Read.Mesg, &rd_mesg);
 	if(ret != 0)
 	{
@@ -643,7 +701,11 @@ uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8, uint32_t *autozero)
 	{
 		*autozero = (rd_mesg.Mes24_31 << 24) | (rd_mesg.Mes16_23 << 16) | (rd_mesg.Mes8_15 << 8) | rd_mesg.Mes0_7;
 	}
-
+#else
+	//tle_register.Autozero_Read.U = SPI_Send(tle_register.Autozero_Read.U);
+	__TLE_Register_ReadReg(tle_register.Autozero_Read.U, &tle_register.Autozero_Read.U);
+	*autozero = tle_register.Autozero_Read.U;
+#endif
 	return ret;
 }
 
@@ -658,6 +720,7 @@ uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8, uint32_t *DutyCycle)
 	tle_register.DutyCycle_Read.B.CH = channel_u8;
 	tle_register.DutyCycle_Read.B.MSG_ID = TLE_MSG12_ID;
 
+#if 0
 	ret = TLE_Register_ReadReg(tle_register.DutyCycle_Read.Mesg, &rd_mesg);
 	if(ret != 0)
 	{
@@ -667,7 +730,12 @@ uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8, uint32_t *DutyCycle)
 	{
 		*DutyCycle = (rd_mesg.Mes24_31 << 24) | (rd_mesg.Mes16_23 << 16) | (rd_mesg.Mes8_15 << 8) | rd_mesg.Mes0_7;
 	}
-	
+#else
+	//tle_register.DutyCycle_Read.U = SPI_Send(tle_register.DutyCycle_Read.U);
+	__TLE_Register_ReadReg(tle_register.DutyCycle_Read.U, &tle_register.DutyCycle_Read.U);
+	*DutyCycle = tle_register.DutyCycle_Read.U;
+#endif
+
 	return ret;
 }
 void TLE_ALL_Register_Period_Read(uint8_t channel_u8, uint16_t period_u16)

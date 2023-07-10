@@ -65,17 +65,20 @@ void API_ConstantCurrent_Drive(uint8_t chan_u8, uint16_t current_u16, uint16_t f
 	
 	if(chan_u8 == PO1 || chan_u8 == PO2 || chan_u8 == PO3 || chan_u8 == PO4)
 	{	
-		TLE7242_CS1_LOW();
+		TLE7242_CS1_HIGH();
 		TLE7242_CS2_HIGH();
-		TLE7242_CS3_HIGH();		
+		TLE7242_CS1_LOW();		
 		conved_chan = chan_u8;
 		//Message #7
 		TLE_Channel_Mode_Config(conved_chan, TLE_MODE_CONST_CURRENT);//恒流模式		
+		
 		//Message #1
 		TLE_Channel_Pwm_Freq_Set(conved_chan, freq_u16);
-		//Message #3
+		
 		TLE_Channel_Constant_Current_Set(conved_chan, conved_current);
+
 		TLE_Channel_KP_KI_Set(conved_chan, kp, ki);
+		TLE7242_CS1_HIGH();
 	}
 	else if(chan_u8 == PO5 || chan_u8 == PO6 || chan_u8 == PO7 || chan_u8 == PO8)
 	{

@@ -300,19 +300,19 @@ uint8_t spi3_read_write_byte(uint8_t txdata)
     return rxdata;
 }
 
-uint32_t SPI_send(uint32_t data1)
+uint32_t SPI_Send(uint32_t data)
 {
 	uint8_t i;
-	uint32_t tmp,tp1;
+	uint32_t tmp, tp;	
 	SCK_CLR;
-	for(i=0; i<10; i++){};
+	for(i = 0; i < 10; i++){};
 	SPI_CS0;
 	delay_us(20);
-	tp1=0;
-	for(i=0; i<32; i++)
+	tp = 0;
+	for(i = 0; i < 32; i++)
 	{
-		tmp = (data1 >> (31-i));
-		tmp &=(uint32_t)1;
+		tmp = (data >> (31 - i));
+		tmp &= (uint32_t)1;
 		if(tmp)//
 			MOSI_SET;
 		else
@@ -320,16 +320,17 @@ uint32_t SPI_send(uint32_t data1)
 		delay_us(10);
 #if 1
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2) == 1)	
-		tp1 |= (1<<(31-i));
+		tp |= (1 << (31 - i));
 		SCK_SET; //SCK
 		delay_us(10);
 		SCK_CLR;//SCK
 #endif	 
 	}
 	delay_us(30);
-	//SPI_CS1;
+	SPI_CS1;
 	delay_us(30);
-	return tp1;
+	//printf("tp %x \r\n", tp);
+	return tp;
 }
 
 

@@ -369,49 +369,55 @@ void Test_Function_TLE7242_PO(void)
 	//{
 	//	API_PO_Mode_Config(i, TLE_MODE_CONST_CURRENT);
 	//}
-#if 1
+#if 0
 	API_ConstantCurrent_Drive(PO1, 500, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[0] = API_DynamicCurrent_Read(0);
-	//duty_value[0] = API_Duty_Feedback_Read(0);	
+	current_value[0] = API_DynamicCurrent_Read(PO1);
+	duty_value[0] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[0], current_value[0] %d %d\r\n", duty_value[0], current_value[0]);
 	HAL_Delay(4000);
 
 
 	API_ConstantCurrent_Drive(PO1, 600, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[1] = API_DynamicCurrent_Read(1);
-	//duty_value[1] = API_Duty_Feedback_Read(1);	
+	current_value[1] = API_DynamicCurrent_Read(PO1);
+	duty_value[1] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[1], current_value[1] %d %d\r\n", duty_value[1], current_value[1]);
 	HAL_Delay(4000);
 
 
 	API_ConstantCurrent_Drive(PO1, 700, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[2] = API_DynamicCurrent_Read(2);
-	//duty_value[2] = API_Duty_Feedback_Read(2);
+	current_value[2] = API_DynamicCurrent_Read(PO1);
+	duty_value[2] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[2], current_value[2] %d %d\r\n", duty_value[2], current_value[2]);
 	HAL_Delay(4000);
 
 
 	API_ConstantCurrent_Drive(PO1, 800, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[3] = API_DynamicCurrent_Read(3);
-	//duty_value[3] = API_Duty_Feedback_Read(3);
+	current_value[3] = API_DynamicCurrent_Read(PO1);
+	duty_value[3] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[3], current_value[3] %d %d\r\n", duty_value[3], current_value[3]);
 	HAL_Delay(4000);
 
 
 	API_ConstantCurrent_Drive(PO1, 900, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[4] = API_DynamicCurrent_Read(4);
-	//duty_value[4] = API_Duty_Feedback_Read(4);
+	current_value[4] = API_DynamicCurrent_Read(PO1);
+	duty_value[4] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[4], current_value[4] %d %d\r\n", duty_value[4], current_value[4]);
 	HAL_Delay(4000);
 
 
 	API_ConstantCurrent_Drive(PO1, 1000, 2000, 0.05, 0.05);
 	HAL_Delay(1000);
-	//current_value[5] = API_DynamicCurrent_Read(5);
-	//duty_value[5] = API_Duty_Feedback_Read(5);
+	current_value[5] = API_DynamicCurrent_Read(PO1);
+	duty_value[5] = API_Duty_Feedback_Read(PO1);
+	printf("duty_value[0], current_value[5] %d %d\r\n", duty_value[5], current_value[5]);
 	HAL_Delay(4000);
 #else
-	for(i = 0; i < 10; i++)
+	/*for(i = 0; i < 10; i++)
 	{
 		
 		API_Power_Switch_Set(PO1, 1);
@@ -419,7 +425,7 @@ void Test_Function_TLE7242_PO(void)
 		HAL_Delay(1000);
 		API_Power_Switch_Set(PO1, 0);
 		HAL_Delay(1000);
-	}
+	}*/
 
 #endif
 

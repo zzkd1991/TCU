@@ -376,12 +376,11 @@ typedef enum
 	TLE_MODE_MAX,
 }TLE7242_MODE;
 
-extern uint32_t TLE_Register_Operation_Data(MesgDef Mesg);
 extern void TLE_Chip_Output_Enable(void);
 extern void TLE_Chip_Output_Disable(void);
 extern void TLE_Power_On_Init(void);
 
-extern uint8_t TLE_Manufacturer_Info_Read(void);
+extern uint8_t TLE_Manufacturer_Info_Read(uint8_t chan_u8);
 extern uint8_t TLE_Channel_Pwm_Freq_Set(uint8_t channel_u8,uint16_t freq_u16);//MSID1
 extern uint8_t TLE_Channel_Time_Offset_Set(uint8_t channel_u8,uint16_t offset_u16);//MSID2
 extern uint8_t TLE_Channel_Constant_Current_Set(uint8_t channel_u8,uint16_t current_u16);//MSID3
@@ -396,6 +395,7 @@ extern uint16_t TLE_Channel_Current_Read(uint8_t channel_u8, uint16_t *Current_V
 extern uint32_t TLE_Channel_Autozero_Read(uint8_t channel_u8, uint32_t *autozero);//MSID11
 extern uint32_t TLE_Channel_Duty_Read(uint8_t channel_u8, uint32_t *DutyCycle);//MSID12
 extern void TLE_ALL_Register_Period_Read(uint8_t channel_u8,uint16_t period_u16);
+extern uint8_t Actul_Channel_to_Register_Channel(uint8_t Acutal_Channel);
 
 void TLE7242_GPIO_Init(void);
 #endif

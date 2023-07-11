@@ -44,7 +44,7 @@ void Test_Function_CAN_CCP(void);
 void Test_Function_LED(void);
 void Test_Function_CAN_Interface(void);
 void Test_Function_PI_Double_Pulse(void);
-void Test_Function_TLE7242_PO(void);
+void Test_Function_TLE7242_PO(uint8_t channel);
 
 void PY_usDelayTest(void);
 

@@ -21,6 +21,10 @@
 #include "spi.h"
 #include "spi_flash.h"
 #include "delay.h"
+#include "tle7242.h"
+#include "bsp_output_docc.h"
+#include "mcp2515.h"
+#include "gpio_spi.h"
 
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
@@ -300,40 +304,27 @@ uint8_t spi3_read_write_byte(uint8_t txdata)
     return rxdata;
 }
 
-uint32_t SPI_Send(uint32_t data)
+uint32_t __spi2_trx(uint32_t data)
 {
-	uint8_t i;
-	uint32_t tmp, tp;	
-	SCK_CLR;
-	for(i = 0; i < 10; i++){};
-	SPI_CS0;
-	delay_us(20);
-	tp = 0;
+	int i;
+	uint32_t tmp, tp;
+
 	for(i = 0; i < 32; i++)
 	{
 		tmp = (data >> (31 - i));
 		tmp &= (uint32_t)1;
-		if(tmp)//
-			MOSI_SET;
+		if(tmp)
+			spi_mosi_set(1);
 		else
-			MOSI_CLR;
-		delay_us(10);
-#if 1
+			spi_mosi_set(0);
+		spi_sck_set(1);
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2) == 1)	
-		tp |= (1 << (31 - i));
-		SCK_SET; //SCK
-		delay_us(10);
-		SCK_CLR;//SCK
-#endif	 
+			tp |= (1 << (31 - i));		
+		spi_sck_set(0);
 	}
-	delay_us(30);
-	SPI_CS1;
-	delay_us(30);
-	//printf("tp %x \r\n", tp);
+	
 	return tp;
 }
-
-
 
 /* USER CODE END 1 */
 

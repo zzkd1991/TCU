@@ -36,7 +36,7 @@ U16 API_PAR_Init(void)
 
 	memset(PAR_BYTES, 0, sizeof(PAR_BYTES));
 
-	status = I2C_Fram_BufferRead((uint8_t *)PAR_BYTES, ParBack_BYTE_BASE, Max_BYTE_NUM);
+	status = I2C_Fram_BufferRead(PAR_BYTES, ParBack_BYTE_BASE, Max_BYTE_NUM);
 	if(status != 0)
 		return 0xff;
 	Cal_Crc = calc_crc32(0, PAR_BYTES, Max_BYTE_NUM);
@@ -70,9 +70,9 @@ U16 API_PAR_Init(void)
 	}
 
 	int j;
-	for(j = 0; j < 30; j++)
+	for(j = 0; j < Max_WORD_NUM; j++)
 	{
-		printf("%c", PAR_WORDS[j]);
+		printf("%c\r\n", PAR_WORDS[j]);
 	}
 
 	memset(PAR_WORDS, 0, sizeof(PAR_WORDS));
@@ -115,9 +115,9 @@ U16 API_PAR_Init(void)
 	//	return par_val;
 	//}
 	int i;
-	for(i = 0; i < 30; i++)
+	for(i = 0; i < Max_REAL_NUM; i++)
 	{
-		printf("%f", PAR_REALS[i]);
+		printf("%f\r\n", PAR_REALS[i]);
 	}
 
 	memset(PAR_REALS, 0, sizeof(PAR_REALS));
@@ -154,14 +154,26 @@ U8 API_PAR_Data_Init(U8 Par_type, U8 * buffer, U16 len)
 	if(Par_type == PAR_TYPE_BYTE)
 	{
 		result = API_PAR_SaveBytes(0, buffer, len);
+		if(result != PAR_WRITE_TRUE)
+		{
+			Error_Handler();
+		}
 	}
 	else if(Par_type == PAR_TYPE_WORD)
 	{
 		result = API_PAR_SaveWords(0, (U16 *)buffer, len);
+		if(result != PAR_WRITE_TRUE)
+		{
+			Error_Handler();
+		}
 	}
-	else if(Par_type == PAR_TYPE_DWORD)	
+	else if(Par_type == PAR_TYPE_DWORD)
 	{
 		result = API_PAR_SaveReals(0, (REAL32 *)buffer, len);
+		if(result != PAR_WRITE_TRUE)
+		{
+			Error_Handler();
+		}
 	}
 
 	return result;

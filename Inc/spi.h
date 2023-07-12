@@ -50,17 +50,20 @@ uint8_t spi3_trx(uint16_t len, uint8_t *w, uint8_t *r);
 
 uint8_t spi3_read_write_byte(uint8_t txdata);
 
-uint32_t SPI_Send(uint32_t data1);
+uint32_t __spi2_trx(uint32_t data);
+
+uint8_t __SPI_Send(uint8_t write_data);
 
 
-#define SPI_CS1       HAL_GPIO_WritePin(GPIOB , GPIO_PIN_12, GPIO_PIN_SET)
-#define SPI_CS0       HAL_GPIO_WritePin(GPIOB , GPIO_PIN_12, GPIO_PIN_RESET)
 #define MOSI_SET      HAL_GPIO_WritePin(GPIOB , GPIO_PIN_15, GPIO_PIN_SET)
 #define MOSI_CLR      HAL_GPIO_WritePin(GPIOB , GPIO_PIN_15, GPIO_PIN_RESET)
 #define SCK_SET      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
 #define SCK_CLR      HAL_GPIO_WritePin(GPIOB , GPIO_PIN_13, GPIO_PIN_RESET)
 
-
+#define mcp2515_mosi_set	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_SET)
+#define mcp2515_mosi_clr	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_RESET)
+#define mcp2515_sck_set		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET)
+#define mcp2515_sck_clr		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET)
 
 #ifdef __cplusplus
 }

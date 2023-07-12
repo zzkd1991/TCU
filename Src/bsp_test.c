@@ -17,9 +17,9 @@ extern struct _USARTQueue USARTQueueRx;
 extern void DI_Screen(void);
 extern void Uart_SendString(uint8_t *str);
 char RecvElement[50] = {0};
-U16 wordpar_store[30] = {0};
-U8 bytepar_store[30] = "11122233";
-REAL32 realpar_store[30] = {0};
+U16 wordpar_store[512] = {0};
+U8 bytepar_store[512] = "1112223332343254325234234242342345634566776567";
+REAL32 realpar_store[512] = {0};
 
 
 void Test_Function_Can1_Send(void)
@@ -244,15 +244,50 @@ void Test_Function_Fram_WR(void)
 	wordpar_store[7] = '2';
 	wordpar_store[8] = '3';
 	wordpar_store[9] = '4';
+	wordpar_store[10] = 's';
+	wordpar_store[11] = '2';
+	wordpar_store[12] = '1';
+	wordpar_store[13] = 'z';
+	wordpar_store[14] = 'x';
+	wordpar_store[15] = 's';
+	wordpar_store[16] = 'v';
+	wordpar_store[17] = 'b';
+	wordpar_store[18] = 'g';
+	wordpar_store[19] = 'h';
+	wordpar_store[20] = 't';
+	wordpar_store[21] = ',';
+	wordpar_store[22] = '4';
+	wordpar_store[23] = '5';
+	wordpar_store[24] = '2';
+	wordpar_store[25] = 'r';
+	wordpar_store[26] = 'y';
+	wordpar_store[27] = 'r';
+	wordpar_store[28] = 's';
+	wordpar_store[29] = 'q';
+	wordpar_store[30] = 'o';
+	wordpar_store[31] = 'p';
+	wordpar_store[32] = 'l';
+	wordpar_store[33] = '6';
+	wordpar_store[34] = '0';
+	wordpar_store[35] = '1';
+	wordpar_store[36] = '2';
+	wordpar_store[37] = 'r';
+	wordpar_store[38] = 's';
+	wordpar_store[39] = 'q';
+	wordpar_store[40] = 'o';
+	wordpar_store[41] = 'p';
+	wordpar_store[42] = 'l';
+	wordpar_store[43] = '6';
+	wordpar_store[44] = '0';
+	wordpar_store[45] = '1';
+	wordpar_store[46] = '2';
+	wordpar_store[47] = '3';
+	wordpar_store[48] = '4';
+	wordpar_store[49] = '5';
+	wordpar_store[50] = ';';
+	wordpar_store[60] = '*';
+	wordpar_store[500] = '%';
 
-	printf("wordpar_store \r\n");
-	
-   /*for(i = 0; i < 512; i++)
-   {
-	   printf("%c", wordpar_store[i]);
-   }
-
-	printf("\r\n");*/
 #if 1
 	realpar_store[0] = 35.1;
 	realpar_store[1] = -12.1;
@@ -284,6 +319,48 @@ void Test_Function_Fram_WR(void)
 	realpar_store[27] = 898.1;
 	realpar_store[28] = 100.1;
 	realpar_store[29] = 99.1;
+	realpar_store[30] = -15.61;
+	realpar_store[31] = -99.82;
+	realpar_store[32] = 732;
+	realpar_store[33] = 54.12;
+	realpar_store[34] = 78.98;
+	realpar_store[35] = 76.98;
+	realpar_store[36] = 54.21;
+	realpar_store[37] = -23.45;
+	realpar_store[38] = -67.89;
+	realpar_store[39] = 98.678;
+	realpar_store[40] = 76.98;
+	realpar_store[41] = 76.99;
+	realpar_store[42] = 98.99;
+	realpar_store[43] = 65;
+	realpar_store[44] = 24.789;
+	realpar_store[45] = 45.78l;
+	realpar_store[46] = 1234;
+	realpar_store[47] = 54.67;
+	realpar_store[48] = 98.76;
+	realpar_store[49] = 77.67;
+	realpar_store[50] = 71.11;
+	realpar_store[51] = 66.78;
+	realpar_store[52] = 89.88;
+	realpar_store[53] = 54.44;
+	realpar_store[54] = 76.99;
+	realpar_store[55] = 12.31;
+#if 1
+	realpar_store[101] = 123.45;
+#else
+	realpar_store[101] = 123.45;
+#endif
+	/*realpar_store[103] = 67.88;
+	realpar_store[150] = 776.98;
+	realpar_store[200] = 15.25;
+	realpar_store[246] = 67.89;
+	realpar_store[267] = 66.78;
+	realpar_store[312] = 57.90;
+	realpar_store[324] = 99.89;
+	realpar_store[412] = 34.67;
+	realpar_store[415] = 89.99;
+	realpar_store[500] = 56.908;
+	realpar_store[510] = 78.998;*/
 
 #else
 	realpar_store[0] = 100;
@@ -326,13 +403,13 @@ void Test_Function_Fram_WR(void)
 	printf("************************\r\n");
    
 
-	result = API_PAR_Data_Init(PAR_TYPE_BYTE, bytepar_store, 30);
+	result = API_PAR_Data_Init(PAR_TYPE_BYTE, bytepar_store, 512);
 	printf("result %d\r\n", result);
 	
-	result = API_PAR_Data_Init(PAR_TYPE_WORD, (U8 *)wordpar_store, 10);
+	result = API_PAR_Data_Init(PAR_TYPE_WORD, (U8 *)wordpar_store, 512);
 	printf("result %d\r\n", result);
 
-	result = API_PAR_Data_Init(PAR_TYPE_DWORD, (U8 *)&realpar_store[0], 30);
+	result = API_PAR_Data_Init(PAR_TYPE_DWORD, (U8 *)&realpar_store[0], 512);
 	printf("result %d\r\n", result);
 	
 	API_PAR_Init();
@@ -344,11 +421,12 @@ void Test_Function_Fram_WR(void)
 	}*/
 
 	printf("\r\n");
-	for(i = 0; i < 30; i++)
+	for(i = 0; i < 100; i++)
 	{
 		printf("%f\r\n", PAR_REALS[i]);
 	}
 #endif
+
 }
 
 void Test_Function_LED(void)

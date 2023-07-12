@@ -20,9 +20,9 @@ Sum = 3584*2 = 7168
 #define ParBack_WORD_BASE		0x1000
 #define ParBack_REAL_BASE		0x1400
 
-#define Max_BYTE_NUM           30
-#define Max_WORD_NUM           30
-#define Max_REAL_NUM           30
+#define Max_BYTE_NUM           512
+#define Max_WORD_NUM           512
+#define Max_REAL_NUM           512
 
 #define ParMainCheckCode_Base	0x1C00      //主存储区校验起始地址4*3
 #define ParBackCheckCode_Base	0x1C0C      //备份区校验起始地址4*3

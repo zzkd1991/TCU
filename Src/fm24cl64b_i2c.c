@@ -74,13 +74,14 @@ void I2C_Fram_Init(void)
 
 uint32_t I2C_Fram_BufferWrite(uint8_t* pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite)
 {
-  uint8_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0;
+  uint32_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0;
 
   Addr = WriteAddr % FRAM_PAGESIZE;
   count = FRAM_PAGESIZE - Addr;
   NumOfPage =  NumByteToWrite / FRAM_PAGESIZE;
   NumOfSingle = NumByteToWrite % FRAM_PAGESIZE;
   uint32_t status = HAL_OK;
+
  
   /* If WriteAddr is I2C_PageSize aligned  */
   if(Addr == 0) 

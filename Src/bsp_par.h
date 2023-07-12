@@ -57,6 +57,14 @@ U16 API_PAR_GetBytes(U16 Address, U8 *buffer, U16 len);
 U16 API_PAR_GetWords(U16 Address, U16 *buffer, U16 len);
 U16 API_PAR_GetReals(U16 Address, REAL32 *buffer, U16 len);
 
+#define API_PAR_DEBUG_ON         1
+
+
+#define API_PAR_DEBUG(fmt,arg...)          do{\
+                                         if(API_PAR_DEBUG_ON)\
+                                         printf("<<-API-PAR-DEBUG->> [%d]"fmt"\n",__LINE__, ##arg);\
+                                       }while(0)
+
 
 #endif
 

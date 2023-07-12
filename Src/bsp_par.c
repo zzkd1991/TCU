@@ -28,11 +28,12 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1;
 		SET_PAR_STATUS_BIT(par_val, 0, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
+		API_PAR_DEBUG("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
 		Error_Handler();
 	}
 
-	printf("%s\r\n", PAR_BYTES);
+	API_PAR_DEBUG("%s\r\n", PAR_BYTES);
+
 
 	memset(PAR_BYTES, 0, sizeof(PAR_BYTES));
 
@@ -47,8 +48,6 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1 << 1;
 		SET_PAR_STATUS_BIT(par_val, 1, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
-
 		Error_Handler();
 	}
 
@@ -64,15 +63,7 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1 << 2;
 		SET_PAR_STATUS_BIT(par_val, 2, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
-
 		Error_Handler();
-	}
-
-	int j;
-	for(j = 0; j < Max_WORD_NUM; j++)
-	{
-		printf("%c\r\n", PAR_WORDS[j]);
 	}
 
 	memset(PAR_WORDS, 0, sizeof(PAR_WORDS));
@@ -88,8 +79,6 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1 << 3;
 		SET_PAR_STATUS_BIT(par_val, 3, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
-
 		Error_Handler();
 	}
 #endif
@@ -105,19 +94,7 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1 << 4;
 		SET_PAR_STATUS_BIT(par_val, 4, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
-
 		Error_Handler();
-
-	}
-	//else
-	//{
-	//	return par_val;
-	//}
-	int i;
-	for(i = 0; i < Max_REAL_NUM; i++)
-	{
-		printf("%f\r\n", PAR_REALS[i]);
 	}
 
 	memset(PAR_REALS, 0, sizeof(PAR_REALS));
@@ -132,10 +109,9 @@ U16 API_PAR_Init(void)
 	{
 //		par_val |= 1 << 5;
 		SET_PAR_STATUS_BIT(par_val, 5, 1);
-		printf("Cal_Crc, Saved_Crc %d, %d\r\n", Cal_Crc, Saved_Crc);
-	
 		Error_Handler();
 	}
+	
 	return par_val;
 }
 
@@ -272,17 +248,10 @@ U16 API_PAR_SaveReals(U16 Address, REAL32 * buffer, U16 len)
 	if(Address + len > 512)
 		return PAR_LEN_ERROR;
 
-	/*for(i = 0; i < len; i++)
+	for(i = 0; i < len; i++)
 	{
 		PAR_REALS[i] = buffer[i];		
-	}*/
-
-	/*printf("\r\n------------\r\n");
-	for(i = 0; i < 512; i++)
-	{
-		printf("%f", PAR_REALS[i]);
-	}*/
-
+	}
 
 	crc = calc_crc32(0, buffer, Max_REAL_NUM * 4);
 
@@ -293,21 +262,6 @@ U16 API_PAR_SaveReals(U16 Address, REAL32 * buffer, U16 len)
 	status = I2C_Fram_BufferWrite((U8 *)buffer, ParMain_REAL_BASE + Address * 4,  4 * Max_REAL_NUM);
 	if(status != 0)
 		return PAR_STATUS_ERROR;
-
-	//status = I2C_Fram_BufferRead((uint8_t *)&PAR_REALS[0], ParMain_REAL_BASE, 4 * Max_REAL_NUM);
-
-	/*printf("\r\n++++++++++\r\n");
-	for(i = 0; i < 512; i++)
-	{
-		printf("%f", buffer[i]);
-	}*/
-
-	/*printf("\r\n*******\r\n");
-	for(i = 0; i < 512; i++)
-	{
-		printf("%f", PAR_REALS[i]);
-	}*/
-
 
 	/*写备份区*/
 	status = I2C_Fram_BufferWrite((U8 *)&crc, ParBackCheckCode_Base + 8, 4);

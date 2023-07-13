@@ -20,7 +20,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   /* Enable GPIO TX/RX clock */
   I2Cx_SCL_GPIO_CLK_ENABLE();
   I2Cx_SDA_GPIO_CLK_ENABLE();
-  /* Enable I2C1 clock */
+  /* Enable I2C2 clock */
   I2Cx_CLK_ENABLE(); 
   
   /*##-2- Configure peripheral GPIO ##########################################*/  
